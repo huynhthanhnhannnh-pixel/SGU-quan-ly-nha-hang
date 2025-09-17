@@ -9,8 +9,8 @@ import utils.*;
 
 public class WorkerManager implements ManagerHandler {
     private static WorkerManager self = null;
-    private int GO_BACK_OPTION = 0; 
-    private final static String[] SCHEDULE_NAMES = {
+    private final int GO_BACK_OPTION = 0; 
+    private final String[] SHIFT_NAMES = {
         "Sang Thu 2", "Chieu Thu 2",
         "Sang Thu 3", "Chieu Thu 3",
         "Sang Thu 4", "Chieu Thu 4",
@@ -36,19 +36,19 @@ public class WorkerManager implements ManagerHandler {
     }
 
     private WorkerManager() {
-        // Init schedule
-        for (int i = 0; i < SCHEDULE_NAMES.length; i++) {
-            schedule.put((i + 1), new Shift(SCHEDULE_NAMES[i]));
+        // Init schedule, create shift each shift name in SHIFT_NAMES
+        for (int i = 0; i < SHIFT_NAMES.length; i++) {
+            schedule.put((i + 1), new Shift(SHIFT_NAMES[i]));
         }
     }
 
-    // Init a storage of worker objects
+    // Init a storage of worker objects, read from Worker.txt
     private void initResources() {
         try (BufferedReader br = new BufferedReader(new FileReader("src\\resources\\Workers.txt"))) {
-            String basicInfo;
+            String basicInfo; // read the odd lines
             int counter = 1;
             while ((basicInfo = br.readLine()) != null) {
-                String description = br.readLine(); // assumes even number of lines
+                String description = br.readLine(); // go to next line(even line) then read it
                 String[] parts = basicInfo.split(" ");
                 String name = parts[0];
                 int age = Integer.parseInt(parts[1]);
@@ -80,7 +80,6 @@ public class WorkerManager implements ManagerHandler {
         if (self == null) {
             self = new WorkerManager();
             self.initResources();
-            // Init Worker data in the resources folder
         } 
         return self;
     }
@@ -252,3 +251,4 @@ public class WorkerManager implements ManagerHandler {
         System.out.println("Fired"+worker.getName());
     };
 }
+
