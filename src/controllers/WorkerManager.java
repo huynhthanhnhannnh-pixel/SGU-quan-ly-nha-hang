@@ -5,8 +5,7 @@ import java.util.*;
 import base.Worker;
 import contracts.ManagerHandler;
 import models.*;
-import utils.Displayer;
-import utils.UserInputHandler;
+import utils.*;
 
 public class WorkerManager implements ManagerHandler {
     private static WorkerManager self = null;
