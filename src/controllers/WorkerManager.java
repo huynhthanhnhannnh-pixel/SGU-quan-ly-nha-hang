@@ -121,6 +121,7 @@ public class WorkerManager implements ManagerHandler {
                 shift.addWorker(wkr);
             }
         }
+        inputHandler.resetOption();
     }
     public void showSchedule() {
         String[] message = {

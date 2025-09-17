@@ -9,9 +9,9 @@ public class UserInputHandler {
     private int curOption = -1;
     private boolean showWarning = false;
 
-    private UserInputHandler() {}
+    private UserInputHandler() { newScanner(); }
     public static UserInputHandler getUserInputHandler() {
-         if (self == null) {
+        if (self == null) {
             self = new UserInputHandler();
         } 
         return self;

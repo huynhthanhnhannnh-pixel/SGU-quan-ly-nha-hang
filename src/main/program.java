@@ -1,7 +1,5 @@
 package main;
 
-import java.util.Scanner;
-
 import controllers.*;
 import utils.*;
 
@@ -18,15 +16,10 @@ public class program {
         };
         boolean sessionActive = true;
 
-        // tasks
-        // Hien thi danh sach nhan vien co the thue
-        Scanner sc = inputHandler.getScanner();
-
         while (sessionActive) {
             displayer.clearScreen();
             displayer.displayOptions(options);
             inputHandler.getUserOption();
-            sc.nextLine(); // clear \n
             switch (inputHandler.getCurrentOption()) {
                 case 1:
                     inputHandler.closeScanner();
