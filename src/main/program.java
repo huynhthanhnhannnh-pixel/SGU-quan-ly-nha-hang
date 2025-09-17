@@ -9,6 +9,7 @@ public class program {
     public static void main(String[] args) {
         WorkerManager workerMgr = WorkerManager.getManager();
         Displayer displayer = Displayer.getDisplayer();
+        UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
         String[] options = { 
             "Exit", 
             "Hire new workers", 
@@ -16,20 +17,19 @@ public class program {
             "Show schedule"
         };
         boolean sessionActive = true;
-        int curOption = 0;
 
         // tasks
         // Hien thi danh sach nhan vien co the thue
-        Scanner sc = displayer.getScanner();
+        Scanner sc = inputHandler.getScanner();
 
         while (sessionActive) {
             displayer.clearScreen();
             displayer.displayOptions(options);
-            curOption = sc.nextInt();
+            inputHandler.getUserOption();
             sc.nextLine(); // clear \n
-            switch (curOption) {
+            switch (inputHandler.getCurrentOption()) {
                 case 1:
-                    displayer.closeScanner();
+                    inputHandler.closeScanner();
                     return;
                 case 2:
                     workerMgr.showWorkerToHire();

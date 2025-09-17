@@ -6,8 +6,10 @@ import base.Worker;
 import contracts.ManagerHandler;
 import models.*;
 import utils.Displayer;
+import utils.UserInputHandler;
 
 public class WorkerManager implements ManagerHandler {
+    private static WorkerManager self = null;
     private int GO_BACK_OPTION = 0; 
     private final static String[] SCHEDULE_NAMES = {
         "Sang Thu 2", "Chieu Thu 2",
@@ -18,11 +20,8 @@ public class WorkerManager implements ManagerHandler {
         "Sang Thu 7", "Chieu Thu 7",
     };
 
-    private Displayer displayer = Displayer.getDisplayer(); 
-    private Scanner sc = displayer.getScanner();
-    private int curOption = -1;
-    private boolean showWarning = false;
-    private static WorkerManager self = null;
+    private Displayer displayer = Displayer.getDisplayer();
+    private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
 
     private HashMap<Integer, Worker> workerToHire = new HashMap<Integer, Worker>(); // available workers
     private HashMap<Integer, Worker> hiredWorkers = new HashMap<Integer, Worker>(); // hired workers
@@ -30,27 +29,11 @@ public class WorkerManager implements ManagerHandler {
 
     @Override
     public void showGeneralInfo() {
-        
+        System.out.println("Class nay dung de quan ly nhan vien ...");
     }
     @Override
     public void createReport() {
-
-    }
-
-    // get user option, show warning when user enter an invalid option
-    private void getUserOption() {
-        System.out.println();
-        displayer.singleSeperate();
-        if (showWarning) {
-            System.out.println("The option "+curOption+" is not a valid option, please choose again");
-            showWarning = false;
-        }
-        curOption = sc.nextInt();
-        sc.nextLine(); // clear \n
-    }
-    private void resetOption() {
-        curOption = -1;
-        showWarning = false;
+        System.out.println("Danh thu cua thang nay la ...");
     }
 
     private WorkerManager() {
@@ -113,9 +96,9 @@ public class WorkerManager implements ManagerHandler {
             "Enter the id of available workers to add to this shift",
             "Enter the id of workers that are in this shift to remove them"
         };   
-        Shift shift = schedule.get(curOption);
-        resetOption();
-        while (curOption != GO_BACK_OPTION) {
+        Shift shift = schedule.get(inputHandler.getCurrentOption());
+        inputHandler.resetOption();
+        while (inputHandler.getCurrentOption() != GO_BACK_OPTION) {
             displayer.clearScreen();
             displayer.showMessage(message);
             shift.display();
@@ -128,25 +111,24 @@ public class WorkerManager implements ManagerHandler {
                 wkr.shortDisplay();
             }
 
-            getUserOption();
+            inputHandler.getUserOption();
 
-            Worker wkr = hiredWorkers.get(curOption);
-            if (wkr == null) { showWarning = true; continue; }
+            Worker wkr = hiredWorkers.get(inputHandler.getCurrentOption());
+            if (wkr == null) { inputHandler.raiseWarning(); continue; }
             if (shift.contain(wkr)) {
                 shift.removeWorker(wkr);
             } else if (!shift.contain(wkr)) {
                 shift.addWorker(wkr);
             }
         }
-        resetOption();
     }
     public void showSchedule() {
         String[] message = {
             "To go back enter 0",
             "This is our schedule",
             "To view add/remove workers enter the schedule number then choose a worker"
-        };       
-        while (curOption != GO_BACK_OPTION) {
+        };  
+        while (inputHandler.getCurrentOption() != GO_BACK_OPTION) {
             displayer.clearScreen();
             displayer.showMessage(message);
 
@@ -156,13 +138,13 @@ public class WorkerManager implements ManagerHandler {
                 displayer.dashSeperate();
             }
 
-            getUserOption();
+            inputHandler.getUserOption();
 
-            if (schedule.containsKey(curOption)) {
+            if (schedule.containsKey(inputHandler.getCurrentOption())) {
                 editSelectedShift();
-            } else { showWarning = true; }
+            } else { inputHandler.raiseWarning(); }
         }
-        resetOption();
+        inputHandler.resetOption();
     }
 
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
@@ -174,8 +156,8 @@ public class WorkerManager implements ManagerHandler {
             "To go back enter 0",
             "This is woker desciption"
         };
-        resetOption();
-        while (curOption != 0) {
+        inputHandler.resetOption();
+        while (inputHandler.getCurrentOption() != GO_BACK_OPTION) {
             displayer.clearScreen();
             displayer.showMessage(message);
 
@@ -188,19 +170,19 @@ public class WorkerManager implements ManagerHandler {
                 System.err.println("1 / Hire this worker");
             }
             
-            getUserOption();
+            inputHandler.getUserOption();
 
-            if (curOption == 1) {
+            if (inputHandler.getCurrentOption() == 1) {
                 if (worker.isEmployed()) {   
                     fireWorker(worker.getId());
                 } else {
                     hireWorker(worker.getId());
                 } 
-                displayer.enter2Continue();
+                inputHandler.enter2Continue();
                 // break; // include this break to end session after you fired or hired a worker
-            } else { showWarning = true; }
+            } else { inputHandler.raiseWarning(); }
         }   
-        resetOption();
+        inputHandler.resetOption();
     }
     public void showWorkerToHire() {
         String[] message = {
@@ -208,7 +190,7 @@ public class WorkerManager implements ManagerHandler {
             "This is a list of available workers to be hired",
             "To view worker description and hire them, enter their id"
         };       
-        while (curOption != GO_BACK_OPTION) {
+        while (inputHandler.getCurrentOption() != GO_BACK_OPTION) {
             displayer.clearScreen();
             displayer.showMessage(message);
 
@@ -217,14 +199,14 @@ public class WorkerManager implements ManagerHandler {
                 entry.getValue().shortDisplay();
             }
 
-            getUserOption();
+            inputHandler.getUserOption();
 
             // check if the entered id exist
-            if (workerToHire.containsKey(curOption)) {
-                showWorkerDes(workerToHire.get(curOption)); // show the selected worker description
-            } else { showWarning = true; }
+            if (workerToHire.containsKey(inputHandler.getCurrentOption())) {
+                showWorkerDes(workerToHire.get(inputHandler.getCurrentOption())); // show the selected worker description
+            } else { inputHandler.raiseWarning(); }
         }
-        resetOption(); 
+        inputHandler.resetOption(); 
     }
     public void showWorkersInPosition(String position) {
         for (Map.Entry<Integer, Worker> entry : hiredWorkers.entrySet()) {
@@ -237,7 +219,7 @@ public class WorkerManager implements ManagerHandler {
             "To go back enter 0",
             "Enter a worker id to view their description"
         };          
-        while (curOption != GO_BACK_OPTION) {
+        while (inputHandler.getCurrentOption() != GO_BACK_OPTION) {
             displayer.clearScreen();
             displayer.showMessage(message);
 
@@ -248,16 +230,14 @@ public class WorkerManager implements ManagerHandler {
             System.out.println("chef: ");
             showWorkersInPosition("chef");
 
-
-            // get user option, show warning when user enter an invalid option
-            getUserOption();
+            inputHandler.getUserOption();
 
             // check if the entered id exist
-            if (hiredWorkers.containsKey(curOption)) {
-                showWorkerDes(hiredWorkers.get(curOption)); // show the selected worker description
-            } else { showWarning = true; }
+            if (hiredWorkers.containsKey(inputHandler.getCurrentOption())) {
+                showWorkerDes(hiredWorkers.get(inputHandler.getCurrentOption())); // show the selected worker description
+            } else { inputHandler.raiseWarning(); }
         }
-        resetOption();
+        inputHandler.resetOption();
     }
     public void hireWorker(int workerID) {
         Worker worker = workerToHire.remove(workerID);
