@@ -27,3 +27,5 @@ WorkerManager - quản lý nhân viên => thuê, sa thải, quản lý thời gi
 -----------------------------------------------------------------------------------------------------------
 
 Class Displayer trong utils dùng để hộ trợ in ra màng hình hoặc clearScreen
+Class InputHandler hộ trợ lấy input từ người dùng
+
