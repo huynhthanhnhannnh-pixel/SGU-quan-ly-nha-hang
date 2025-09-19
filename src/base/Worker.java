@@ -37,7 +37,7 @@ public abstract class Worker {
 
     // Display staff details
     public void display() {
-        System.out.println("ID: "+id+"\nName: "+name+"\nSalaries: "+age+"\nGender: "+gender+"\nPosition: "+position+"\nSalaries: "+salaries+"$");
+        System.out.println("ID: "+id+"\nName: "+name+"\nAge: "+age+"\nGender: "+gender+"\nPosition: "+position+"\nSalaries: "+salaries+"$");
         System.out.println("Description: "+description);
     }
     public void shortDisplay() {
@@ -46,4 +46,5 @@ public abstract class Worker {
 
     public abstract void startWorking();
     public abstract void stopWorking();
+
 }
