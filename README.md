@@ -28,9 +28,10 @@ Tạo src/enums/WorkerType.java để quản lý các chức vụ của nhân vi
 2. Đóng gói
 Ví dụ 1:
 
+````
 Animal {
     makeSound(); -- kêu
-}
+}    
 
 Dog extends Animal {
     makeSound(); -- kêu
@@ -46,54 +47,53 @@ void main() {
     Animal dog = new Dog();
     Animal cat = new Cat();
 
-    // Vì cat và dog là kiểu dữ liệu Animal, nên chúng ta chỉ biết là Animal có hàm makeSound()
-    // Đây gọi là đóng gói, mặc dù dog được tạo ra từ Dog() nhưng chúng ta chỉ biết nó là Animal 
-    // ko phải là Dog vì chúng ta đã định nghĩa nó là kiểu Animal
+// Vì cat và dog là kiểu dữ liệu Animal, nên chúng ta chỉ biết là Animal có hàm makeSound()
+// Đây gọi là đóng gói, mặc dù dog được tạo ra từ Dog() nhưng chúng ta chỉ biết nó là Animal 
+// ko phải là Dog vì chúng ta đã định nghĩa nó là kiểu Animal
 
-    dog.makeSound(); -- đúng
-    cat.makeSound(); -- đúng
+dog.makeSound(); -- đúng
+cat.makeSound(); -- đúng
 
-    dog.catchBall(); -- báo lỗi
-    cat.playWithToy(); -- báo lỗi
+dog.catchBall(); -- báo lỗi
+cat.playWithToy(); -- báo lỗi
 
-    // Nếu muốn sử dụng hàm playWithToy hay catchBall thì phải gán trực tiếp kiểu dữ liệu Dog và Cat
+// Nếu muốn sử dụng hàm playWithToy hay catchBall thì phải gán trực tiếp kiểu dữ liệu Dog và Cat
 
-    Dog dog = new Dog();
-    Cat cat = new Cat();
+Dog dog = new Dog();
+Cat cat = new Cat();
 
-    dog.catchBall(); -- đúng
-    cat.playWithToy(); -- đúng
+dog.catchBall(); -- đúng
+cat.playWithToy(); -- đúng
+````
+Giả sử chúng ta cần in ra màn hình tiếng kêu của các con vật
 
-    // Vấn đề thực tế
-    // Giả sử chúng ta cần in ra màn hình tiếng kêu của các con vật
+````
+// Giải pháp 1
+List<Animal> list1 = new List<Aniaml>;
 
-    // Giải pháp 1
-    List<Animal> list1 = new List<Aniaml>;
-    
-    for(Animal animal : list1) {
-        animal.makeSound();
-    }
+for(Animal animal : list1) {
+    animal.makeSound();
+}
+````
+````
+// Giải pháp 2
+List<Dog> dogList = new List<Dog>;
+List<Cat> catList = new List<Cat>;
 
-    // Giải pháp 2
-    List<Dog> dogList = new List<Dog>;
-    List<Cat> catList = new List<Cat>;
-
-    for(Dog dog : list1) {
-        dog.makeSound();
-    }
-
-    for(Cat cat : list1) {
-        cat.makeSound();
-    }
-
-    // Giờ hãy tưởng tượng chúng ta có 100 con vật, giải pháp 2 sẽ là một đống hỗi độn và không tối ưu
-
+for(Dog dog : list1) {
+    dog.makeSound();
 }
 
+for(Cat cat : list1) {
+    cat.makeSound();
+}
+
+// Giờ hãy tưởng tượng chúng ta có 100 con vật, giải pháp 2 sẽ là một đống hỗi độn và không tối ưu
+````
 !!! Giải thích về class src/base/Worker.java và src/workerTypes.*
 
 Giả sử ta có
-
+````
 Chef.Nau();
 Waiter.PhucVu();
 Manager.QuanLy();
@@ -115,14 +115,14 @@ for(Waiter waiter : waiterList) {
 for(Manager manager : managerList) {
     manager.QuanLy(); -- Sa thải nhân viên A, thuê a B, viết báo cáo về chị C
 }
-
+````
 Giải pháp
 Hãy Để cho Chef, Waiter, Manager kế thừa từ class Worker
-
+````
 for(Worker worker : workerList) {
     worker.StartWorking(); -- hoạt động tương tự nhưng ví dụ trên nhưng tối ưu và hiệu quả hơn
 }
-
+````
 !!! Vấn đề mới
 
 Nếu chúng ta muốn truy cập trực tiếp đối tượng manager thì sao, nói cách khác là chúng ta muốn
@@ -140,7 +140,7 @@ ChoiPickerBall() -- vờn em pickerball
 
 Nhưng chúng ta không muốn tạo thêm 1 List mới để chứa manager, List<Manager>
 Vậy hãy "gọi"(gọi hàm ko phải khởi tạo hàm) 2 hàm trên trong interact()
-
+````
 public void DiNhau() {
     print("1, 2, 3, ZO");
 }
@@ -162,7 +162,7 @@ public void interact() {
             break;
     }
 }
-
+````
 Vậy chúng ta chỉ cần gọi worker.interact() là xong
 
 Hết.
@@ -351,4 +351,5 @@ sử dụng hàm TableManager.getEmptyTables() để lấy danh sách các bàn 
 EventHandler.addTable(Table table) để bỏ các bàn vào danh sách cần được phục vụ
 
 2. Đối với nhân viên quản lý là SupplyManager thì phải thông báo còn bao nhiêu nguyên liệu
+
 trong kho sau mỗi ca làm
