@@ -179,19 +179,18 @@ thì đừng đụng vào nó
 Yêu cầu chương trình hiện tại
 
 Tip: bấm cntrl + k, 2 để collapse, xem các hàm cho nhanh, "bấm cntrl rồi bấm k, tiếp tục giữ cntrl rồi bấm 2"
-
-!!!
-đối với nhiệm vụ chưa xong thì 
---------------------- X ---------------------
-còn nhiệm vụ đã xong thì
---------------------- V ---------------------
-
--------------------------------------------------- Start here
-Bắt đầu làm
-
---------------------- X ---------------------
-src/models/Dish.java
-src/resources/Dishes.txt
+ 
+!!!đối với nhiệm vụ chưa xong thì   
+--------------------- X ---------------------          
+còn nhiệm vụ đã xong thì                
+--------------------- V ---------------------             
+         
+-------------------------------------------------- Start here           
+Bắt đầu làm 
+ 
+--------------------- X ---------------------                  
+src/models/Dish.java                         
+src/resources/Dishes.txt                         
 
 Nhiệm vụ 
 
@@ -208,9 +207,9 @@ tạo 1 hashMap để chứa tên nguyên liệu và số lượng của chúng 
 5. Trong file Dishes.txt thiết lập format(định dạng) {DishName ingredient6 ingredient29 ...}
 hiểu là {"Tên món ăn" "nguyên liệu A | số lượng" "nguyên liệu B | số lượng" ...} nhập định dạng này trên mỗi hàng
 
---------------------- X ---------------------
-src/models/Ingredient.java
-src/resources/Ingredients.txt
+--------------------- X ---------------------                        
+src/models/Ingredient.java                                                      
+src/resources/Ingredients.txt                                                            
 
 Nhiệm vụ
 
@@ -220,8 +219,8 @@ getter và setter cho nó, sửa đổi hoặc bổ sung constructor cho Ingredi
 2. Sử đổi file Ingredients.txt thành format(định dạng) sau {Name Cost} nhập định dạng này trên mỗi hàng
 định dạng hiện tại của file là {Name}
 
---------------------- X ---------------------
-src/models/Order.java
+--------------------- X ---------------------                                                                 
+src/models/Order.java                                             
 
 Nhiệm vụ
 
@@ -247,8 +246,8 @@ thì gọi hàm updateOrder() để xóa các món ăn khỏi danh sách "dishes
 
 9. Tạo hàm getState để kiểm tra trạng thái của Order
 
---------------------- X ---------------------
-src/models/Table.java
+--------------------- X ---------------------                    
+src/models/Table.java                          
 
 Nhiệm vụ
 
@@ -264,8 +263,8 @@ numOfOrder là số order không nấu được
 3. Viết hàm display(), sau khi khách đã đặt bàn thì có thể sử dụng hàm này để xem thông tin các
 khách hàng, món ăn trong bàn này, và khích thước bàn
 
---------------------- X ---------------------
-src/controllers/TableManager.java
+--------------------- X ---------------------                        
+src/controllers/TableManager.java                            
 
 Nhiệm vụ
 
@@ -282,8 +281,8 @@ customerRGN để tạo khách hàng ngẫu nhiên
 
 4. Tạo hàm getEmptyTables() => trả về tất cả các bàn đang trống
 
---------------------- X ---------------------
-src/controllers/SupplyManager.java
+--------------------- X ---------------------                      
+src/controllers/SupplyManager.java                            
 
 Nhiệm vụ
 
@@ -299,8 +298,8 @@ cho khách xem rồi chọn món
 
 4. Viết hàm addIngredient
 
---------------------- X ---------------------
-src/models/Waiter.java
+--------------------- X ---------------------                          
+src/models/Waiter.java                            
 
 Nhiệm vụ
 
@@ -321,8 +320,8 @@ chef bắt đầu làm việc
 
 Note: dựa vào logic bên dưới thì Nhân viên sẽ được tự động thông báo từ các chef(đây là ứng dụng của EventHandler)
 
---------------------- X ---------------------
-src/models/Chef.java
+--------------------- X ---------------------                          
+src/models/Chef.java                                            
 
 Nhiệm vụ
 
@@ -344,7 +343,7 @@ thì kêu nhân viên ra lấy lại order EventHandler.notifyWaiter()
 
 Note: dựa vào logic bên trên thì Chef sẽ được tự động thông báo từ các waiter(đây là ứng dụng của EventHandler)
 
---------------------- X ---------------------
+--------------------- X ---------------------                                   
 1. Đối với nhân viên quản lý là TableManager thì phải
 Kiểm tra các bàn đang trống sau đó bỏ vào danh sách bàn cần được phục vụ
 sử dụng hàm TableManager.getEmptyTables() để lấy danh sách các bàn đang trống, sau đó gọi
@@ -353,3 +352,4 @@ EventHandler.addTable(Table table) để bỏ các bàn vào danh sách cần đ
 2. Đối với nhân viên quản lý là SupplyManager thì phải thông báo còn bao nhiêu nguyên liệu
 
 trong kho sau mỗi ca làm
+
