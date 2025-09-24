@@ -8,16 +8,20 @@ public class program {
         WorkerManager workerMgr = WorkerManager.getManager();
         Displayer displayer = Displayer.getDisplayer();
         UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
+        String[] message = {
+            "WELCOME TO QUAN LY NHA HANG"
+        };
         String[] options = { 
             "Exit", 
-            "Hire new workers", 
-            "Show all workers in our restaurant",
-            "Show schedule"
+            "Thue nhan vien moi", 
+            "Hien thi nhan vien cua nha hang",
+            "Hien thi lich lam"
         };
         boolean sessionActive = true;
 
         while (sessionActive) {
             displayer.clearScreen();
+            displayer.displayMessage(message);
             displayer.displayOptions(options);
             inputHandler.getUserOption();
             switch (inputHandler.getCurrentOption()) {

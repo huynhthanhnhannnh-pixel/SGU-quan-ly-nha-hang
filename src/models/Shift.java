@@ -1,6 +1,10 @@
 package models;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+
+import enums.WorkerType;
 import base.Worker;
 
 public class Shift {
@@ -16,15 +20,15 @@ public class Shift {
         return shiftName;
     }
 
-    // Show all workers in this shift
+    // Hiện thị tất cả nhân viên trong ca này
     public void display() {
-        System.out.println(shiftName + "\nWorkers of this shift:\n ------------------");
+        System.out.println(shiftName + "\nCac nhan vien cua ca nay:\n ------------------");
         for (Worker worker : workerList) { 
             System.out.println("id: "+worker.getId()+" / "+worker.getName()+" / "+worker.getPosition());
         }
     }
 
-    // Add new worker to current schedule
+    // Thêm nhân viên vào ca làm
     public void addWorker(Worker worker) {
         boolean success = workerList.add(worker);
         if (!success) {
@@ -33,7 +37,7 @@ public class Shift {
         }
     }
 
-    // Remvoe worker from current schedule
+    // Loại bỏ nhân viên khỏi ca làm
     public void removeWorker(Worker worker) {
         boolean success = workerList.remove(worker);
         if (!success) {
@@ -42,11 +46,42 @@ public class Shift {
         }
     }
 
-    // Check if this shift already has this worker
+    // Kiểm tra nếu ca này đã có nhân viên đó
     public boolean contain(Worker worker) {
         for (Worker _worker : workerList) {
             if (_worker == worker ) { return true; }
         }
         return false;
+    }
+
+    // Lấy danh sách các nhân viên của ca làm
+    public List<Worker> getAllWorkers() {
+       List<Worker> temp = new ArrayList<>();
+        for (Worker worker : workerList) { temp.add(worker); }
+        return temp;
+    }
+
+    // Lấy Nhân viên đâu tiên có vị trí trùng với vị trí đã cho
+    public Worker findFirstWorkerWithPosition(WorkerType position) {
+        for (Worker worker : workerList) {
+            if (worker.getPosition().equals(position.getPosition())) {
+                return worker;
+            }
+        }
+        return null;
+    }
+
+    // Lấy danh sách các nhân viên không phải là quản lý
+    public List<Worker> getWorkersThatIsNotManager() {
+        List<Worker> temp = new ArrayList<>();
+        for (Worker worker : workerList) {
+            if (
+                worker.getPosition().equals(WorkerType.SUPPLY_MANAGER.getPosition()) ||
+                worker.getPosition().equals(WorkerType.WORKER_MANAGER.getPosition()) ||
+                worker.getPosition().equals(WorkerType.TABLE_MANAGER.getPosition())
+            ) { continue; }
+            temp.add(worker);
+        }
+        return temp;
     }
 }

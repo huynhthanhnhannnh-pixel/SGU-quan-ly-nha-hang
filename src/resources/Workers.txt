@@ -7,4 +7,10 @@ I like to make burger with my special white sauce
 Thien 19 male chef 500
 Toi nau khach hang
 Minh 19 male waiter 200
-toi bi ngu
+toi bi an thit cho
+QuanLyThucPham 19 male supplyManager 10000
+Toi se quan ly nguon cung thuc pham cua chung ta, dam bao khong co chuot, gian va nguyen lieu luon duoc tuoi moi
+QuanLyNhanVien 19 male workerManager 10000
+Toi se giam xac nhan vien cua chung ta, dam bao rang ko co ai noi xau khach hang, trom cap tien, nguyen lieu cua chung ta hay ngu trong gio lam viec
+QuanLyBan 19 male tableManager 10000
+Toi se kiem tra va dat ban cho khach, voi kinh nghiem cua minh, toi dam bao la nha hang cua minh luon full nhung em chubby

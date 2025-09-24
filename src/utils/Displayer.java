@@ -16,7 +16,7 @@ public class Displayer {
     public void doubleSeperate() { System.out.println("=".repeat(SEPERATOR_LENGTH)); }
     public void dashSeperate() { System.out.println(" --- ".repeat(20)); }
 
-    public void showMessage(String[] messages) {
+    public void displayMessage(String[] messages) {
         doubleSeperate();
         System.out.println();
         for (String message : messages) { System.out.println(message); }

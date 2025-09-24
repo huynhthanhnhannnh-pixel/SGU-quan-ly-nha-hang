@@ -2,13 +2,19 @@ package controllers;
 
 import java.io.*;
 import java.util.*;
+
 import base.Worker;
 import contracts.ManagerHandler;
-import models.*;
+import enums.WorkerType;
 import utils.*;
+import workerTypes.*;
+import models.*;
 
 public class WorkerManager implements ManagerHandler {
     private static WorkerManager self = null;
+    private Displayer displayer = Displayer.getDisplayer();
+    private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
+
     private final int GO_BACK_OPTION = 0; 
     private final String[] SHIFT_NAMES = {
         "Sang Thu 2", "Chieu Thu 2",
@@ -19,8 +25,7 @@ public class WorkerManager implements ManagerHandler {
         "Sang Thu 7", "Chieu Thu 7",
     };
 
-    private Displayer displayer = Displayer.getDisplayer();
-    private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
+
 
     private HashMap<Integer, Worker> workerToHire = new HashMap<Integer, Worker>(); // available workers
     private HashMap<Integer, Worker> hiredWorkers = new HashMap<Integer, Worker>(); // hired workers
@@ -28,19 +33,30 @@ public class WorkerManager implements ManagerHandler {
 
     @Override
     public void showGeneralInfo() {
-        System.out.println("Class nay dung de quan ly nhan vien ...");
+        String[] message = {
+            "Day la trinh quan ly nhan vien sieu uy tin",
+            "Trinh quan ly gom cac tinh nang nhu:",
+            "1. thue/sa thai nhan vien -- tat nhien roi",
+            "2. xep lich cho nhan vien",
+            "3. kiem tra lich trong tuan",
+            "Nhan vien cua chung ta se luon duoc an nhung mon an do dau bep Hannibal nau",
+            "",
+            "",
+            "",
+            "Ngai Hannibal se chuan bi mon ung thu than giai doan cuoi cho chung ta"
+        };
+        displayer.displayMessage(message);
     }
     @Override
     public void createReport() {
-        System.out.println("Danh thu cua thang nay la ...");
+        System.out.println("Nhan vien A vua hut thuoc vua choi da");
+        System.out.println("Nhan vien B moi mo tai khoan only quat");
+        System.out.println("Nhan vien C vua bi cooked");
     }
 
-    private WorkerManager() {
-        // Init schedule, create shift each shift name in SHIFT_NAMES
-        for (int i = 0; i < SHIFT_NAMES.length; i++) {
-            schedule.put((i + 1), new Shift(SHIFT_NAMES[i]));
-        }
-    }
+    //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
+    //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
+    // Initialization
 
     // Init a storage of worker objects, read from Worker.txt
     private void initResources() {
@@ -56,13 +72,17 @@ public class WorkerManager implements ManagerHandler {
                 String position = parts[3];
                 double salaries = Double.parseDouble(parts[4]);
                 Worker worker = null;
-                switch (position) {
-                    case "waiter":
+                switch (WorkerType.fromPosition(position)) {
+                    case WAITER:
                         worker = new Waiter(counter, name, age, gender, position, salaries, description);
                         workerToHire.put(counter, worker);
                         break;
-                    case "chef":
+                    case CHEF:
                         worker = new Chef(counter, name, age, gender, position, salaries, description);
+                        workerToHire.put(counter, worker);
+                        break;
+                    case SUPPLY_MANAGER, WORKER_MANAGER, TABLE_MANAGER:
+                        worker = new Manager(counter, name, age, gender, position, salaries, description);
                         workerToHire.put(counter, worker);
                         break;
                     default:
@@ -76,6 +96,15 @@ public class WorkerManager implements ManagerHandler {
         }
     }
 
+    // Private constructor to enforce singleton
+    private WorkerManager() {
+        // Init schedule, create shift each shift name in SHIFT_NAMES
+        for (int i = 0; i < SHIFT_NAMES.length; i++) {
+            schedule.put((i + 1), new Shift(SHIFT_NAMES[i]));
+        }
+    }
+
+    // Public method to get the single self
     public static WorkerManager getManager() {
         if (self == null) {
             self = new WorkerManager();
@@ -86,22 +115,20 @@ public class WorkerManager implements ManagerHandler {
 
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
-    //Schedule system
+    // Schedule system
 
     private void editSelectedShift() {
         String[] message = {
-            "To go back enter 0",
-            "Enter the id of available workers to add to this shift",
-            "Enter the id of workers that are in this shift to remove them"
+            "Nhap 0 de quay lai",
+            "Nhap id cua nhan vien de add/remove nhan vien do vao/khoi lich"
         };   
         Shift shift = schedule.get(inputHandler.getCurrentOption());
-        inputHandler.resetOption();
         while (inputHandler.getCurrentOption() != GO_BACK_OPTION) {
             displayer.clearScreen();
-            displayer.showMessage(message);
+            displayer.displayMessage(message);
             shift.display();
             displayer.singleSeperate();
-            System.out.println("Avaiable workers");
+            System.out.println("Cac nhan vien chua co trong lich nay");
 
             for (Map.Entry<Integer, Worker> entry : hiredWorkers.entrySet()) {
                 Worker wkr = entry.getValue();
@@ -123,13 +150,13 @@ public class WorkerManager implements ManagerHandler {
     }
     public void showSchedule() {
         String[] message = {
-            "To go back enter 0",
-            "This is our schedule",
-            "To view add/remove workers enter the schedule number then choose a worker"
+            "Nhap 0 de quay lai",
+            "Day la lich lam viec cua chung ta",
+            "De xem lich hay nhap id cua lich"
         };  
         while (inputHandler.getCurrentOption() != GO_BACK_OPTION) {
             displayer.clearScreen();
-            displayer.showMessage(message);
+            displayer.displayMessage(message);
 
             for (Map.Entry<Integer, Shift> entry : schedule.entrySet()) {
                 System.out.print(entry.getKey()+" / ");
@@ -145,55 +172,69 @@ public class WorkerManager implements ManagerHandler {
         }
         inputHandler.resetOption();
     }
+    public Shift getShift(int shiftID) {
+        return schedule.get(shiftID);
+    }
 
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
-    //Hire and fire workers system
+    // Hire and fire workers system
     
     public void showWorkerDes(Worker worker) {
         String[] message = {
-            "To go back enter 0",
-            "This is woker desciption"
+            "Nhap 0 de quay lai",
+            "Day la thong tin nhan vien"
         };
-        inputHandler.resetOption();
         while (inputHandler.getCurrentOption() != GO_BACK_OPTION) {
             displayer.clearScreen();
-            displayer.showMessage(message);
+            displayer.displayMessage(message);
 
             worker.display();
             displayer.singleSeperate();
 
             if (worker.isEmployed()) {
-                System.err.println("1 / Fire this worker");
+                System.out.println("1 / Sa thai nhan vien nay");
+                System.out.println("2 / Tuong tac");
             } else {
-                System.err.println("1 / Hire this worker");
+                System.out.println("1 / Thue nguoi nay");
             }
             
             inputHandler.getUserOption();
 
-            if (inputHandler.getCurrentOption() == 1) {
-                if (worker.isEmployed()) {   
-                    fireWorker(worker.getId());
-                } else {
-                    hireWorker(worker.getId());
-                } 
-                inputHandler.enter2Continue();
-                // break; // include this break to end session after you fired or hired a worker
-            } else { inputHandler.raiseWarning(); }
+            switch (inputHandler.getCurrentOption()) {
+                case 1:
+
+                    if (worker.isEmployed()) {   
+                        fireWorker(worker.getId());
+                    } else {
+                        hireWorker(worker.getId());
+                    } 
+                    inputHandler.enter2Continue();
+
+                    break;
+
+                case 2:
+                    worker.interact();
+                    break;
+        
+                default:
+                    inputHandler.raiseWarning();
+                    break;
+            }
         }   
         inputHandler.resetOption();
     }
     public void showWorkerToHire() {
         String[] message = {
-            "To go back enter 0",
-            "This is a list of available workers to be hired",
-            "To view worker description and hire them, enter their id"
+            "Nhap 0 de quay lai",
+            "Day la danh sach nhung nguoi lao dong ma ban co the thue",
+            "De thue nguoi lao dong hay nhap id cua ho"
         };       
         while (inputHandler.getCurrentOption() != GO_BACK_OPTION) {
             displayer.clearScreen();
-            displayer.showMessage(message);
+            displayer.displayMessage(message);
 
-            // Show avaiable workers to hire
+            // Show available workers to hire
             for (Map.Entry<Integer, Worker> entry : workerToHire.entrySet()) {
                 entry.getValue().shortDisplay();
             }
@@ -207,27 +248,32 @@ public class WorkerManager implements ManagerHandler {
         }
         inputHandler.resetOption(); 
     }
-    public void showWorkersInPosition(String position) {
+    public void showWorkersInPosition(WorkerType position) {
         for (Map.Entry<Integer, Worker> entry : hiredWorkers.entrySet()) {
             Worker wkr = entry.getValue();
-            if (wkr.getPosition().equals(position)) { wkr.shortDisplay(); }
+            if (WorkerType.fromPosition(wkr.getPosition()) == position) { wkr.shortDisplay(); }
         }
     }
     public void showHiredWorker() {
         String[] message = {
-            "To go back enter 0",
-            "Enter a worker id to view their description"
+            "Nhap 0 de quay lai",
+            "Nhap id cua nhan vien de xem thong tin cua ho"
         };          
         while (inputHandler.getCurrentOption() != GO_BACK_OPTION) {
             displayer.clearScreen();
-            displayer.showMessage(message);
+            displayer.displayMessage(message);
 
             // Show hired workers
+            System.out.println("Managers: ");
+            showWorkersInPosition(WorkerType.SUPPLY_MANAGER);
+            showWorkersInPosition(WorkerType.WORKER_MANAGER);
+            showWorkersInPosition(WorkerType.TABLE_MANAGER);
+            displayer.doubleSeperate();
             System.out.println("Waiter: ");
-            showWorkersInPosition("waiter");
+            showWorkersInPosition(WorkerType.WAITER);
             displayer.doubleSeperate();
             System.out.println("chef: ");
-            showWorkersInPosition("chef");
+            showWorkersInPosition(WorkerType.CHEF);
 
             inputHandler.getUserOption();
 
@@ -242,13 +288,12 @@ public class WorkerManager implements ManagerHandler {
         Worker worker = workerToHire.remove(workerID);
         hiredWorkers.put(workerID, worker);
         worker.setEmploymentState(true);
-        System.out.println("Hired"+worker.getName());
+        System.out.println("Ban da thue "+worker.getName());
     };
     public void fireWorker(int workerID) {
         Worker worker = hiredWorkers.remove(workerID);
         workerToHire.put(workerID, worker);
         worker.setEmploymentState(false);
-        System.out.println("Fired"+worker.getName());
+        System.out.println("Ban da sa thai "+worker.getName());
     };
 }
-
