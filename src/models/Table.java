@@ -8,7 +8,6 @@ public class Table {
     private final int size;
     private final List<Customer> customers;
     private String[] FOOD_MENU = null; // menu của bàn
-    private Order curOrder; // order hiện tại của bàn
 
     // Constructor
     public Table(int size) {
@@ -34,7 +33,6 @@ public class Table {
     // Reset bàn(đưa bàn về trạng thái trống)
     public void reset() {
         customers.clear();
-        curOrder = null;
     }
 
     // Lấy trạng thái hiện tại của bàn
@@ -71,38 +69,6 @@ public class Table {
         return customers.size();
     }
 
-    // Lấy order của bàn
-    public Order getOrder() {
-        Order order;
-        if (curOrder != null) {
-            order = curOrder;
-        } else {
-            order = new Order(this);
-        }
-
-        // Đếm số lượng khách hang rồi
-        // Dùng vòng lặp for để chọn món rồi lưu vào temp, dùng hàm orderRNG để lấy ngẫu nhiên món
-
-
-        return order;
-    }
-
-    // Lấy lại order nấu mấy món trước không đủ đồ để nấu
-    public Order getOrder(String[] excludedOrders) {
-        Order order;
-        if (curOrder != null) {
-            order = curOrder;
-        } else {
-            order = new Order(this);
-        }
-
-        // Sử dụng Order.getNumOfUnsatisfiedRequest để chạy vòng lăp for
-        // Dùng vòng lặp for để chọn món rồi lưu vào temp, dùng hàm orderRNG để lấy ngẫu nhiên món
-        // Loại trừ các món có trong excludedOrders
-
-        return order;
-    }
-
     // Hàm này để random món ăn của bàn
     public String orderRNG() {
         // List<String> orders = new ArrayList<>();
@@ -113,7 +79,7 @@ public class Table {
         //     orders.add(customer.toString() + " ordered: " + food);
         // }
 
-        return "Unplemented";
+        // return orders;
+        return "Testing";
     }
-
 }
