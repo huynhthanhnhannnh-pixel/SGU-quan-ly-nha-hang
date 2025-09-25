@@ -297,7 +297,7 @@ src/models/Waiter.java
 Nhiệm vụ
 
 Ở hàm startWorking(), 
-waiter sẽ gọi EventHandler.getTable(), nếu null thì nghỉ, còn không thì gọi Table.getOrder()
+waiter sẽ gọi EventHandler.getTable(), nếu null thì nghỉ, còn không thì        
 Nhân viên cần kiểm tra xem order là mới hay là order cần lấy lại 
 dùng hàm getgetState để kiểm tra trạng thái,
 
@@ -345,6 +345,7 @@ EventHandler.addTable(Table table) để bỏ các bàn vào danh sách cần đ
 2. Đối với nhân viên quản lý là SupplyManager thì phải thông báo còn bao nhiêu nguyên liệu
 
 trong kho sau mỗi ca làm
+
 
 
 
