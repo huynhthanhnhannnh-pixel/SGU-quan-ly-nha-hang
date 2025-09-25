@@ -253,11 +253,7 @@ Nhiệm vụ
 
 !!! đọc file src/models/Customer.java trước khi tiếp tục
 
-1. Viết hàm Order getOrder(), Trả vê biến order của bàn. trước đó thì phải ghi vào order
-
-2.  Order getOrder(String[] excludedOrders). tượng tự như hàm trên nhưng loại trừ các món không nấu được
-
-3. Viết hàm display(), sau khi khách đã đặt bàn thì có thể sử dụng hàm này để xem thông tin các
+1. Viết hàm display(), sau khi khách đã đặt bàn thì có thể sử dụng hàm này để xem thông tin các
 khách hàng, món ăn trong bàn này, và khích thước bàn
 
 --------------------- X ---------------------                        
@@ -335,7 +331,7 @@ sau khi kiểm tra xong toàn bộ thì
 SupplyManager.getIngredient(String name, int amount) sau đó tạo 1 object Dish rồi kêu waiter gửi về bàn
 
 - nếu không thì gọi Order.addExcludedDish(String dishName), sau khi add xong hết rồi thì gọi
-Order.updateOrder(), sau đó thì EventHandler.addUnfinishedTable(Order.getTable()) rồi cuối cùng
+Order.updateOrder(), sau đó thì EventHandler.addTable(Order.getTable()) rồi cuối cùng
 thì kêu nhân viên ra lấy lại order EventHandler.notifyWaiter()
 
 Note: dựa vào logic bên trên thì Chef sẽ được tự động thông báo từ các waiter(đây là ứng dụng của EventHandler)
@@ -349,6 +345,7 @@ EventHandler.addTable(Table table) để bỏ các bàn vào danh sách cần đ
 2. Đối với nhân viên quản lý là SupplyManager thì phải thông báo còn bao nhiêu nguyên liệu
 
 trong kho sau mỗi ca làm
+
 
 
 
