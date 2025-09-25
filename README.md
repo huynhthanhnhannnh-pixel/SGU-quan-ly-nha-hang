@@ -299,7 +299,7 @@ Nhiệm vụ
 Ở hàm startWorking(), 
 waiter sẽ gọi EventHandler.getTable(), nếu null thì nghỉ, còn không thì        
 Nhân viên cần kiểm tra xem order là mới hay là order cần lấy lại 
-dùng hàm getgetState để kiểm tra trạng thái,
+dùng hàm getState để kiểm tra trạng thái,
 
 nếu là NEW thì dự vào số khách hàng của bàn Order.getTable().getNumOfCustomer() 
 nếu là UNFINISHED thì kiểm tra Order.getNumOfUnsatisfiedRequest()
@@ -307,7 +307,7 @@ nếu là FINISHED thì thanh toán hóa đơn rồi gọi notifyTableManager() 
 đã phục vụ xong
 (tạm thời cứ ghi là print("da thanh toan"), nếu muốn tạo danh thu thì nhắn zalo cho tui sau)
 
-Đối với NEW và UNFINISHED thì phải dùng Order.writeOrder(String dishName) trong for loop để ghi Order
+Đối với NEW và UNFINISHED thì phải dùng Order.write(String dishName) trong for loop để ghi Order
 sau đó EventHandler.addOrder() để add order trở lại danh sách rồi gọi EventHandler.notifyChef() để kêu các 
 chef bắt đầu làm việc
 
@@ -345,6 +345,7 @@ EventHandler.addTable(Table table) để bỏ các bàn vào danh sách cần đ
 2. Đối với nhân viên quản lý là SupplyManager thì phải thông báo còn bao nhiêu nguyên liệu
 
 trong kho sau mỗi ca làm
+
 
 
 
