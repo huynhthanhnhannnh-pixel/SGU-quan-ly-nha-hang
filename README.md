@@ -196,13 +196,13 @@ Nhiệm vụ
 
 1. Cập nhật class Dish.java Dish(món ăn) được hiểu là 1 danh sách các nguyên liệu và số lượng nguyên liệu,
 tạo biến private name(tên món ăn) cho nó, tạo hàm getter, setter và constructor
-tạo 1 hashMap để chứa tên nguyên liệu và số lượng của chúng HashMap<String, int>
+tạo 1 hashMap để chứa tên nguyên liệu và số lượng của chúng HashMap<String, Interger>
 
 2. Tạo 2 hàm addIngredient(Ingredient ingredient) và removeIngredient(Ingredient ingredient)
 
 3. Tạo 1 hàm public double getPrice() => trả về tổng tiền của tất cả các nguyên liệu rồi x3 lên
 
-4. Tạo 1 hàm public HashMap<String, int> readIngredients() để trả về thông tin của các nguyên liệu dùng trong món ăn
+4. Tạo 1 hàm public HashMap<String, Interger> readIngredients() để trả về thông tin của các nguyên liệu dùng trong món ăn
 
 5. Trong file Dishes.txt thiết lập format(định dạng) {DishName ingredient6 ingredient29 ...}
 hiểu là {"Tên món ăn" "nguyên liệu A | số lượng" "nguyên liệu B | số lượng" ...} nhập định dạng này trên mỗi hàng
@@ -352,4 +352,5 @@ EventHandler.addTable(Table table) để bỏ các bàn vào danh sách cần đ
 2. Đối với nhân viên quản lý là SupplyManager thì phải thông báo còn bao nhiêu nguyên liệu
 
 trong kho sau mỗi ca làm
+
 
