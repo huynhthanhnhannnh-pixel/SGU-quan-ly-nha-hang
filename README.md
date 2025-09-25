@@ -253,12 +253,9 @@ Nhiệm vụ
 
 !!! đọc file src/models/Customer.java trước khi tiếp tục
 
-1. Viết hàm String[] getOrder(), 
-hàm get order này sẽ trả về danh sách tên các món ăn mà bàn này đã gọi
+1. Viết hàm Order getOrder(), Trả vê biến order của bàn. trước đó thì phải ghi vào order
 
-2. Viết String[] getOrder(int numOfOrder)
-nếu chef ko nấu được món do hết nguyên liệu thì sẽ kêu waiter sử dụng hàm này để lấy order mới,
-numOfOrder là số order không nấu được
+2.  Order getOrder(String[] excludedOrders). tượng tự như hàm trên nhưng loại trừ các món không nấu được
 
 3. Viết hàm display(), sau khi khách đã đặt bàn thì có thể sử dụng hàm này để xem thông tin các
 khách hàng, món ăn trong bàn này, và khích thước bàn
@@ -352,5 +349,6 @@ EventHandler.addTable(Table table) để bỏ các bàn vào danh sách cần đ
 2. Đối với nhân viên quản lý là SupplyManager thì phải thông báo còn bao nhiêu nguyên liệu
 
 trong kho sau mỗi ca làm
+
 
 
