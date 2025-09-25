@@ -64,8 +64,11 @@ public class TableManager implements ManagerHandler {
 
         // thêm khách vào bàn
 
-        
-
     }
-    
+
+    // 2.1 random khách hàng
+    public Customer customerRGN() {
+        return null;
+    }
 }
+
