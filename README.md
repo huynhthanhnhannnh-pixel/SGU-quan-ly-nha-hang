@@ -235,7 +235,7 @@ thể nấu món A, B, C thì tên các món đó phải được ghi vào danh 
 4. Tạo 1 biến tên là private numOfUnsatisfiedRequest(số lượng order cần phải lấy lại),
 tạo getter/setter cho nó
 
-5. Tạo 1 hàm tên là writeOrder(String dishName) để ghi lại tên món ăn của khách hàng
+5. Tạo 1 hàm tên là write(String dishName) để ghi lại tên món ăn của khách hàng
 
 6. Tạo 1 hàm tên là addExcludedDish(String dishName) để thêm vào tên món ăn không được order
 
@@ -245,6 +245,8 @@ thì gọi hàm updateOrder() để xóa các món ăn khỏi danh sách "dishes
 8. Tạo 3 trạng thái mới cho Order là NEW, UNFINISHED, và COMPLETED, tạo 1 file enum mới trong mục src/enums
 
 9. Tạo hàm getState để kiểm tra trạng thái của Order
+
+10. Tạo hàm addDish() và getPrice() => tính tiền tất cả món ănăn
 
 --------------------- X ---------------------                    
 src/models/Table.java                          
@@ -293,18 +295,18 @@ cho khách xem rồi chọn món
 
 --------------------- X ---------------------                          
 src/models/Waiter.java                            
-
+                                    
 Nhiệm vụ
-
-Ở hàm startWorking(), 
-waiter sẽ gọi EventHandler.getTable(), nếu null thì nghỉ, còn không thì        
-Nhân viên cần kiểm tra xem order là mới hay là order cần lấy lại 
-dùng hàm getState để kiểm tra trạng thái,
-
-nếu là NEW thì dự vào số khách hàng của bàn Order.getTable().getNumOfCustomer() 
-nếu là UNFINISHED thì kiểm tra Order.getNumOfUnsatisfiedRequest()
-nếu là FINISHED thì thanh toán hóa đơn rồi gọi notifyTableManager() để thông báo cho quản lý là bàn
-đã phục vụ xong
+                                     
+Ở hàm startWorking(),                             
+waiter sẽ gọi EventHandler.getTable(), nếu null thì nghỉ, còn không thì                         
+Nhân viên cần kiểm tra xem order là mới hay là order cần lấy lại                        
+dùng hàm getState để kiểm tra trạng thái,                                 
+                                               
+nếu là NEW thì dự vào số khách hàng của bàn Order.getTable().getNumOfCustomer()                                 
+nếu là UNFINISHED thì kiểm tra Order.getNumOfUnsatisfiedRequest()                                   
+nếu là FINISHED thì thanh toán hóa đơn rồi gọi notifyTableManager() để thông báo cho quản lý là bàn                          
+đã phục vụ xong                                                                     
 (tạm thời cứ ghi là print("da thanh toan"), nếu muốn tạo danh thu thì nhắn zalo cho tui sau)
 
 Đối với NEW và UNFINISHED thì phải dùng Order.write(String dishName) trong for loop để ghi Order
@@ -317,34 +319,35 @@ Note: dựa vào logic bên dưới thì Nhân viên sẽ được tự động 
 src/models/Chef.java                                            
 
 Nhiệm vụ
-
-Ở hàm startWorking()
-
+                           
+Ở hàm startWorking()                            
+                                    
 1. chef sẽ lấy order bằng cách gọi EventHandler.getOrder(), nếu order là null(ko có order) thì nghỉ,
-nếu có thì bắt đầu nấu
-
-2. Sử dụng for loop để đọc từng món ăn có trong order Với mỗi món ăn thì
-Sử dụng SupplyManager.checkIngredients(String dishName) để xem có đủ nguyên liệu không,
-sau khi kiểm tra xong toàn bộ thì
-
-- nếu đủ thì dùng vòng lặp để lấy từng nguyên liệu ra khỏi kho, sử dụng hàm 
-SupplyManager.getIngredient(String name, int amount) sau đó tạo 1 object Dish rồi kêu waiter gửi về bàn
-
-- nếu không thì gọi Order.addExcludedDish(String dishName), sau khi add xong hết rồi thì gọi
-Order.updateOrder(), sau đó thì EventHandler.addTable(Order.getTable()) rồi cuối cùng
-thì kêu nhân viên ra lấy lại order EventHandler.notifyWaiter()
-
-Note: dựa vào logic bên trên thì Chef sẽ được tự động thông báo từ các waiter(đây là ứng dụng của EventHandler)
-
+nếu có thì bắt đầu nấu                             
+                                  
+2. Sử dụng for loop để đọc từng món ăn có trong order Với mỗi món ăn thì                          
+Sử dụng SupplyManager.checkIngredients(String dishName) để xem có đủ nguyên liệu không,                   
+sau khi kiểm tra xong toàn bộ thì                               
+                                 
+- nếu đủ thì dùng vòng lặp để lấy từng nguyên liệu ra khỏi kho, sử dụng hàm                      
+SupplyManager.getIngredient(String name, int amount) sau đó tạo 1 object Dish rồi gọi Order.addDish()    
+rồi kêu waiter gửi về bàn                                
+                                 
+- nếu không thì gọi Order.addExcludedDish(String dishName), sau khi add xong hết rồi thì gọi              
+Order.updateOrder(), sau đó thì EventHandler.addTable(Order.getTable()) rồi cuối cùng                 
+thì kêu nhân viên ra lấy lại order EventHandler.notifyWaiter()                   
+                                                           
+Note: dựa vào logic bên trên thì Chef sẽ được tự động thông báo từ các waiter(đây là ứng dụng của EventHandler)        
+                                                                           
 --------------------- X ---------------------                                   
-1. Đối với nhân viên quản lý là TableManager thì phải
-Kiểm tra các bàn đang trống sau đó bỏ vào danh sách bàn cần được phục vụ
-sử dụng hàm TableManager.getEmptyTables() để lấy danh sách các bàn đang trống, sau đó gọi
-EventHandler.addTable(Table table) để bỏ các bàn vào danh sách cần được phục vụ
+1. Đối với nhân viên quản lý là TableManager thì phải                                           
+Kiểm tra các bàn đang trống sau đó bỏ vào danh sách bàn cần được phục vụ                
+sử dụng hàm TableManager.getEmptyTables() để lấy danh sách các bàn đang trống, sau đó gọi         
+EventHandler.addTable(Table table) để bỏ các bàn vào danh sách cần được phục vụ            
 
-2. Đối với nhân viên quản lý là SupplyManager thì phải thông báo còn bao nhiêu nguyên liệu
+2. Đối với nhân viên quản lý là SupplyManager thì phải thông báo còn bao nhiêu nguyên liệu                 
+trong kho sau mỗi ca làm                 
 
-trong kho sau mỗi ca làm
 
 
 
