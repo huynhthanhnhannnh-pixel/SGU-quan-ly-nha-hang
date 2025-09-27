@@ -141,10 +141,10 @@ ChoiPickerBall() -- vờn em pickerball
 Nhưng chúng ta không muốn tạo thêm 1 List mới để chứa manager, List<Manager>
 Vậy hãy "gọi"(gọi hàm ko phải khởi tạo hàm) 2 hàm trên trong interact()
 ````
-public void DiNhau() {
+private void DiNhau() {
     print("1, 2, 3, ZO");
 }
-public void ChoiPickerBall() {
+private void ChoiPickerBall() {
     print("PICKERBALL");
 }
 
@@ -347,6 +347,7 @@ EventHandler.addTable(Table table) để bỏ các bàn vào danh sách cần đ
 
 2. Đối với nhân viên quản lý là SupplyManager thì phải thông báo còn bao nhiêu nguyên liệu                 
 trong kho sau mỗi ca làm                 
+
 
 
 
