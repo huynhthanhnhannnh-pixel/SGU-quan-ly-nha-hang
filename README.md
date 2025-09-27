@@ -25,7 +25,7 @@ và toàn vẹn của chương trình
 
 Tạo src/enums/WorkerType.java để quản lý các chức vụ của nhân viên trong nhà hàng
 
-2. Đóng gói
+2. Tính trừu tượng
 Ví dụ 1:
 
 ````
@@ -123,6 +123,9 @@ for(Worker worker : workerList) {
     worker.StartWorking(); -- hoạt động tương tự nhưng ví dụ trên nhưng tối ưu và hiệu quả hơn
 }
 ````
+
+3. Tính đóng gói
+
 !!! Vấn đề mới
 
 Nếu chúng ta muốn truy cập trực tiếp đối tượng manager thì sao, nói cách khác là chúng ta muốn
@@ -141,6 +144,10 @@ ChoiPickerBall() -- vờn em pickerball
 Nhưng chúng ta không muốn tạo thêm 1 List mới để chứa manager, List<Manager>
 Vậy hãy "gọi"(gọi hàm ko phải khởi tạo hàm) 2 hàm trên trong interact()
 ````
+// đối với class manager chúng ta chỉ cần biết hàm interact, ko cần biết các hàm
+DiNhau hay ChoiPickerBall nên ta để 2 hàm này là private rồi gọi nó trong hàm interact
+đây được gọi là tính đóng gói
+
 private void DiNhau() {
     print("1, 2, 3, ZO");
 }
@@ -347,6 +354,7 @@ EventHandler.addTable(Table table) để bỏ các bàn vào danh sách cần đ
 
 2. Đối với nhân viên quản lý là SupplyManager thì phải thông báo còn bao nhiêu nguyên liệu                 
 trong kho sau mỗi ca làm                 
+
 
 
 
