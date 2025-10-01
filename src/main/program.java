@@ -27,6 +27,7 @@ public class program {
             displayer.displayMessage(message);
             displayer.displayOptions(options);
             inputHandler.getUserOption();
+            
             switch (inputHandler.getCurrentOption()) {
                 case 1:
                     inputHandler.closeScanner();

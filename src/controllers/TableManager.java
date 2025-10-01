@@ -3,6 +3,7 @@ package controllers;
 import java.util.HashMap;
 
 import contracts.ManagerHandler;
+import models.Customer;
 import models.Table;
 import utils.*;
 
@@ -64,6 +65,8 @@ public class TableManager implements ManagerHandler {
 
         // thêm khách vào bàn
 
+        
+
     }
 
     // 2.1 random khách hàng
@@ -71,4 +74,3 @@ public class TableManager implements ManagerHandler {
         return null;
     }
 }
-

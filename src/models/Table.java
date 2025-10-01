@@ -13,12 +13,17 @@ public class Table {
     public Table(int size) {
         this.size = size;
         this.customers = new ArrayList<>();
-        this.FOOD_MENU = SupplyManager.getManager().getMenu();
+        addMenu();
     }
 
     // Hiện các khách hàng trong bàn và các món ăn đã gọi(nếu có)
     public void display() {
         
+    }
+
+    // add menu cho bàn
+    public void addMenu() {
+        FOOD_MENU = SupplyManager.getManager().getMenu(); // Lấy menu của quán
     }
 
     // Đưa khách hàng vào bàn nếu như vẫn còn chỗ ngồi

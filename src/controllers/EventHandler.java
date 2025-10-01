@@ -83,9 +83,15 @@ public class EventHandler {
         }
     }
 
-    // lấy bàn đầu tiên chưa thỏa order trong unsatisfiedTables
-    public Table getTable() {
-        return unsatisfiedTables.remove(0);
+    // lấy Order chứa bàn cần được phục vụ, nếu order chưa có thì tạo mới
+    public Order getTable() {
+        Table table = unsatisfiedTables.remove(0);
+        for (Order order : orderList) {
+            if (table.equals(order.getTable())) {
+                return order;
+            }
+        }
+        return new Order(table);
     }
 
     // thêm bàn vào danh sách các bàn cần phục vụ
