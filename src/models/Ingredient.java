@@ -2,18 +2,28 @@ package models;
 
 public class Ingredient {
     private final String name;
+    private double cost;
     private int quantity = 0; // Default quantity is 0
 
     // Constructor
     public Ingredient(String name) {
         this.name = name;
+
     }
 
     // Getters
     public String getName() { return name; }
     public int getQuantity() { return quantity; }
+    public double getCost() { return cost; }
 
-    // Settets
+    // Setters
+    public void setCost(double newCost) {
+        if (newCost < 0) {
+            System.out.println("Gia khong duoc phep la so am");
+            return;
+        }
+        this.cost = newCost;
+    }
 
     // Method to increase quantity
     public void increaseQuantity(int amount) {

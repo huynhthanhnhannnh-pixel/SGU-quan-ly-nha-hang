@@ -79,10 +79,7 @@ public class Table {
         // List<String> orders = new ArrayList<>();
         // Random random = new Random();
 
-        // for (Customer customer : customers) {
-        //     String food = FOOD_MENU[random.nextInt(FOOD_MENU.length)];
-        //     orders.add(customer.toString() + " ordered: " + food);
-        // }
+        
 
         // return orders;
         return "Testing";
