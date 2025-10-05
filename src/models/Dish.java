@@ -19,7 +19,7 @@ public class Dish {
     }
     
     public void addIngredient (String name , int amount){
-        nguyenLieu.put(name,amount);
+        nguyenLieu.put(name.toLowerCase(),amount);
     }
     public void removeIngredient(String name) {
         nguyenLieu.remove(name);
@@ -44,3 +44,4 @@ public class Dish {
         return total*3;
     }
 }
+
