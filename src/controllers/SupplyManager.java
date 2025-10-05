@@ -42,7 +42,28 @@ public class SupplyManager implements ManagerHandler {
 
     // Load các món ăn(Dishes) NOTE: load nguyên liệu trước rồi load món ăn
     private void loadDishesFromFile() {
-
+        // Dish monAn = new Dish("Trung")
+        // monAn.AddIngredient("Trung", 3)
+        // monAn.AddIngredient("Dau", 1)
+        try (BufferedReader reader = new BufferedReader(new FileReader("src\\resources\\Dishes.txt"))){
+            String line; 
+            while((line = reader.readLine()) != null){
+                line = line.trim();
+                if(!line.isEmpty()) {
+                    String[] ing = line.split(" ");
+                    Dish dish = new Dish(ing[0]);
+                    for (int i = 1 ; i < ing.length; i ++){
+                        String[] parts = ing[i].split("\\|");
+                        dish.addIngredient(parts[0],Integer.parseInt(parts[1]));
+                    }
+                    dishList.add(dish);
+                }
+            }
+            System.out.println("Loading successful");
+        }
+        catch (IOException e) {
+            System.err.println("Error loading dishes from file: " + e.getMessage());
+        }
     }
 
     // Load các object nguyên liệu(Ingredient)
@@ -52,9 +73,14 @@ public class SupplyManager implements ManagerHandler {
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
                 if (!line.isEmpty()) {
-                    ingredients.add(new Ingredient(line));
+                    String[] ing = line.split("\\|");
+                    Ingredient nguyenlieu = new Ingredient(ing[0]);
+                    nguyenlieu.increaseQuantity(Integer.parseInt(ing[1]));
+                    nguyenlieu.setCost(Double.parseDouble(ing[2]));
+                    ingredients.add(nguyenlieu);
                 }
             }
+            System.out.println("Loading successful");
         } catch (IOException e) {
             System.err.println("Error loading ingredients from file: " + e.getMessage());
         }
@@ -79,6 +105,11 @@ public class SupplyManager implements ManagerHandler {
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
     // Your codes go here
 
+    public List<Ingredient> getKho() {
+        return ingredients;
+    }
+
+
     // kiểm tra xem có đủ nguyên liệu không
     public Boolean checkIngredients(String dishName) {
         // lấy object Dish từ danh sách menu 
@@ -91,12 +122,12 @@ public class SupplyManager implements ManagerHandler {
     }
 
 
-    // Bỏ nguyên liệu vào kho
-    public void addIngredient(String name, int amount) {
-        // lấy object ingredient trong kho
+    // // Bỏ nguyên liệu vào kho
+    // public void addIngredient(String name, int amount) {
+    //     // lấy object ingredient trong kho
 
-        // tăng số lượng
-    }
+    //     // tăng số lượng
+    // } lỡ viết loadingIngredients đọc xong lưu vào mảng Ingredients (tức kho nguyên liệu) nên viết thêm cái này bị thừa
 
     // Lấy nguyên liệu ra khỏi kho
     public Ingredient getIngredient(String name, int amount) {
@@ -116,10 +147,21 @@ public class SupplyManager implements ManagerHandler {
 
   
     // lấy menu dưới dạng danh sách tên các món ăn
-    public String[] getMenu() {
-        // Sử dụng vòng lặp để lấy hết tên tất cả các món trong menu rồi lưu vào biến temp
-        String[] temp = {"Mon A", "Món B"};
-
-        return temp;
+    //public String[] getMenu() {
+    //     // Sử dụng vòng lặp để lấy hết tên tất cả các món trong menu rồi lưu vào biến temp
+    //     // String[] temp = {"Mon A", "Món B"};
+    //     // return temp;
+        
+    // }
+    //get menu giờ sửa thành randomMenu
+    public List<String> randomMenuToday(int amount){
+        Random rand = new Random();
+        List <String> menu = new ArrayList<>();
+        List <Dish> temp = new ArrayList<>(dishList);
+        Collections.shuffle(temp, rand);
+        for (int i =0;i< amount;i++){
+            menu.add(temp.get(i).getName());
+        }
+        return menu;
     }
 }

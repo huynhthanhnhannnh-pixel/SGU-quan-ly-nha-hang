@@ -69,7 +69,7 @@ public class TableManager implements ManagerHandler {
 
     }
 
-    // 2.1 random khách hàng
+    // 2.1 random khách hàng (chua lam gi) 
     public Customer customerRGN() {
         return null;
     }
