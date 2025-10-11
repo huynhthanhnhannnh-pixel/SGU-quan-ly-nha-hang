@@ -1,9 +1,9 @@
 package controllers;
 
+import contracts.ManagerHandler;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import contracts.ManagerHandler;
 import java.util.*;
 import models.*;
 import utils.*;
@@ -154,14 +154,19 @@ public class SupplyManager implements ManagerHandler {
         
     // }
     //get menu giờ sửa thành randomMenu
-    public List<String> randomMenuToday(int amount){
-        Random rand = new Random();
-        List <String> menu = new ArrayList<>();
-        List <Dish> temp = new ArrayList<>(dishList);
-        Collections.shuffle(temp, rand);
-        for (int i =0;i< amount;i++){
-            menu.add(temp.get(i).getName());
-        }
-        return menu;
+    // public List<String> randomMenuToday(int amount){
+    //     Random rand = new Random();
+    //     List <String> menu = new ArrayList<>();
+    //     List <Dish> temp = new ArrayList<>(dishList);
+    //     Collections.shuffle(temp, rand);
+    //     for (int i =0;i< amount;i++){
+    //         menu.add(temp.get(i).getName());
+    //     }
+    //     return menu;
+    // }
+
+
+    public List<Dish> getDishList() {
+        return dishList;
     }
 }
