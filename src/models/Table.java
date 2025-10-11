@@ -7,7 +7,7 @@ import enums.TableState;
 public class Table {
     private final int size;
     private final List<Customer> customers;
-    private String[] FOOD_MENU = null; // menu của bàn
+    private List<String> FOOD_MENU = null; // menu của bàn
 
     // Constructor
     public Table(int size) {
@@ -23,7 +23,7 @@ public class Table {
 
     // add menu cho bàn
     public void addMenu() {
-        FOOD_MENU = SupplyManager.getManager().getMenu(); // Lấy menu của quán
+        FOOD_MENU = SupplyManager.getManager().randomMenuToday(10); // Lấy menu của quán
     }
 
     // Đưa khách hàng vào bàn nếu như vẫn còn chỗ ngồi
