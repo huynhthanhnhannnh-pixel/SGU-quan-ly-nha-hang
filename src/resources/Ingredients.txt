@@ -1,7 +1,9 @@
-carrot 
-tomato
-apple
-cabbage
-corn
-chesse
-milk
+Trung|3|500
+Dau|1|600 
+carrot|2|400 
+tomato|3|300
+apple|4|500
+cabbage|5|700
+corn|6|800
+chesse|3|250 
+milk|2|8000
