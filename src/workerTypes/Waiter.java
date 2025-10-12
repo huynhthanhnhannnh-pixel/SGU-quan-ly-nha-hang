@@ -43,7 +43,7 @@ public class Waiter extends base.Worker {
                     break;
 
                 case COMPLETED:
-                    double bill = order.totalAmount();
+                    double bill = order.getAmount();
                     System.out.println("Bàn " + order.getTable() +
                                        " đã thanh toán: " + bill);
                     System.out.println("da thanh toan");
