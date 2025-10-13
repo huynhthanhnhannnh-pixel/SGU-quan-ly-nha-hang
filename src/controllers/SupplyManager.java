@@ -80,7 +80,7 @@ public class SupplyManager implements ManagerHandler {
     private void loadIngredientsFromFile() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         try (BufferedReader reader = new BufferedReader(
-            new FileReader("src\\controlable\\Ingredients(copy).txt"))) {
+            new FileReader("src\\controlable\\Ingredients.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 line = line.trim(); 
