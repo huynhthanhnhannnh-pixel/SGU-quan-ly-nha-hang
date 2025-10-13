@@ -5,7 +5,7 @@ import enums.*;
 
 public class Order {
     private Table table;
-    private double totalAmount;
+    private double amount;
     List<String> dishes = new ArrayList<String>();
     List<String> excludedDishes = new ArrayList<String>();
     private int numOfUnsatisfiedRequest = 0;
@@ -16,6 +16,7 @@ public class Order {
 
     public Table getTable() { return table; }
     public  int getNumOfUnsatisfiedRequest() { return numOfUnsatisfiedRequest; }
+    public double getAmount() { return amount; }    
 
     public void writeOrder(String dishName) {
         dishes.add(dishName);
@@ -48,7 +49,5 @@ public class Order {
         return OrderState.COMPLETED;
     }
 
-    public double totalAmount() {
-        return totalAmount;
-    }
+
 }
