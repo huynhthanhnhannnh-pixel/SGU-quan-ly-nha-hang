@@ -2,7 +2,6 @@ package models;
 
 import java.util.*;
 import controllers.*;
-import models.*;
 
 public class Dish {
     private final String name;

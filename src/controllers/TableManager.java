@@ -3,7 +3,6 @@ package controllers;
 import java.util.HashMap;
 
 import contracts.ManagerHandler;
-import models.Customer;
 import models.Table;
 import utils.*;
 
@@ -26,7 +25,7 @@ public class TableManager implements ManagerHandler {
         };
         displayer.displayMessage(message);
     }
-
+    
     @Override
     public void createReport() {
         System.out.println("Ban 1, 2, 3 con trong, Ban 4 thi bi con nho chubby an me roi");
@@ -39,7 +38,10 @@ public class TableManager implements ManagerHandler {
     // khởi tạo bàn với số lương bàn đã cho
     private void loadTables(int numberOfTable) {
         // Sử dụng vòng lăp để tạo bàn rồi lưu vào dang sách bàn
-
+        for ( int i = 1; i <= numberOfTable; i++){
+            Table table = new Table(8);
+            tableList.put(i,table);
+        }
     }
     
     // Private constructor to enforce singleton
@@ -60,17 +62,17 @@ public class TableManager implements ManagerHandler {
     // Your codes go here
 
     // Chuẩn bị bàn ăn cho khách
-    public void prepareTable(int tableID) {
+    // public void prepareTable(int tableID) {
         // dựa vào tableID lấy ra object Table từ tableList(danh sách bàn)
 
         // thêm khách vào bàn
 
         
 
-    }
+    // }
 
     // 2.1 random khách hàng (chua lam gi) 
-    public Customer customerRGN() {
-        return null;
-    }
+    // public Customer customerRGN() {
+    //     return null;
+    // }
 }
