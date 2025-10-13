@@ -1,8 +1,8 @@
 package controllers;
 
-import java.util.*;
 import base.Worker;
 import enums.*;
+import java.util.*;
 import models.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -51,7 +51,7 @@ public class EventHandler {
     
     // Khi có khách đặt bàn hay chef gửi lại order thì kêu waiter đầu tiên đang rảnh làm việc
     public void notifyWaiters() {
-        for (Worker worker : workerList) {
+    for (Worker worker : workerList) {
             if (worker.getPosition().equals(WorkerType.WAITER.getPosition())) {
                 worker.startWorking();
                 break;
