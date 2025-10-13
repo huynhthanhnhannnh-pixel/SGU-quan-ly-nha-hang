@@ -5,7 +5,6 @@ import controllers.*;
 import models.*;
 
 public class Dish {
-    private List<Ingredient> kho = SupplyManager.getManager().getKho();
     private final String name;
     private HashMap<String, Integer> nguyenLieu = new HashMap<String, Integer>(); // ten va so kuong nguyen lieu can thiet cho mon an 
     public Dish(String name){
@@ -33,6 +32,7 @@ public class Dish {
     }
     public double getPrice(){
         double total=0;
+        List<Ingredient> kho = SupplyManager.getManager().getKho();
         for (Ingredient ingredient : kho){
             String ten = ingredient.getName();
             if(nguyenLieu.containsKey(ten.toLowerCase())){

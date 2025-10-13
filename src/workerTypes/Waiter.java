@@ -74,7 +74,6 @@ public class Waiter extends base.Worker {
     // Lấy order của bàn
     private void getOrder(Order order) {
 
-        // Đếm số lượng khách hang rồi
         // Dùng vòng lặp for để chọn món rồi lưu vào temp, dùng hàm orderRNG để lấy ngẫu nhiên món
 
 
