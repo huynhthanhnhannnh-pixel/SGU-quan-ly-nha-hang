@@ -3,8 +3,9 @@ package contracts;
 public interface ManagerHandler {
     public void showGeneralInfo();
     public void createReport();
-    public void add();
-    public void remove();
-    public void search();
+    public void add(Object obj);
+    public void remove(int objID);
+    public void search(int objID);
 }
+
 
