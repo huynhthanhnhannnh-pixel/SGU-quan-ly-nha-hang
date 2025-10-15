@@ -1,5 +1,6 @@
 package controllers;
 
+import contracts.ManagerHandler;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -196,6 +197,17 @@ public class SupplyManager implements ManagerHandler {
         return null; // Not found or insufficient quantity
     }
 
+    public List<Dish> getDishList(){
+        return dishList;
+    }
+    public Dish getDishByName(String name) {
+    for (Dish d : dishList) { // dishList đã có sẵn trong SupplyManager
+        if (d.getName().equalsIgnoreCase(name)) {
+            return d;
+        }
+    }
+    return null;
+}
   
     // lấy menu dưới dạng danh sách tên các món ăn
     //public String[] getMenu() {
