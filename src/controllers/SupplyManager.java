@@ -1,9 +1,13 @@
 package controllers;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import contracts.ManagerHandler;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import models.*;
 import utils.*;
@@ -14,8 +18,8 @@ public class SupplyManager implements ManagerHandler {
     private Displayer displayer = Displayer.getDisplayer();
     //private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
 
-    private List<Ingredient> ingredients; // Kho nguyên liệu
-    private List<Dish> dishList; // Menu của chúng ta, không hẳng là menu vì nó đang chứa cả data của món ăn, menu chính sẽ nằm trong object Table
+    private List<Ingredient> ingredients = new ArrayList<>(); // Kho nguyên liệu
+    private List<Dish> dishList = new ArrayList<>(); // Menu của chúng ta, không hẳng là menu vì nó đang chứa cả data của món ăn, menu chính sẽ nằm trong object Table
 
     @Override
     public void showGeneralInfo() {
@@ -54,12 +58,18 @@ public class SupplyManager implements ManagerHandler {
                     Dish dish = new Dish(ing[0]);
                     for (int i = 1 ; i < ing.length; i ++){
                         String[] parts = ing[i].split("\\|");
-                        dish.addIngredient(parts[0],Integer.parseInt(parts[1]));
+                        if (parts.length == 2){
+                            dish.addIngredient(parts[0].trim(),Integer.parseInt(parts[1].trim()));
+                        }
+                        else {
+                            System.err.println("Sai dinh dang dong ");
+                            return;
+                        }
                     }
                     dishList.add(dish);
-                }
             }
             System.out.println("Loading successful");
+        }
         }
         catch (IOException e) {
             System.err.println("Error loading dishes from file: " + e.getMessage());
@@ -68,22 +78,33 @@ public class SupplyManager implements ManagerHandler {
 
     // Load các object nguyên liệu(Ingredient)
     private void loadIngredientsFromFile() {
-        try (BufferedReader reader = new BufferedReader(new FileReader("src\\resources\\Ingredients.txt"))) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        try (BufferedReader reader = new BufferedReader(
+            new FileReader("src\\controlable\\Ingredients.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                line = line.trim();
+                line = line.trim(); 
                 if (!line.isEmpty()) {
                     String[] ing = line.split("\\|");
-                    Ingredient nguyenlieu = new Ingredient(ing[0]);
-                    nguyenlieu.increaseQuantity(Integer.parseInt(ing[1]));
-                    nguyenlieu.setCost(Double.parseDouble(ing[2]));
+                    if (ing.length < 5){
+                        System.out.println("Dong du lieu k hop le ");
+                        return;
+                    }
+                    Ingredient nguyenlieu = new Ingredient(ing[0].trim());
+                    nguyenlieu.increaseQuantity(Integer.parseInt(ing[1].trim()));
+                    nguyenlieu.setCost(Double.parseDouble(ing[2].trim()));
+                    nguyenlieu.setHSD(LocalDate.parse(ing[3].trim(),formatter));
+                    nguyenlieu.setNgayNhap(LocalDate.parse(ing[4].trim(),formatter));
                     ingredients.add(nguyenlieu);
                 }
             }
             System.out.println("Loading successful");
         } catch (IOException e) {
             System.err.println("Error loading ingredients from file: " + e.getMessage());
-        }
+        } catch (Exception e) {
+        System.err.println("Loi khi doc du lieu: " + e.getMessage());
+    }
+
     }
 
     // Private constructor to enforce singleton
@@ -101,33 +122,60 @@ public class SupplyManager implements ManagerHandler {
         return self;
     }
     
-    //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
-    //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
-    // Your codes go here
-
+   
+    //Trả về cái kho của chúng ta 
     public List<Ingredient> getKho() {
         return ingredients;
     }
 
-
-    // kiểm tra xem có đủ nguyên liệu không
-    public Boolean checkIngredients(String dishName) {
-        // lấy object Dish từ danh sách menu 
-
-        // Dùng Dish.readIngredient để đọc các nguyên liệu cần lấy
-
-        // Dùng vòng lặp để kiểm tra có đủ nguyên liệu để nấu không
-
-        return false;
+    //Trả về menu của quán 
+    public List <Dish> getDishList(){
+        return dishList;
     }
 
+    // kiểm tra xem có đủ 1 nguyên liệu không
+    public Boolean checkIngredients(String name , int amount) {
+        // Giả sử bạn đã có danh sách các nguyên liệu trong kho
+    // List<Ingredient> ingredients;
 
-    // // Bỏ nguyên liệu vào kho
-    // public void addIngredient(String name, int amount) {
-    //     // lấy object ingredient trong kho
+    for (Ingredient ing : ingredients) {
+        if (name.equalsIgnoreCase(ing.getName())) { // tìm đúng nguyên liệu
+            if (amount > ing.getQuantity()) {
+                System.out.println("Khong du nguyen lieu " + name);
+                return false;
+            } else {
+                System.out.println("Nguyen lieu du"+ name );
+                return true; // có đủ nguyên liệu
+            }
+        }
+    }
+    // Nếu duyệt hết mà không tìm thấy nguyên liệu
+    System.out.println("Nguyen lieu khong co trong kho " + name);
+    return false;
+    }
+    
+    
 
-    //     // tăng số lượng
-    // } lỡ viết loadingIngredients đọc xong lưu vào mảng Ingredients (tức kho nguyên liệu) nên viết thêm cái này bị thừa
+    //Ham kiem tra kho co nguyen lieu nao het han su dung khong neu co thi delete
+    public void deleteIngredientsfromWarehouse(){
+       LocalDate today = LocalDate.now();
+       System.out.println("Ngay hom nay la " + today);
+       ingredients.removeIf(ing -> ing.getDate().isBefore(today));
+       saveToFile("src\\controlable\\Ingredients(copy).txt",ingredients);
+    }
+    // ghi lai cai list vao file txt 
+    public static void saveToFile(String fileName, List<Ingredient> list) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
+            for (Ingredient ing : list) {
+                bw.write(ing.toString());
+                bw.newLine();
+            }
+            System.out.println("Da cap nhat file" + fileName);
+        } catch (IOException e) {
+            System.out.println("Loi ghi file: " + e.getMessage());
+        }
+    }
+    
 
     // Lấy nguyên liệu ra khỏi kho
     public Ingredient getIngredient(String name, int amount) {
@@ -145,23 +193,59 @@ public class SupplyManager implements ManagerHandler {
         return null; // Not found or insufficient quantity
     }
 
-  
-    // lấy menu dưới dạng danh sách tên các món ăn
+    // Hàm này tìm nguyên liệu hsd nhỏ nhất trong số các nguyên liệu có cùng tên 
+    public Ingredient TimNguyenLieuNhoNhat(String name) {
+        if (ingredients.isEmpty()) return null; 
+        Ingredient min = ingredients.get(0);
+        for (Ingredient n1 : ingredients){
+            if (n1.getName().equalsIgnoreCase(name)){
+                if (n1.getDate().isBefore(min.getDate())){
+                    min = n1;
+                }
+            }
+        }
+        return min;
+}
+
+// lấy menu dưới dạng danh sách tên các món ăn'
     //public String[] getMenu() {
     //     // Sử dụng vòng lặp để lấy hết tên tất cả các món trong menu rồi lưu vào biến temp
     //     // String[] temp = {"Mon A", "Món B"};
     //     // return temp;
         
     // }
-    //get menu giờ sửa thành randomMenu
-    public List<String> randomMenuToday(int amount){
-        Random rand = new Random();
-        List <String> menu = new ArrayList<>();
-        List <Dish> temp = new ArrayList<>(dishList);
-        Collections.shuffle(temp, rand);
-        for (int i =0;i< amount;i++){
-            menu.add(temp.get(i).getName());
-        }
-        return menu;
-    }
+    // //get menu giờ sửa thành randomMenu
+    // public List<String> randomMenuToday(int amount){
+    //     Random rand = new Random();
+    //     List <String> menu = new ArrayList<>();
+    //     List <Dish> temp = new ArrayList<>(dishList);
+    //     Collections.shuffle(temp, rand);
+    //     for (int i =0;i< amount;i++){
+    //         menu.add(temp.get(i).getName());
+    //     }
+    //     return menu;
+    // }
+
+    // // Bỏ nguyên liệu vào kho
+    // public void addIngredient(String name, int amount) {
+    //     // lấy object ingredient trong kho
+
+    //     // tăng số lượng
+    // } lỡ viết loadingIngredients đọc xong lưu vào mảng Ingredients (tức kho nguyên liệu) nên viết thêm cái này bị thừa
+
+    //Ham kiem tra nguyen lieu trong kho con hsd khong, neu khong con thi se danh dau thuoc tinh nguyen lieu theo boolean là false
+    // public boolean checkdateIngredients(Ingredient ing) {
+    // LocalDate today = LocalDate.now();
+    // System.out.println("Ngay hom nay la " + today);
+    // if (today.isAfter(ing.getDate())){
+    //     System.out.println(ing.getName() + " da het han su dung tu ngay " + ing.getDate());
+    //     return false;
+    // }
+    // System.out.println(ing.getName() + " con han su dung ");
+    // return true;
+    // }
+
+     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
+    //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
+    // Your codes go here
 }

@@ -1,2 +1,70 @@
 TrungChien Trung|2 Dau|2 
 Chubby TraBong|1 BeoPhi|1
+ComChienHaiSan Tom|2 Muc|1 Gao|5 Hanh|1 DauAn|1
+BanhTacosGaChien Ga|1 DauAn|1 VoBanh|1 Rau|1 
+PhoBo Bo|2 BanhPho|3 Hanh|1 Gia|1 NuocLeo|1
+HuTieuNamVang Tom|2 Heo|2 Mi|1 Hanh|1 Gia|1
+MiQuang Ga|1 Tom|1 Mi|2 DauPhung|1 Rau|1
+BunCha ThitNuong|2 Bun|2 Rau|1 NuocMam|1
+BunBoHue Bo|2 Bun|3 Hanh|1 Sa|1
+ComTamSuonBi Suon|2 Bi|1 Trung|1 DuaChua|1
+BanhMiThit Nguoi|2 Pate|1 Dau|1 Rau|1
+MiXaoBo Mi|2 Bo|2 Rau|1 DauAn|1
+MiXaoHaiSan Mi|2 Tom|1 Muc|1 DauAn|1
+ComGaHaiNam Ga|1 Gung|1 DauAn|1
+CaKhoTo Ca|1 DauAn|1 Hanh|1 Tieu|1
+ThitKhoTrung Thit|2 Trung|2 NuocMam|1
+CanhChuaCa Ca|1 Thom|1 CaChua|1 Gia|1
+BoLucLac Bo|2 DauAn|1 Hanh|1 Ot|1
+BanhCuon Thit|1 VoBanh|1 Hanh|1
+BanhXeo Tom|1 Thit|1 Bot|2 DauAn|1
+LauThai Tom|2 Muc|1 Nam|1 Rau|1
+MiYBoBam Mi|2 BoBam|2 CaChua|1
+CaPheTrung Trung|1 CaPhe|1 Duong|1
+BanhFlan Trung|2 Sua|2 Duong|1
+BanhBaoThit Thit|2 Bot|2 Trung|1
+NemRan Thit|1 VoBanh|1 DauAn|1
+LauGaLaE Ga|2 Rau|1 Nam|1
+TraSuaTranChau Tra|1 Sua|1 TranChau|1
+PizzaHawaii Bot|2 PhoMai|2 ThitLonXongKhoi|1 Dua|1
+PizzaBoBam Bot|2 BoBam|2 CaChua|1 PhoMai|2
+BurgerBo BanhMi|2 Bo|2 Rau|1 PhoMai|1
+BurgerGa BanhMi|2 Ga|1 Rau|1 PhoMai|1
+PastaBoBam MiY|2 BoBam|2 CaChua|1 DauOlive|1
+PastaHaiSan MiY|2 Tom|1 Muc|1 DauOlive|1
+SandwichTrung BanhMi|2 Trung|1 XaLach|1 Mayonnaise|1
+Hotdog XucXich|1 BanhMi|1 TuongCa|1 TuongOt|1
+SushiCaHoi CaHoi|2 Com|2 RongBien|1
+SushiTrung Trung|1 Com|2 RongBien|1
+SashimiCaNgu CaNgu|2 Gung|1 NuocTuong|1
+RamenBo Mi|2 Bo|2 Trung|1 NuocLeo|1
+RamenHaiSan Mi|2 Tom|1 Muc|1 Trung|1
+KimchiBokkeumbap Com|2 Kimchi|2 Trung|1 DauAn|1
+Tokbokki BotGao|3 TuongOt|1 CaVien|1
+Bibimbap Com|2 Thit|1 Trung|1 Rau|1
+Jajangmyeon Mi|2 TuongDen|1 Thit|1 Hanh|1
+DimSumThitThapCam VoBanh|2 Thit|1 Tom|1
+MyTrungXaoXaXiu Mi|2 XaXiu|2 Rau|1
+MiUdonHaiSan MiUdon|2 Tom|1 Muc|1 Rau|1
+
+KemVani Sua|2 Duong|1 Vani|1
+KemSocola Sua|2 Socola|2 Duong|1
+BanhFlan Trung|2 Sua|2 Duong|1
+BanhCrepe Bot|2 Trung|1 Sua|1 TraiCay|1
+BanhPancake Bot|2 Trung|1 Sua|1 MatOng|1
+BanhTiramisu PhoMai|2 Trung|1 CaPhe|1 Duong|1
+BanhSuKem Bot|2 Trung|2 KemSua|1
+CheDauDo DauDo|2 Duong|1 Nuoc|1
+CheBaMau DauDo|1 HatSen|1 Thach|1 Duong|1
+TraiCayToHop Tao|1 Le|1 Nho|1 Duong|1
+
+CaPheDen CaPhe|2 Nuoc|1 Duong|1
+CaPheSua CaPhe|2 Sua|1 Duong|1
+BacXiu CaPhe|1 Sua|2 Duong|1
+SinhToXoai Xoai|2 Sua|1 Da|1
+SinhToBo Bo|2 Sua|1 Da|1
+NuocCam Cam|2 Duong|1 Da|1
+NuocChanh Chanh|2 Duong|1 Da|1
+TraSua TranChau|2 Sua|1 Tra|1 Duong|1
+TraDao Tra|1 Dao|2 Duong|1
+TraXanh Tra|2 Duong|1 Da|1

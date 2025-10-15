@@ -1,9 +1,13 @@
 package controllers;
 
-import java.util.*;
 import base.Worker;
 import enums.*;
+import java.util.*;
 import models.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 
 public class EventHandler {
     private WorkerManager wrkMgr = WorkerManager.getManager();
@@ -47,7 +51,7 @@ public class EventHandler {
     
     // Khi có khách đặt bàn hay chef gửi lại order thì kêu waiter đầu tiên đang rảnh làm việc
     public void notifyWaiters() {
-        for (Worker worker : workerList) {
+    for (Worker worker : workerList) {
             if (worker.getPosition().equals(WorkerType.WAITER.getPosition())) {
                 worker.startWorking();
                 break;
@@ -110,5 +114,23 @@ public class EventHandler {
     // tạo order mới
     public void addOrder(Order newOrder) {
         orderList.add(newOrder);
+    }
+    //ham copy file 
+
+
+    public static void copyTextFile() {
+        try (
+            BufferedReader reader = new BufferedReader(new FileReader("src\\resources\\Ingredients.txt"));
+            BufferedWriter writer = new BufferedWriter(new FileWriter("src\\controlable\\Ingredients(copy).txt"));
+        ) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                writer.write(line);
+                writer.newLine(); // xuống dòng sau mỗi dòng
+            }
+            System.out.println("✅ Sao chép thành công ");
+        } catch (Exception e) {
+            System.out.println("❌ Lỗi khi sao chép file: " + e.getMessage());
+        }
     }
 }
