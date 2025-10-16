@@ -5,7 +5,7 @@ public interface ManagerHandler {
     public void createReport();
     public void add(Object obj);
     public void remove(int objID);
-    public void search(int objID);
+    public Object search(int objID);
 }
 
 
