@@ -7,6 +7,7 @@ import enums.OrderState;
 import models.Order;
 import models.Table;
 
+
 public class Waiter extends base.Worker {
     
     public Waiter(int id, String name, int age, String gender, String position, double salaries, String description) {
@@ -25,7 +26,7 @@ public class Waiter extends base.Worker {
                     Order order = new Order(null);
                     Table table = new Table(10);
             if (order == null) {
-                System.out.println(getName() + " không còn order -> tạm nghỉ!");
+                System.out.println(" không còn order -> tạm nghỉ!");
                 break;
             }
 
@@ -45,7 +46,7 @@ public class Waiter extends base.Worker {
                     break;
 
                 case COMPLETED:
-                    double bill = order.totalAmount();
+                    double bill = order.getAmount();
                     System.out.println("Bàn " + order.getTable() +
                                        " đã thanh toán: " + bill);
                     System.out.println("da thanh toan");
@@ -60,24 +61,19 @@ public class Waiter extends base.Worker {
         }
         // Nếu UNFINISHED thì dùng retakeOrder
     }
-    
+
     @Override
     public void stopWorking() {
         
     }
-
     // Lấy order của bàn
     private void getOrder(Table table) {
- 
         Order order = new Order(table);
-        
         for(String dish : table.orderRNG())
-            order.addDishes(dish);
+            order.writeOrder(dish);
             System.out.println("Waiter: Đã lấy món mới cho order của bàn " );
-
         }
     
-
     // Lấy lại order nấu mấy món trước không đủ đồ để nấu
     private void retakeOrder(Table table) {
     Order order = new Order(table);
@@ -86,13 +82,10 @@ public class Waiter extends base.Worker {
         // Loại trừ các món có trong excludedOrders
         // Bước 1: Xoá các món không đủ nguyên liệu
     order.updateOrder();
-
     // Bước 2: Lấy số món cần chọn lại
     int retryCount = order.getNumOfUnsatisfiedRequest();
-
     // Bước 3: Truy xuất trực tiếp excludedDishes (không cần get)
     List<String> excluded = order.getExcludedDishes(); // nếu cùng class Order thì dùng được
-
     // Bước 4: Chọn lại các món mới, tránh món bị loại
     for (int i = 0; i < retryCount; i++) {
         String dish;
@@ -100,8 +93,7 @@ public class Waiter extends base.Worker {
             List<String> randomList = table.orderRNG(); // trả về List<String>
         dish = randomList.get(0);
         } while (excluded.contains(dish)); // không chọn lại món lỗi
-
-        order.addDishes(dish);
+        order.writeOrder(dish);
     }
 }
 }

@@ -2,7 +2,6 @@ package models;
 
 import java.util.*;
 import controllers.*;
-import models.*;
 
 public class Dish {
     private final String name;
@@ -32,8 +31,8 @@ public class Dish {
     }
     public double getPrice(){
         double total=0;
-        List<Ingredient> kho = SupplyManager.getManager().getKho();
-        for (Ingredient ingredient : kho){
+        HashMap<Integer, Ingredient>  kho = SupplyManager.getManager().getKho();
+        for (Ingredient ingredient : kho.values()){
             String ten = ingredient.getName();
             if(nguyenLieu.containsKey(ten.toLowerCase())){
                 int soluongcan = nguyenLieu.get(ten);

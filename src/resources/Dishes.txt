@@ -1,5 +1,4 @@
 TrungChien Trung|2 Dau|2 
-<<<<<<< HEAD
 Chubby TraBong|1 BeoPhi|1
 ComChienHaiSan Tom|2 Muc|1 Gao|5 Hanh|1 DauAn|1
 BanhTacosGaChien Ga|1 DauAn|1 VoBanh|1 Rau|1 
@@ -69,6 +68,3 @@ NuocChanh Chanh|2 Duong|1 Da|1
 TraSua TranChau|2 Sua|1 Tra|1 Duong|1
 TraDao Tra|1 Dao|2 Duong|1
 TraXanh Tra|2 Duong|1 Da|1
-=======
-ComChien Com|2 Dau|1
->>>>>>> upstream/thien
