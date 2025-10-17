@@ -53,18 +53,6 @@ public class WorkerManager implements ManagerHandler {
         System.out.println("Nhan vien B moi mo tai khoan only quat");
         System.out.println("Nhan vien C vua bi cooked");
     }
-    @Override
-    public void add(Object obj){
-
-    }
-    @Override
-    public void remove(int objID){
-
-    }
-    @Override
-    public Object search(int objID){
-        return null;
-    }
 
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
