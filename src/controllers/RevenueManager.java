@@ -25,9 +25,22 @@ public class RevenueManager implements ManagerHandler {
     public void createReport() {
 
     }
+    @Override
+    public void add(Object obj){
+
+    }
+    @Override
+    public void remove(int objID){
+
+    }
+    @Override
+    public Object search(int objID){
+        return null;
+    }
 
     public HashMap<LocalDate, DailyRevenue> getRevenueRecords(){ return revenueRecords; }
 
+    //Lấy doanh thu của ngày nào đó 
     public double getRevenueOfDate(LocalDate date){
         double totalAmount = 0;
         DailyRevenue RevenueOfDate = revenueRecords.get(date);
@@ -35,6 +48,11 @@ public class RevenueManager implements ManagerHandler {
             totalAmount += order.getAmount();
         }
         return totalAmount;
+    }
+
+    // lấy LỢI NHUẬN của 1 ngày 
+    public double getProfitOfDate(LocalDate date){
+        return getRevenueOfDate(date)/3*2;
     }
 
     // Private constructor to enforce singleton

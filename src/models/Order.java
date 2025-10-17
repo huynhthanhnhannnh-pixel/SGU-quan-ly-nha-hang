@@ -12,11 +12,12 @@ public class Order {
 
     public Order(Table table) {
         this.table = table;
-    }
+    } 
 
     public Table getTable() { return table; }
     public  int getNumOfUnsatisfiedRequest() { return numOfUnsatisfiedRequest; }
-    public double getAmount() { return amount; }    
+    public double getAmount() { return amount; } 
+    public List<String> getDishes() { return dishes; }   
 
     public void writeOrder(String dishName) {
         dishes.add(dishName);
