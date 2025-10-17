@@ -31,7 +31,7 @@ public class SupplyManager implements ManagerHandler {
         };
         displayer.displayMessage(message);
     }
-
+    
     @Override
     public void createReport() {
         System.out.println("Danh sach nguyen lieu trong kho:");
@@ -178,6 +178,7 @@ public class SupplyManager implements ManagerHandler {
         int newId = ingredients.isEmpty() ? 1 : Collections.max(ingredients.keySet()) + 1;
         ingredients.put(newId, ing);
         System.out.println("Da them nguyen lieu moi (ID=" + newId + "): " + ing.getName());
+        
     }
 
     // Hàm tìm kiếm nguyên lí 
@@ -186,7 +187,7 @@ public class SupplyManager implements ManagerHandler {
         return ingredients.get(objID);
     }
 
-    // Xóa nguyên liệu hết hạn và số lượng = 0 
+    // Xóa nguyên liệu hết hạn và số lượng = 0 và trả về giá hàng bị hủy 
     public double deleteExpiredandLowQuantityIngredients() {
         LocalDate today = LocalDate.now();
         double total = 0;
@@ -201,29 +202,10 @@ public class SupplyManager implements ManagerHandler {
                 System.out.println("Da xoa nguyen lieu het han: " + ing.getName());
             }
         }
-
-        saveToFile("src\\controlable\\Ingredients(copy).txt");
         return total;
     }
 
-    // Ghi HashMap vào file
-    public void saveToFile(String fileName) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
-            for (Ingredient ing : ingredients.values()) {
-                String line = ing.getName() + "|" +
-                              ing.getQuantity() + "|" +
-                              ing.getCost() + "|" +
-                              ing.getDate() + "|" +
-                              ing.getNgayNhapHang();
-                bw.write(line);
-                bw.newLine();
-            }
-            System.out.println("Da cap nhat file: " + fileName);
-        } catch (IOException e) {
-            System.out.println("Loi ghi file: " + e.getMessage());
-        }
-    }
-
+    
     // Lấy nguyên liệu ra khỏi kho
     public Ingredient getIngredient(String name, int amount) {
         for (Ingredient ing : ingredients.values()) {
