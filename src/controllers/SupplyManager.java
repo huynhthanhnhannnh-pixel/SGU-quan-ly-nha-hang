@@ -136,13 +136,10 @@ public class SupplyManager implements ManagerHandler {
                 total+= ing.getQuantity();
             }
         }
-        if (total >= amount) {
-            System.out.println("Nguyen lieu " + name + " co du ");
-            return true;
-        } else {
-            System.out.println("Nguyen lieu khong co trong kho: " + name);
-            return false;
+        if (total >= amount) {       
+            return true;       
         }
+        return false;
     }
     
     //hàm xóa 

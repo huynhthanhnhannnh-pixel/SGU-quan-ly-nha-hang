@@ -1,7 +1,11 @@
 package workerTypes;
+import java.util.ArrayList;
+import java.util.List;
+
 import controllers.EventHandler;
 import enums.OrderState;
 import models.Order;
+import models.Table;
 
 
 public class Waiter extends base.Worker {
@@ -19,11 +23,10 @@ public class Waiter extends base.Worker {
     public void startWorking() {
         // Nếu NEW thì dùng getOrder
         while (true) {
-            // Lấy order từ EventHandler
-            Order order = EventHandler.getEventHandler().getTable();
-
+                    Order order = new Order(null);
+                    Table table = new Table(10);
             if (order == null) {
-                System.out.println(getName() + " không còn order -> tạm nghỉ!");
+                System.out.println(" không còn order -> tạm nghỉ!");
                 break;
             }
 
@@ -31,13 +34,13 @@ public class Waiter extends base.Worker {
 
             switch (state) {
                 case NEW:
-                    getOrder(order);
+                    getOrder(table);
                     EventHandler.getEventHandler().addOrder(order);
                     EventHandler.getEventHandler().notifyChefs();
                     break;
 
                 case UNFINISHED:
-                    retakeOrder(order);
+                    retakeOrder(table);
                     EventHandler.getEventHandler().addOrder(order);
                     EventHandler.getEventHandler().notifyChefs();
                     break;
@@ -55,22 +58,14 @@ public class Waiter extends base.Worker {
                     break;
             }
 
-            // Nghỉ mô phỏng
-            try {
-                Thread.sleep(150);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
-            }
         }
         // Nếu UNFINISHED thì dùng retakeOrder
     }
-    
+
     @Override
     public void stopWorking() {
         
     }
-
     // Lấy order của bàn
     private void getOrder(Order order) {
 
@@ -80,11 +75,26 @@ public class Waiter extends base.Worker {
     }
 
     // Lấy lại order nấu mấy món trước không đủ đồ để nấu
-    private void retakeOrder(Order order) {
-
+    private void retakeOrder(Table table) {
+    Order order = new Order(table);
         // Sử dụng Order.getNumOfUnsatisfiedRequest để chạy vòng lăp for
         // Dùng vòng lặp for để chọn món rồi lưu vào temp, dùng hàm orderRNG để lấy ngẫu nhiên món
         // Loại trừ các món có trong excludedOrders
-
+        // Bước 1: Xoá các món không đủ nguyên liệu
+    order.updateOrder();
+    // Bước 2: Lấy số món cần chọn lại
+    int retryCount = order.getNumOfUnsatisfiedRequest();
+    // Bước 3: Truy xuất trực tiếp excludedDishes (không cần get)
+    List<String> excluded = order.getExcludedDishes(); // nếu cùng class Order thì dùng được
+    // Bước 4: Chọn lại các món mới, tránh món bị loại
+    for (int i = 0; i < retryCount; i++) {
+        String dish;
+        do {
+            List<String> randomList = table.orderRNG(); // trả về List<String>
+        dish = randomList.get(0);
+        } while (excluded.contains(dish)); // không chọn lại món lỗi
+        order.writeOrder(dish);
     }
 }
+}
+        
