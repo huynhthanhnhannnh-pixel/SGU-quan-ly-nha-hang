@@ -18,7 +18,8 @@ public class program {
             "Thue nhan vien moi", 
             "Hien thi nhan vien cua nha hang",
             "Hien thi lich lam",
-            "Thu nghiem tinh nang"
+            "Thu nghiem tinh nang",
+            "Kiem tra kho nguyen lieu" 
         };
         boolean sessionActive = true;
 

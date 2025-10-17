@@ -25,6 +25,18 @@ public class RevenueManager implements ManagerHandler {
     public void createReport() {
 
     }
+    @Override
+    public void add(Object obj){
+
+    }
+    @Override
+    public void remove(int objID){
+
+    }
+    @Override
+    public Object search(int objID){
+        return null;
+    }
 
     public HashMap<LocalDate, DailyRevenue> getRevenueRecords(){ return revenueRecords; }
 
