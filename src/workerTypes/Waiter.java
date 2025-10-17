@@ -1,6 +1,8 @@
 package workerTypes;
-
+import controllers.EventHandler;
+import enums.OrderState;
 import models.Order;
+
 
 public class Waiter extends base.Worker {
     
@@ -16,10 +18,54 @@ public class Waiter extends base.Worker {
     @Override
     public void startWorking() {
         // Nếu NEW thì dùng getOrder
+        while (true) {
+            // Lấy order từ EventHandler
+            Order order = EventHandler.getEventHandler().getTable();
 
+            if (order == null) {
+                System.out.println(getName() + " không còn order -> tạm nghỉ!");
+                break;
+            }
+
+            OrderState state = order.getState();
+
+            switch (state) {
+                case NEW:
+                    getOrder(order);
+                    EventHandler.getEventHandler().addOrder(order);
+                    EventHandler.getEventHandler().notifyChefs();
+                    break;
+
+                case UNFINISHED:
+                    retakeOrder(order);
+                    EventHandler.getEventHandler().addOrder(order);
+                    EventHandler.getEventHandler().notifyChefs();
+                    break;
+
+                case COMPLETED:
+                    double bill = order.getAmount();
+                    System.out.println("Bàn " + order.getTable() +
+                                       " đã thanh toán: " + bill);
+                    System.out.println("da thanh toan");
+                    EventHandler.getEventHandler().notifyTableManager();
+                    break;
+
+                default:
+                    System.out.println(getName() + " -> trạng thái không xác định: " + state);
+                    break;
+            }
+
+            // Nghỉ mô phỏng
+            try {
+                Thread.sleep(150);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
         // Nếu UNFINISHED thì dùng retakeOrder
     }
-
+    
     @Override
     public void stopWorking() {
         
