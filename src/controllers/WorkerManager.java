@@ -286,14 +286,31 @@ public class WorkerManager implements ManagerHandler {
     }
     public void hireWorker(int workerID) {
         Worker worker = workerToHire.remove(workerID);
-        hiredWorkers.put(workerID, worker);
+        add(worker);
+    };
+    public void fireWorker(int workerID) {
+        remove(workerID);
+    };
+
+    @Override
+    public void add(Object obj) {
+        Worker worker = (Worker) obj;
+        hiredWorkers.put(worker.getId(), worker);
         worker.setEmploymentState(true);
         System.out.println("Ban da thue "+worker.getName());
     };
-    public void fireWorker(int workerID) {
-        Worker worker = hiredWorkers.remove(workerID);
-        workerToHire.put(workerID, worker);
+
+    @Override
+    public void remove(int objID) {
+        Worker worker = hiredWorkers.remove(objID);
+        workerToHire.remove(objID);
         worker.setEmploymentState(false);
         System.out.println("Ban da sa thai "+worker.getName());
+    };
+
+    @Override
+    public Object search(int objID) {
+
+        return null;
     };
 }

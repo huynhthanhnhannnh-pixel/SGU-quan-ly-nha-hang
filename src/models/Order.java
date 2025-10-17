@@ -12,16 +12,20 @@ public class Order {
 
     public Order(Table table) {
         this.table = table;
-    }
+    } 
 
     public Table getTable() { return table; }
     public  int getNumOfUnsatisfiedRequest() { return numOfUnsatisfiedRequest; }
-    public double getAmount() { return amount; }  
-    public List<String> getDishes(){ return dishes; }   
-    public List<String> getExcludedDishes(){ return excludedDishes; }  
-    
-    public void writeOrder(String dishName) {   dishes.add(dishName); }
-    public void addExcludedDish(String dishName) { excludedDishes.add(dishName); }
+    public double getAmount() { return amount; } 
+    public List<String> getDishes() { return dishes; }   
+
+    public void writeOrder(String dishName) {
+        dishes.add(dishName);
+    }
+
+    public void addExcludedDish(String dishName) {
+        excludedDishes.add(dishName);
+    }
 
     public void updateOrder() {
         for (String excludedDish : excludedDishes) {

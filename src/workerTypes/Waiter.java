@@ -67,13 +67,13 @@ public class Waiter extends base.Worker {
         
     }
     // Lấy order của bàn
-    private void getOrder(Table table) {
-        Order order = new Order(table);
-        for(String dish : table.orderRNG())
-            order.writeOrder(dish);
-            System.out.println("Waiter: Đã lấy món mới cho order của bàn " );
-        }
-    
+    private void getOrder(Order order) {
+
+        // Dùng vòng lặp for để chọn món rồi lưu vào temp, dùng hàm orderRNG để lấy ngẫu nhiên món
+
+
+    }
+
     // Lấy lại order nấu mấy món trước không đủ đồ để nấu
     private void retakeOrder(Table table) {
     Order order = new Order(table);

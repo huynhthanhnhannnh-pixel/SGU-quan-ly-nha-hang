@@ -11,10 +11,11 @@ import utils.*;
 public class SupplyManager implements ManagerHandler {
     private static SupplyManager self;
     private Displayer displayer = Displayer.getDisplayer();
-
+    private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
     // Giờ kho là HashMap<Integer, Ingredient>
     private HashMap<Integer, Ingredient> ingredients = new HashMap<>();
     private List<Dish> dishList = new ArrayList<>();
+    int GO_BACK_OPTION = 0;
 
     @Override
     public void showGeneralInfo() {
@@ -37,12 +38,14 @@ public class SupplyManager implements ManagerHandler {
         System.out.println("Danh sach nguyen lieu trong kho:");
         for (Map.Entry<Integer, Ingredient> entry : ingredients.entrySet()) {
             Ingredient ing = entry.getValue();
+            displayer.singleSeperate();
             System.out.println(
                 "ID: " + entry.getKey() + 
-                ", Name: " + ing.getName() + 
-                ", Quantity: " + ing.getQuantity() +
-                ", HSD: " + ing.getDate() +
-                ", Ngay Nhap hang: " + ing.getNgayNhapHang()
+                "\nName: " + ing.getName() + 
+                "\nHSD: " + ing.getDate() +
+                "\nNgay Nhap hang: " + ing.getNgayNhapHang() +
+                "\nQuantity: " + ing.getQuantity() +
+                "\nCost: " + ing.getCost()
             );
         }
     }
@@ -77,7 +80,7 @@ public class SupplyManager implements ManagerHandler {
     // === Load nguyên liệu ===
     private void loadIngredientsFromFile() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        try (BufferedReader reader = new BufferedReader(new FileReader("src\\controlable\\Ingredients.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("src\\resources\\Ingredients.txt"))) {
             String line;
             int id = 1; // ID tự tăng
             while ((line = reader.readLine()) != null) {
@@ -104,11 +107,12 @@ public class SupplyManager implements ManagerHandler {
         }
     }
 
+    // Private constructor to enforce singleton
     private SupplyManager() {
         loadIngredientsFromFile();
         loadDishesFromFile();
     }
-
+    // Public method to get the single self
     public static SupplyManager getManager() {
         if (self == null) self = new SupplyManager();
         return self;
@@ -268,7 +272,31 @@ public class SupplyManager implements ManagerHandler {
         if (allEnough) {
             System.out.println("✅ Du nguyen lieu de lam tat ca mon !");
         }
-}
+    }
+
+    public void showStorage(){
+        String[] message = {
+            "Nhap 0 de quay lai",
+            "Tat ca nguyen lieu co trong kho: "
+        };
+
+        while (inputHandler.getCurrentOption() != GO_BACK_OPTION) {
+            displayer.clearScreen();
+            displayer.displayMessage(message);
+
+            // hien thi kho
+            // for ( Ingredient ing : ingredients.values()){
+            //     System.out.println(ing.getName() + ", so luong: " + ing.getQuantity() + ", gia: " + ing.getCost());
+            // }
+
+            createReport();
+
+            inputHandler.getUserOption();
+
+        }
+        inputHandler.resetOption();
+
+    }
 
     
 }
