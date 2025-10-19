@@ -15,6 +15,7 @@ public class SupplyManager implements ManagerHandler {
     // Giờ kho là HashMap<Integer, Ingredient>
     private HashMap<Integer, Ingredient> ingredients = new HashMap<>();
     private List<Dish> dishList = new ArrayList<>();
+    private List <Ingredient> ingredientsData = new ArrayList<>();
 
     @Override
     public void showGeneralInfo() {
@@ -27,6 +28,7 @@ public class SupplyManager implements ManagerHandler {
             "3. Xoa nguyen lieu trong kho ",
             "4. Tim kiem nguyen lieu trong kho ",
             "5. Xuat cac nguyen lieu khong du so luong lam 1 mon trong kho ",
+            "6. Tao bao cao ve cac nguyen lieu hien tai dang co",
             "Va dat biet la cac mon an cua chung ta duoc lam boi sieu dau bep ratatouille"
         };
         displayer.displayMessage(message);
@@ -80,7 +82,7 @@ public class SupplyManager implements ManagerHandler {
         try (BufferedReader reader = new BufferedReader(new FileReader("src\\controlable\\Ingredients.txt"))) {
             String line;
             int id = 1; // ID tự tăng
-            while ((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null) {    
                 line = line.trim();
                 if (!line.isEmpty()) {
                     String[] ing = line.split("\\|");
@@ -93,6 +95,7 @@ public class SupplyManager implements ManagerHandler {
                     nguyenlieu.setCost(Double.parseDouble(ing[2].trim()));
                     nguyenlieu.setHSD(LocalDate.parse(ing[3].trim(), formatter));
                     nguyenlieu.setNgayNhap(LocalDate.parse(ing[4].trim(), formatter));
+                    ingredientsData.add(nguyenlieu);
                     ingredients.put(id++, nguyenlieu);
                 }
             }
@@ -162,7 +165,7 @@ public class SupplyManager implements ManagerHandler {
 
         Ingredient ing = (Ingredient) obj;
         String name = ing.getName();
-        int qtyToAdd = ing.getQuantity();
+        int qtyToAdd = ing.getQuantity();   
 
         // Tìm nguyên liệu trùng tên
         for (Ingredient existing : ingredients.values()) {
