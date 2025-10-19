@@ -2,6 +2,7 @@ package models;
 
 import java.time.LocalDate;
 
+
 public class Ingredient {
         private final String name;
         private LocalDate date;
@@ -38,6 +39,10 @@ public class Ingredient {
     public void setHSD (LocalDate date){
         this.date = date;
     }
+    //Ham set so luong 
+    public void setQuantity (int quantity){
+        this.quantity = quantity;
+    }
     // Method to increase quantity
     public void increaseQuantity(int amount) {
         if (amount > 0) {
@@ -59,4 +64,5 @@ public class Ingredient {
             return available; // Return what was available
         }
     }
+    
 }

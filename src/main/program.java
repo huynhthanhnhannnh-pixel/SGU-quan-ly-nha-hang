@@ -9,6 +9,7 @@ public class program {
         Displayer displayer = Displayer.getDisplayer();
         UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
         EventHandler eventHlr = EventHandler.getEventHandler();
+        SupplyManager splManager = SupplyManager.getManager();
 
         String[] message = {
             "WELCOME TO QUAN LY NHA HANG"
@@ -18,12 +19,13 @@ public class program {
             "Thue nhan vien moi", 
             "Hien thi nhan vien cua nha hang",
             "Hien thi lich lam",
-            "Thu nghiem tinh nang"
+            "Kiem tra kho nguyen lieu",
+            "Nhap them/xoa nguyen lieu trong kho" 
         };
         boolean sessionActive = true;
 
         while (sessionActive) {
-            displayer.clearScreen();
+
             displayer.displayMessage(message);
             displayer.displayOptions(options);
             inputHandler.getUserOption();
@@ -42,22 +44,18 @@ public class program {
                     workerMgr.showSchedule();
                     break;
                 case 5:
-                    // sử dụng eventHandler để test tính năng
-                    // nhập EvenHandler.[Hàm cần test]
-
-                    //==================================
-
-
-
-
-
-
-                    //==================================
-                    inputHandler.enter2Continue();
+                    splManager.showStorage();
+                    break;
+                case 6:
+                    splManager.showAddRemoveIngredients();
                     break;
                 default:
                     System.out.println("Invalid input!");
+                    inputHandler.enter2Continue();
+                    break;
             }
+            
+            displayer.clearScreen();
         }
     }
 }

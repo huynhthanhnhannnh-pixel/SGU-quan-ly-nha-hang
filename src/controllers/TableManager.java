@@ -30,6 +30,18 @@ public class TableManager implements ManagerHandler {
     public void createReport() {
         System.out.println("Ban 1, 2, 3 con trong, Ban 4 thi bi con nho chubby an me roi");
     }
+    @Override
+    public void add(Object obj){
+
+    }
+    @Override
+    public Object remove(int objID){
+        return null;
+    }
+    @Override
+    public Object search(Object objID){
+        return null;
+    }
 
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
