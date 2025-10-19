@@ -19,12 +19,13 @@ public class program {
             "Thue nhan vien moi", 
             "Hien thi nhan vien cua nha hang",
             "Hien thi lich lam",
-            "Kiem tra kho nguyen lieu" 
+            "Kiem tra kho nguyen lieu",
+            "Nhap them/xoa nguyen lieu trong kho" 
         };
         boolean sessionActive = true;
 
         while (sessionActive) {
-           
+
             displayer.displayMessage(message);
             displayer.displayOptions(options);
             inputHandler.getUserOption();
@@ -45,8 +46,13 @@ public class program {
                 case 5:
                     splManager.showStorage();
                     break;
+                case 6:
+                    splManager.showAddRemoveIngrediens();
+                    break;
                 default:
                     System.out.println("Invalid input!");
+                    inputHandler.enter2Continue();
+                    break;
             }
             
             displayer.clearScreen();

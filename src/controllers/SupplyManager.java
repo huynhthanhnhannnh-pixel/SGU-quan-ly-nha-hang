@@ -153,7 +153,7 @@ public class SupplyManager implements ManagerHandler {
         System.out.println("Da xoa nguyen lieu: " + removed.getName() + " (so luong: " + removed.getQuantity() + ")");
     }
 
-    //hàm thêm 
+    //hàm thêm quantity vào nguyên liệu có sẵn
     @Override
     public void add(Object obj) {
         if (obj == null || !(obj instanceof Ingredient)) {
@@ -274,6 +274,7 @@ public class SupplyManager implements ManagerHandler {
         }
     }
 
+    //case 5, show tất cả nguyên liệu ở kho
     public void showStorage(){
         String[] message = {
             "Nhap 0 de quay lai",
@@ -283,20 +284,98 @@ public class SupplyManager implements ManagerHandler {
         while (inputHandler.getCurrentOption() != GO_BACK_OPTION) {
             displayer.clearScreen();
             displayer.displayMessage(message);
-
-            // hien thi kho
-            // for ( Ingredient ing : ingredients.values()){
-            //     System.out.println(ing.getName() + ", so luong: " + ing.getQuantity() + ", gia: " + ing.getCost());
-            // }
-
             createReport();
-
             inputHandler.getUserOption();
-
         }
         inputHandler.resetOption();
-
     }
+
+
+    //Case 6, Thêm xóa nguyên liệu ở kho
+    public void showAddRemoveIngrediens() {
+        String[] messageMenu = {
+            "Nhap 0 de quay lai",
+            "Chon them hoac xoa nguyen lieu"
+        };
+        String[] option = {
+            "Nhap them nguyen lieu da co san",
+            "Them nguyen lieu moi vao kho",
+            "Xoa nguyen lieu khoi kho"
+        }; 
+
+        while (inputHandler.getCurrentOption() != GO_BACK_OPTION){
+            displayer.clearScreen();
+            displayer.displayMessage(messageMenu);
+             
+            displayer.displayOptions(option);
+            inputHandler.getUserOption();
+            //Lấy input để bít nhập thêm hay xóa 
+            switch (inputHandler.getCurrentOption()) {
+                case 1:
+                    String[] messageAddQuantity = {
+                        "Nhap 0 de quay lai",
+                        "Nhap id cua nguyen lieu muon nhap them:"
+                    };
+                    while (inputHandler.getCurrentOption() != GO_BACK_OPTION){
+                        displayer.clearScreen();
+                        displayer.displayMessage(messageAddQuantity);   
+                        inputHandler.getUserOption();
+                        int id = inputHandler.getCurrentOption();
+                        for (Map.Entry<Integer, Ingredient> entry : ingredients.entrySet()){
+                            if (entry.getKey() == id ){
+                                Ingredient ing = entry.getValue();
+                                String[] ingredientInfo = {
+                                    "ID: " + entry.getKey() + 
+                                    "\nName: " + ing.getName() + 
+                                    "\nHSD: " + ing.getDate().toString() +
+                                    "\nNgay Nhap hang: " + ing.getNgayNhapHang().toString() +
+                                    "\nQuantity: " + String.valueOf(ing.getQuantity()) +
+                                    "\nCost: " + String.valueOf(ing.getCost())
+                                };
+                                displayer.displayMessage(ingredientInfo);
+
+                                String[] question = { "Muon nhap bao nhieu: " };
+                                displayer.displayMessage(question);
+                                inputHandler.getUserOption();
+                                int quantityToAdd = inputHandler.getCurrentOption();
+                                entry.getValue().increaseQuantity(quantityToAdd);
+
+                                String[] annoucement = { "Sau khi them vao: "};
+                                displayer.displayMessage(annoucement);
+                                String[] ingredientInfoAfter = {
+                                    "ID: " + entry.getKey() + 
+                                    "\nName: " + ing.getName() + 
+                                    "\nHSD: " + ing.getDate().toString() +
+                                    "\nNgay Nhap hang: " + ing.getNgayNhapHang().toString() +
+                                    "\nQuantity: " + String.valueOf(ing.getQuantity()) +
+                                    "\nCost: " + String.valueOf(ing.getCost())
+                                };
+                                displayer.displayMessage(ingredientInfoAfter);
+                                
+                                inputHandler.enter2Continue();
+                            }
+                        }
+                    }
+                    inputHandler.resetOption();
+                case 2: 
+                    String[] messageAddName= {"Nhap ten cua nguyen lieu moi: "};
+                    while (inputHandler.getCurrentOption() != GO_BACK_OPTION){
+                        displayer.clearScreen();
+                        displayer.displayMessage(messageAddName);  
+                        inputHandler.getUserOptionString();
+                        //tên nguyên liệu mới
+                        String newName = inputHandler.getCurrentOptionString();
+
+
+                    }
+                    inputHandler.resetOption();
+
+
+            }
+        }
+        inputHandler.resetOption();
+    }
+    
 
     
 }
