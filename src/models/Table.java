@@ -5,7 +5,7 @@ import java.util.*;
 
 public class Table {
     private final int size;
-    private List<String> FOOD_MENU = null; // menu của bàn
+    private List<String> FOOD_MENU = new ArrayList<String>(); // menu của bàn
 
     // Constructor
     public Table(int size) {
