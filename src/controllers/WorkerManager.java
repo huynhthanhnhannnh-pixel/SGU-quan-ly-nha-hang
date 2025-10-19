@@ -309,7 +309,7 @@ public class WorkerManager implements ManagerHandler {
     };
 
     @Override
-    public Object search(int objID) {
+    public Object search(Object objID) {
 
         return null;
     };
