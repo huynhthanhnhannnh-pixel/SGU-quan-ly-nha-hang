@@ -10,6 +10,7 @@ public class program {
         UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
         EventHandler eventHlr = EventHandler.getEventHandler();
         SupplyManager splManager = SupplyManager.getManager();
+        dishManager dishMgr = dishManager.getManager();
 
         String[] message = {
             "WELCOME TO QUAN LY NHA HANG"
@@ -19,8 +20,8 @@ public class program {
             "Thue nhan vien moi", 
             "Hien thi nhan vien cua nha hang",
             "Hien thi lich lam",
-            "Kiem tra kho nguyen lieu",
-            "Nhap them/xoa nguyen lieu trong kho" 
+            "Kiem tra kho nguyen lieu", 
+            "Kiem tra danh sach menu"
         };
         boolean sessionActive = true;
 
@@ -44,10 +45,10 @@ public class program {
                     workerMgr.showSchedule();
                     break;
                 case 5:
-                    splManager.showStorage();
+                    splManager.showGeneralInfo();
                     break;
                 case 6:
-                    splManager.showAddRemoveIngredients();
+                    dishMgr.showGeneralInfo();
                     break;
                 default:
                     System.out.println("Invalid input!");

@@ -20,7 +20,8 @@ public class Chef extends base.Worker {
     @Override
     public void startWorking() {
         EventHandler event = EventHandler.getEventHandler();
-        SupplyManager sm = SupplyManager.getManager();
+    controllers.dishManager dm = controllers.dishManager.getManager();
+    SupplyManager sm = SupplyManager.getManager();
         Order order = new Order(null);   
         if (order.getDishes().isEmpty()) {
             System.out.println("Chef: Không có order nào, nghỉ!");
@@ -31,7 +32,7 @@ public class Chef extends base.Worker {
 
         for (String dish : order.getDishes()) {
             loop1:
-            for (Dish dishMENU : sm.getDishList()){
+            for (Dish dishMENU : dm.getDishList()){
                 if (dish.equalsIgnoreCase(dishMENU.getName())){
                     Map<String, Integer> requiredIngredients = dishMENU.readIngredients(); // nguyên liệu cần cho món
                 
@@ -55,7 +56,7 @@ public class Chef extends base.Worker {
         System.out.println("Chef: Đủ nguyên liệu -> Bắt đầu nấu!");
 
         for (String dish : order.getDishes()) {
-            for (Dish dishMENU : sm.getDishList()){
+            for (Dish dishMENU : dm.getDishList()){
                 if (dish.equalsIgnoreCase(dishMENU.getName())){
         Map<String, Integer> requiredIngredients = dishMENU.readIngredients(); // nguyên liệu cần cho món
 
