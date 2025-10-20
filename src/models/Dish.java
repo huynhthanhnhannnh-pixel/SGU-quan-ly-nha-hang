@@ -31,11 +31,13 @@ public class Dish {
     }
     public double getPrice(){
         double total=0;
-        List<Ingredient> kho = SupplyManager.getManager().getKho();
-        for (Ingredient ingredient : kho){
+        HashMap<Integer, Ingredient>  kho = SupplyManager.getManager().getKho();
+        for (Ingredient ingredient : kho.values()){
             String ten = ingredient.getName();
-            if(nguyenLieu.containsKey(ten.toLowerCase())){
-                int soluongcan = nguyenLieu.get(ten);
+            String key = ten != null ? ten.toLowerCase() : "";
+            if(nguyenLieu.containsKey(key)){
+                Integer soluongcanObj = nguyenLieu.get(key);
+                int soluongcan = soluongcanObj != null ? soluongcanObj.intValue() : 0;
                 double giaNguyenlieu = ingredient.getCost();
                 total += soluongcan*giaNguyenlieu;
             }   
