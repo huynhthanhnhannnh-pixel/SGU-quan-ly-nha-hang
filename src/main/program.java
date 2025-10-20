@@ -9,6 +9,7 @@ public class program {
         UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
         WorkerManager workerMgr = WorkerManager.getManager();
         SupplyManager splManager = SupplyManager.getManager();
+        dishManager dishMgr = dishManager.getManager();
 
         String[] message = {"WELCOME TO QUAN LY NHA HANG"};
         String[] roles = {
