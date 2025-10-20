@@ -33,19 +33,41 @@ public class WorkerManager implements ManagerHandler {
 
     @Override
     public void showGeneralInfo() {
-        String[] message = {
-            "Day la trinh quan ly nhan vien sieu uy tin",
-            "Trinh quan ly gom cac tinh nang nhu:",
-            "1. thue/sa thai nhan vien -- tat nhien roi",
-            "2. xep lich cho nhan vien",
-            "3. kiem tra lich trong tuan",
-            "Nhan vien cua chung ta se luon duoc an nhung mon an do dau bep Hannibal nau",
-            "",
-            "",
-            "",
-            "Ngai Hannibal se chuan bi mon ung thu than giai doan cuoi cho chung ta"
+        String[] intro = { "Trinh quan ly nhan vien" };
+        String[] options = {
+            "Xem danh sach nhan vien co the thue",
+            "Xem danh sach nhan vien da thue",
+            "Xem lich lam viec",
+            "Quay lai"
         };
-        displayer.displayMessage(message);
+
+        while (true) {
+            displayer.clearScreen();
+            displayer.displayMessage(intro);
+            displayer.displayOptions(options);
+
+            inputHandler.getUserOption();
+            int choice = inputHandler.getCurrentOption();
+            if (choice == GO_BACK_OPTION) { inputHandler.resetOption(); break; }
+
+            switch (choice) {
+                case 1:
+                    showWorkerToHire();
+                    break;
+                case 2:
+                    showHiredWorker();
+                    break;
+                case 3:
+                    showSchedule();
+                    break;
+                default:
+                    inputHandler.raiseWarning();
+            }
+
+            displayer.singleSeperate();
+            inputHandler.enter2Continue();
+            inputHandler.resetOption();
+        }
     }
     @Override
     public void createReport() {
@@ -60,12 +82,31 @@ public class WorkerManager implements ManagerHandler {
 
     // Init a storage of worker objects, read from Worker.txt
     private void initResources() {
-        try (BufferedReader br = new BufferedReader(new FileReader("src\\resources\\Workers.txt"))) {
+        BufferedReader br = null;
+        try {
+            // try classpath resource first
+            InputStream is = WorkerManager.class.getClassLoader().getResourceAsStream("resources/Workers.txt");
+            if (is != null) {
+                br = new BufferedReader(new InputStreamReader(is, java.nio.charset.StandardCharsets.UTF_8));
+            } else {
+                java.nio.file.Path p1 = java.nio.file.Paths.get("resources", "Workers.txt");
+                java.nio.file.Path p2 = java.nio.file.Paths.get("src", "resources", "Workers.txt");
+                if (java.nio.file.Files.exists(p1)) {
+                    br = java.nio.file.Files.newBufferedReader(p1, java.nio.charset.StandardCharsets.UTF_8);
+                } else if (java.nio.file.Files.exists(p2)) {
+                    br = java.nio.file.Files.newBufferedReader(p2, java.nio.charset.StandardCharsets.UTF_8);
+                } else {
+                    throw new FileNotFoundException("Workers.txt not found in classpath or resources folders");
+                }
+            }
+
             String basicInfo; // read the odd lines
             int counter = 1;
             while ((basicInfo = br.readLine()) != null) {
                 String description = br.readLine(); // go to next line(even line) then read it
+                if (description == null) description = "";
                 String[] parts = basicInfo.split(" ");
+                if (parts.length < 5) continue;
                 String name = parts[0];
                 int age = Integer.parseInt(parts[1]);
                 String gender = parts[2];
@@ -81,7 +122,9 @@ public class WorkerManager implements ManagerHandler {
                         worker = new Chef(counter, name, age, gender, position, salaries, description);
                         workerToHire.put(counter, worker);
                         break;
-                    case SUPPLY_MANAGER, WORKER_MANAGER, TABLE_MANAGER:
+                    case SUPPLY_MANAGER:
+                    case WORKER_MANAGER:
+                    case TABLE_MANAGER:
                         worker = new Manager(counter, name, age, gender, position, salaries, description);
                         workerToHire.put(counter, worker);
                         break;
@@ -93,6 +136,10 @@ public class WorkerManager implements ManagerHandler {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try { br.close(); } catch (IOException ignored) {}
+            }
         }
     }
 
@@ -301,11 +348,15 @@ public class WorkerManager implements ManagerHandler {
     };
 
     @Override
-    public Worker remove(int objID) {
+    public Object remove(int objID) {
         Worker worker = hiredWorkers.remove(objID);
         workerToHire.remove(objID);
-        worker.setEmploymentState(false);
-        System.out.println("Ban da sa thai "+worker.getName());
+        if (worker != null) {
+            worker.setEmploymentState(false);
+            System.out.println("Ban da sa thai " + worker.getName());
+        } else {
+            System.out.println("Khong tim thay nhan vien de sa thai voi id: " + objID);
+        }
         return worker;
     };
 

@@ -5,57 +5,40 @@ import utils.*;
 
 public class program {
     public static void main(String[] args) {
-        WorkerManager workerMgr = WorkerManager.getManager();
         Displayer displayer = Displayer.getDisplayer();
         UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
-        EventHandler eventHlr = EventHandler.getEventHandler();
+        WorkerManager workerMgr = WorkerManager.getManager();
         SupplyManager splManager = SupplyManager.getManager();
 
-        String[] message = {
-            "WELCOME TO QUAN LY NHA HANG"
+        String[] message = {"WELCOME TO QUAN LY NHA HANG"};
+        String[] roles = {
+            "Exit",
+            "You are Supply Manager",
+            "You are Worker Manager",
+            "Other..."
         };
-        String[] options = { 
-            "Exit", 
-            "Thue nhan vien moi", 
-            "Hien thi nhan vien cua nha hang",
-            "Hien thi lich lam",
-            "Kiem tra kho nguyen lieu",
-            "Nhap them/xoa nguyen lieu trong kho" 
-        };
-        boolean sessionActive = true;
 
-        while (sessionActive) {
-
+        while (true) {
+            displayer.clearScreen();
             displayer.displayMessage(message);
-            displayer.displayOptions(options);
+            displayer.displayOptions(roles);
             inputHandler.getUserOption();
-            
-            switch (inputHandler.getCurrentOption()) {
+            int choice = inputHandler.getCurrentOption();
+            if (choice == 0) { inputHandler.closeScanner(); return; }
+
+            switch (choice) {
                 case 1:
-                    inputHandler.closeScanner();
-                    return;
+                    // Run interactive flow for supply manager
+                    splManager.runSupplyManagerConsole();
+                    break;
                 case 2:
-                    workerMgr.showWorkerToHire();
-                    break;
-                case 3:
-                    workerMgr.showHiredWorker();
-                    break;
-                case 4:
-                    workerMgr.showSchedule();
-                    break;
-                case 5:
-                    splManager.showStorage();
-                    break;
-                case 6:
-                    splManager.showAddRemoveIngredients();
+                    // show worker manager general info / menu
+                    workerMgr.showGeneralInfo();
                     break;
                 default:
-                    System.out.println("Invalid input!");
+                    System.out.println("Role not implemented yet.");
                     inputHandler.enter2Continue();
-                    break;
             }
-            
-            displayer.clearScreen();
         }
     }
 }
