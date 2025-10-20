@@ -301,15 +301,16 @@ public class WorkerManager implements ManagerHandler {
     };
 
     @Override
-    public void remove(int objID) {
+    public Worker remove(int objID) {
         Worker worker = hiredWorkers.remove(objID);
         workerToHire.remove(objID);
         worker.setEmploymentState(false);
         System.out.println("Ban da sa thai "+worker.getName());
+        return worker;
     };
 
     @Override
-    public Object search(int objID) {
+    public Object search(Object objID) {
 
         return null;
     };

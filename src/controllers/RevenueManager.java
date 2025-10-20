@@ -30,11 +30,11 @@ public class RevenueManager implements ManagerHandler {
 
     }
     @Override
-    public void remove(int objID){
-
+    public Object remove(int objID){
+        return null;
     }
     @Override
-    public Object search(int objID){
+    public Object search(Object objID){
         return null;
     }
 

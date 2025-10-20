@@ -94,7 +94,7 @@ public class SupplyManager implements ManagerHandler {
     // === Load nguyên liệu ===
     private void loadIngredientsFromFile() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        try (BufferedReader reader = new BufferedReader(new FileReader("resources\\Ingredients.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("src/resources/Ingredients.txt"))) {
             String line;
             int id = 1; // ID tự tăng
             while ((line = reader.readLine()) != null) {    
@@ -509,5 +509,4 @@ public class SupplyManager implements ManagerHandler {
     }
 
 }
-
     

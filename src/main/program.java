@@ -47,7 +47,7 @@ public class program {
                     splManager.showStorage();
                     break;
                 case 6:
-                    // splManager.showAddRemoveIngrediens();
+                    splManager.showAddRemoveIngredients();
                     break;
                 default:
                     System.out.println("Invalid input!");
