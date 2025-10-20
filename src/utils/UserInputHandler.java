@@ -39,6 +39,11 @@ public class UserInputHandler {
             showWarning = false;
         }
         try {
+            if (!sc.hasNextLine()) {
+                // no input available (EOF) — set to -1 and return gracefully
+                curOption = -1;
+                return;
+            }
             String input = sc.nextLine(); // đọc nguyên dòng
             curOption = Integer.parseInt(input); // parse sang int và gán vào curOption
         } catch (NumberFormatException e) {
@@ -57,6 +62,10 @@ public class UserInputHandler {
             showWarning = false;
         }
         try {
+            if (!sc.hasNextLine()) {
+                curOptionString = "";
+                return;
+            }
             curOptionString = sc.nextLine();            
         } catch (Exception e) {
             System.out.println("Invalid input. Please enter a number.");
