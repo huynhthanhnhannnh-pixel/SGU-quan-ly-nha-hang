@@ -16,7 +16,6 @@ public class SupplyManager implements ManagerHandler {
     private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
     // Giờ kho là HashMap<Integer, Ingredient>
     private HashMap<Integer, Ingredient> ingredients = new LinkedHashMap<>();
-    private List<Dish> dishList = new ArrayList<>();
     int GO_BACK_OPTION = 0;
     private HashMap <String, Ingredient> ingredientsData = new LinkedHashMap<>();
 
@@ -385,6 +384,10 @@ public class SupplyManager implements ManagerHandler {
         dishList.add(dish);
         System.out.println("Da them mon: " + dish.getName());
     }
+
+    
+
+    
     
     @Override
     public void createReport() {
@@ -621,7 +624,6 @@ public class SupplyManager implements ManagerHandler {
     // Private constructor to enforce singleton
     private SupplyManager() {
         loadIngredientsFromFile();
-        loadDishesFromFile();
     }
     // Public method to get the single self
     public static SupplyManager getManager() {
@@ -634,10 +636,7 @@ public class SupplyManager implements ManagerHandler {
         return ingredients;
     }
     
-    //Trả về danh sách món ăn 
-    public List<Dish> getDishList() {
-        return dishList;
-    }
+   
 
     // Kiểm tra đủ nguyên liệu chưa
     public Boolean checkIngredients(String name, int amount) {
@@ -775,7 +774,7 @@ public class SupplyManager implements ManagerHandler {
         while (iterator.hasNext()) {
             Map.Entry<Integer, Ingredient> entry = iterator.next();
             Ingredient ing = entry.getValue();
-            if (ing.getDate().isBefore(today) || ing.getQuantity() == 0 ) {
+            if ((ing.getDate() != null && ing.getDate().isBefore(today)) || ing.getQuantity() == 0 ) {
                 total += ing.getCost() * ing.getQuantity();
                 iterator.remove();
 
@@ -836,7 +835,17 @@ public class SupplyManager implements ManagerHandler {
 
     // Hàm kiểm tra xem các nguyên liệu có đủ làm 1 món nào k 
     public void checkWarehouse() {
-        boolean allEnough = true;
+        // Improve: for each dish compute how many full portions can be made
+        // and list missing/insufficient ingredients with quantities.
+        controllers.dishManager dm = controllers.dishManager.getManager();
+        List<Dish> dishList = dm.getDishList();
+        if (dishList == null || dishList.isEmpty()) {
+            System.out.println("Khong co mon an nao de kiem tra.");
+            return;
+        }
+
+        boolean anyMakeable = false;
+        System.out.println("Kiem tra kho de biet co the lam duoc may phan cua moi mon:");
         for (Dish dish : dishList) {
             for (Map.Entry<String, Integer> need : dish.readIngredients().entrySet()) {
                 String ingName = normalizeKey(need.getKey());
@@ -859,9 +868,8 @@ public class SupplyManager implements ManagerHandler {
             }
         }
 
-        // B4. Nếu đủ tất cả
-        if (allEnough) {
-            System.out.println("Du nguyen lieu de lam tat ca mon !");
+        if (!anyMakeable) {
+            System.out.println("(Luu y) Kho hien khong du nguyen lieu de lam bat ky mon nao hoac so luong la 0.");
         }
     }
 
@@ -985,90 +993,85 @@ public class SupplyManager implements ManagerHandler {
         };
 
         while (true) {
-            displayer.clearScreen();
-            displayer.displayMessage(messageMenu);
-            displayer.displayOptions(option);
-
-            // Đọc lựa chọn của người dùng
-            inputHandler.getUserOption();
-            int choice = inputHandler.getCurrentOption();
-
-            if (choice == GO_BACK_OPTION) {
-                System.out.println("Quay lai menu truoc...");
-                inputHandler.enter2Continue();
-                break;
+            // Name
+            System.out.print("Nhap ten nguyen lieu (nhap 0 de huy): ");
+            String name = input.getScanner().nextLine().trim();
+            if (name.equals("0")) return null;
+            if (name.isEmpty()) {
+                System.out.println("Ten nguyen lieu khong duoc de trong. Vui long nhap lai.");
+                continue;
             }
 
-            switch (choice) {
-                case 1: { // ====== THÊM NGUYÊN LIỆU ======
-                    String[] messageAdd = {
-                        "Nhap 0 de quay lai",
-                        "Moi nhap vao thong tin nguyen lieu moi:"
-                    };
-                    displayer.clearScreen();
-                    displayer.displayMessage(messageAdd);
-
-                    // Gọi hàm nhập nguyên liệu
-                    Ingredient newIng = IngredientInput();
-
-                    if (newIng == null) {
-                        System.out.println("Khong the them: du lieu nguyen lieu khong hop le!");
-                        inputHandler.enter2Continue();
-                        break;
+            // Quantity
+            Integer quantity = null;
+            while (quantity == null) {
+                System.out.print("Nhap so luong (so nguyen duong, nhap 0 de huy): ");
+                String qline = input.getScanner().nextLine().trim();
+                if (qline.equals("0")) return null;
+                try {
+                    quantity = Integer.parseInt(qline);
+                    if (quantity <= 0) {
+                        System.out.println("So luong phai la so nguyen duong. Nhap lai.");
+                        quantity = null;
                     }
-
-                    // Thêm vào kho
-                    System.out.println("Dang them nguyen lieu moi vao kho...");
-                    add(newIng);
-
-                    // Hiển thị lại kết quả tìm kiếm (để xác nhận)
-                    System.out.println("\nKiem tra ket qua them vao:");
-                    search(newIng.getName().toLowerCase());
-
-                    System.out.println("\nThem nguyen lieu thanh cong!");
-                    inputHandler.enter2Continue();
-                    break;
-                }
-
-                case 2: { // ====== XÓA NGUYÊN LIỆU ======
-                    String[] messageRemove = {
-                        "Nhap 0 de quay lai",
-                        "Moi nhap vao ID nguyen lieu can xoa:"
-                    };
-                    displayer.clearScreen();
-                    displayer.displayMessage(messageRemove);
-
-                    try {
-                        int removeId = inputHandler.getScanner().nextInt();
-                        inputHandler.getScanner().nextLine(); // clear newline
-
-                        if (removeId == GO_BACK_OPTION) {
-                            System.out.println("Huy thao tac xoa, quay lai menu truoc.");
-                            inputHandler.enter2Continue();
-                            break;
-                        }
-
-                        System.out.println("Dang xoa nguyen lieu co ID = " + removeId + "...");
-                        Ingredient ing = remove(removeId);
-                        search(ing.getName());
-                    } catch (Exception e) {
-                        System.out.println("Loi: Vui long nhap so hop le.");
-                        inputHandler.getScanner().nextLine(); // clear buffer nếu lỗi nhập
-                    }
-
-                    inputHandler.enter2Continue();
-                    break;
-                }
-
-                default: {
-                    System.out.println("Lua chon khong hop le, vui long chon lai (1, 2 hoac 0).");
-                    inputHandler.enter2Continue();
-                    break;
+                } catch (NumberFormatException e) {
+                    System.out.println("Dinh dang so luong khong hop le. Vui long nhap lai.");
                 }
             }
 
-            // Reset lại option để tránh lỗi vòng lặp
-            inputHandler.resetOption();
+            // Cost
+            Double cost = null;
+            while (cost == null) {
+                System.out.print("Nhap gia nhap (so, nhap 0 de huy): ");
+                String cline = input.getScanner().nextLine().trim();
+                if (cline.equals("0")) return null;
+                try {
+                    cost = Double.parseDouble(cline);
+                    if (cost < 0) {
+                        System.out.println("Gia phai la so khong am. Nhap lai.");
+                        cost = null;
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Dinh dang gia khong hop le. Vui long nhap lai.");
+                }
+            }
+
+            // Ngay nhap
+            LocalDate ngayNhap = null;
+            while (ngayNhap == null) {
+                System.out.print("Nhap ngay nhap (dd/MM/yyyy) (nhap 0 de huy): ");
+                String ngayNhap1 = input.getScanner().nextLine().trim();
+                if (ngayNhap1.equals("0")) return null;
+                try {
+                    ngayNhap = LocalDate.parse(ngayNhap1, fmt);
+                } catch (Exception e) {
+                    System.out.println("Dinh dang ngay nhap khong hop le. Vui long nhap lai theo dd/MM/yyyy.");
+                }
+            }
+
+            // HSD
+            LocalDate hsd = null;
+            while (hsd == null) {
+                System.out.print("Nhap HSD (dd/MM/yyyy) (nhap 0 de huy): ");
+                String hsd1 = input.getScanner().nextLine().trim();
+                if (hsd1.equals("0")) return null;
+                try {
+                    hsd = LocalDate.parse(hsd1, fmt);
+                    if (hsd.isBefore(ngayNhap)) {
+                        System.out.println("HSD khong duoc nho hon ngay nhap. Vui long nhap lai.");
+                        hsd = null;
+                    }
+                } catch (Exception e) {
+                    System.out.println("Dinh dang HSD khong hop le. Vui long nhap lai theo dd/MM/yyyy.");
+                }
+            }
+
+            Ingredient moi = new Ingredient(name);
+            moi.setQuantity(quantity);
+            moi.setCost(cost);
+            moi.setHSD(hsd);
+            moi.setNgayNhap(ngayNhap);
+            return moi;
         }
     }
 }

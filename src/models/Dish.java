@@ -15,20 +15,7 @@ public class Dish {
     public HashMap<String, Integer> readIngredients(){
         return new HashMap<>(nguyenLieu);
     }
-    
-    public void addIngredient (String name , int amount){
-        nguyenLieu.put(name.toLowerCase(),amount);
-    }
-    public void removeIngredient(String name) {
-        nguyenLieu.remove(name);
-    }
-    public void changeIngredientAmount(String name, int amount){
-        if (nguyenLieu.containsKey(name)) {
-            nguyenLieu.put(name, amount); // cập nhật số lượng mới
-        } else {
-            System.out.println("Nguyên liệu '" + name + "' không tồn tại trong món ăn.");
-        }
-    }
+
     public double getPrice(){
         double total=0;
         HashMap<Integer, Ingredient>  kho = SupplyManager.getManager().getKho();
