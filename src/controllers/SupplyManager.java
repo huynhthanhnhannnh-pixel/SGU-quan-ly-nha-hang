@@ -25,282 +25,19 @@ public class SupplyManager implements ManagerHandler {
         return s.trim().toLowerCase().replaceAll("\\s+", "");
     }
 
-    @Override
-    public void showGeneralInfo() {
-        String[] intro = {
-            "Day la trinh quan ly nguon cung thuc pham 100% sieu sach",
-            "Trinh quan ly gom cac tinh nang nhu:"
-        };
-
-        String[] options = {
-            "Xem cac nguyen lieu trong kho",
-            "Them nguyen lieu vao kho",
-            "Xoa nguyen lieu trong kho",
-            "Tim kiem nguyen lieu trong kho",
-            "Xuat cac nguyen lieu khong du so luong lam 1 mon",
-            "Tao bao cao ve cac nguyen lieu hien tai dang co",
-            "Xoa nguyen lieu het han khoi kho",
-            "Xem danh sach mon an hien co (va cac thao tac mon an)",
-            "Them nguyen lieu trong mon an",
-            "Xoa nguyen lieu trong mon an",
-            "Sua so luong nguyen lieu trong mon an",
-            "Quay lai"
-        };
-
-        while (true) {
-            displayer.clearScreen();
-            displayer.displayMessage(intro);
-            displayer.displayOptions(options);
-
-            inputHandler.getUserOption();
-            int choice = inputHandler.getCurrentOption();
-            if (choice == GO_BACK_OPTION) {
-                inputHandler.resetOption();
-                break;
-            }
-
-            switch (choice) {
-                case 1:
-                    showStorage();
-                    break;
-                case 2:
-                    showAddRemoveIngredients();
-                    break;
-                case 3: {
-                    System.out.print("Nhap ID can xoa: ");
-                    try {
-                        int id = Integer.parseInt(inputHandler.getScanner().nextLine().trim());
-                        remove(id);
-                    } catch (Exception e) { System.out.println("ID khong hop le"); }
-                    break;
-                }
-                case 4: {
-                    System.out.print("Nhap ten nguyen lieu can tim: ");
-                    String name = inputHandler.getScanner().nextLine().trim();
-                    if (!name.equals("0")) search(name);
-                    break;
-                }
-                case 5:
-                    checkWarehouse();
-                    break;
-                case 6:
-                    createReport();
-                    break;
-                case 7:
-                    double lost = deleteExpiredandLowQuantityIngredients();
-                    System.out.println("Gia tri hang lo bi xoa: " + lost);
-                    break;
-                case 8:
-                    showDishesAndPrintMenu();
-                    break;
-                case 9:
-                    showDishesAndPrintMenu();
-                    break;
-                case 10:
-                    showDishesAndPrintMenu();
-                    break;
-                case 11:
-                    showDishesAndPrintMenu();
-                    break;
-                default:
-                    System.out.println("Lua chon khong hop le.");
-            }
-
-            displayer.singleSeperate();
-            inputHandler.enter2Continue();
-            inputHandler.resetOption();
-        }
-    }
-
-    // Interactive submenu for options related to dishes and printing
-    public void showDishesAndPrintMenu() {
-        String[] header = {"Nhap 0 de quay lai", "Quan ly mon an va hien thi"};
-        String[] options = {
-            "Xem tat ca nguyen lieu (aggregate)",
-            "Xem tat ca mon an va gia",
-            "Them nguyen lieu vao mon an",
-            "Xoa nguyen lieu khoi mon an",
-            "Sua so luong nguyen lieu trong mon an"
-        };
-
-        while (true) {
-            displayer.clearScreen();
-            displayer.displayMessage(header);
-            displayer.displayOptions(options);
-
-            inputHandler.getUserOption();
-            int choice = inputHandler.getCurrentOption();
-            if (choice == GO_BACK_OPTION) {
-                inputHandler.resetOption();
-                break;
-            }
-
-            switch (choice) {
-                case 1:
-                    Xuat("nguyenlieu");
-                    break;
-                case 2:
-                    Xuat("monan");
-                    break;
-                case 3: {
-                    // Add ingredient to a dish
-                    System.out.print("Ten mon (exact): ");
-                    String dishName = inputHandler.getScanner().nextLine().trim();
-                    if (dishName.equals("0")) break;
-                    System.out.print("Ten nguyen lieu: ");
-                    String ingName = inputHandler.getScanner().nextLine().trim();
-                    if (ingName.equals("0")) break;
-                    System.out.print("So luong: ");
-                    int amt = 0;
-                    try { amt = Integer.parseInt(inputHandler.getScanner().nextLine().trim()); } catch (Exception e){ System.out.println("So luong khong hop le"); break; }
-                    addIngredientToDish(dishName, ingName, amt);
-                    break;
-                }
-                case 4: {
-                    System.out.print("Ten mon (exact): ");
-                    String dishName = inputHandler.getScanner().nextLine().trim();
-                    if (dishName.equals("0")) break;
-                    System.out.print("Ten nguyen lieu can xoa: ");
-                    String ingName = inputHandler.getScanner().nextLine().trim();
-                    if (ingName.equals("0")) break;
-                    removeIngredientFromDish(dishName, ingName);
-                    break;
-                }
-                case 5: {
-                    System.out.print("Ten mon (exact): ");
-                    String dishName = inputHandler.getScanner().nextLine().trim();
-                    if (dishName.equals("0")) break;
-                    System.out.print("Ten nguyen lieu can sua: ");
-                    String ingName = inputHandler.getScanner().nextLine().trim();
-                    if (ingName.equals("0")) break;
-                    System.out.print("So luong moi: ");
-                    int amt = 0;
-                    try { amt = Integer.parseInt(inputHandler.getScanner().nextLine().trim()); } catch (Exception e){ System.out.println("So luong khong hop le"); break; }
-                    changeIngredientAmountInDish(dishName, ingName, amt);
-                    break;
-                }
-                default:
-                    System.out.println("Lua chon khong hop le.");
-            }
-
-            displayer.singleSeperate();
-            inputHandler.enter2Continue();
-            inputHandler.resetOption();
-        }
-    }
-
-    // New: top-level interactive flow for when user logs in as Supply Manager
-    public void runSupplyManagerConsole() {
-        // Auto-clean expired items at start of day
-        deleteExpiredandLowQuantityIngredients();
-
-        String[] header = {"Ban dang dang nhap voi vai tro: Supply Manager", "Chon mot chuc nang:"};
-        String[] options = {"1. Ban muon quan li mon an?", "2. Ban muon quan li nguyen lieu?", "0. Quay lai"};
-
-        while (true) {
-            displayer.clearScreen();
-            displayer.displayMessage(header);
-            displayer.displayOptions(options);
-            inputHandler.getUserOption();
-            int choice = inputHandler.getCurrentOption();
-            if (choice == GO_BACK_OPTION) { inputHandler.resetOption(); break; }
-
-            if (choice == 1) {
-                dishManagementMenu();
-            } else if (choice == 2) {
-                ingredientManagementMenu();
-            } else {
-                System.out.println("Lua chon khong hop le");
-            }
-
-            displayer.singleSeperate();
-            inputHandler.enter2Continue();
-            inputHandler.resetOption();
-        }
-    }
-
-    // Dish management submenu per spec
-    private void dishManagementMenu() {
-        String[] header = {"Quan ly mon an"};
-        String[] options = {
-            "Xuat menu (ten, gia, nguyen lieu - khong can so luong)",
-            "Them mon vao menu (nhap ten va danh sach nguyen lieu + so luong)",
-            "Ham them nguyen lieu vao mon (them nguyen lieu vao mon co san)",
-            "Ham sua nguyen lieu cua mon (cap nhat so luong)",
-            "Ham xoa nguyen lieu cua mon",
-            "Chon 0 de quay lai"
-        };
-
-        while (true) {
-            displayer.clearScreen();
-            displayer.displayMessage(header);
-            displayer.displayOptions(options);
-            inputHandler.getUserOption();
-            int choice = inputHandler.getCurrentOption();
-            if (choice == GO_BACK_OPTION) { inputHandler.resetOption(); break; }
-
-            switch (choice) {
-                case 1:
-                    printMenuForGuests();
-                    break;
-                case 2:
-                    addDishInteractive();
-                    break;
-                case 3: {
-                    System.out.print("Ten mon (exact): ");
-                    String dishName = inputHandler.getScanner().nextLine().trim();
-                    if (dishName.equals("0")) break;
-                    System.out.print("Ten nguyen lieu: ");
-                    String ingName = inputHandler.getScanner().nextLine().trim();
-                    if (ingName.equals("0")) break;
-                    System.out.print("So luong: ");
-                    int amt = 0; try { amt = Integer.parseInt(inputHandler.getScanner().nextLine().trim()); } catch(Exception e){ System.out.println("So luong khong hop le"); break; }
-                    addIngredientToDish(dishName, ingName, amt);
-                    break;
-                }
-                case 4: {
-                    System.out.print("Ten mon (exact): ");
-                    String dishName = inputHandler.getScanner().nextLine().trim();
-                    if (dishName.equals("0")) break;
-                    System.out.print("Ten nguyen lieu can sua: ");
-                    String ingName = inputHandler.getScanner().nextLine().trim();
-                    if (ingName.equals("0")) break;
-                    System.out.print("So luong moi: ");
-                    int amt = 0; try { amt = Integer.parseInt(inputHandler.getScanner().nextLine().trim()); } catch(Exception e){ System.out.println("So luong khong hop le"); break; }
-                    changeIngredientAmountInDish(dishName, ingName, amt);
-                    break;
-                }
-                case 5: {
-                    System.out.print("Ten mon (exact): ");
-                    String dishName = inputHandler.getScanner().nextLine().trim();
-                    if (dishName.equals("0")) break;
-                    System.out.print("Ten nguyen lieu can xoa: ");
-                    String ingName = inputHandler.getScanner().nextLine().trim();
-                    if (ingName.equals("0")) break;
-                    removeIngredientFromDish(dishName, ingName);
-                    break;
-                }
-                default:
-                    System.out.println("Lua chon khong hop le");
-            }
-
-            displayer.singleSeperate();
-            inputHandler.enter2Continue();
-            inputHandler.resetOption();
-        }
-    }
 
     // Ingredient management submenu per spec
-    private void ingredientManagementMenu() {
-        String[] header = {"Quan ly nguyen lieu"};
+    @Override
+    public void showGeneralInfo() {
+        String[] header = {"Quan ly nguyen lieu",           
+         "Chon 0 de quay lai"};
         String[] options = {
             "Xem nguyen lieu trong kho (aggregate)",
             "Xem cac lo nguyen lieu hien dang co (chi tiet lo)",
             "Xem cac nguyen lieu khong du de lam mot mon",
             "Them nguyen lieu",
             "Xoa nguyen lieu (theo ID)",
-            "Tim kiem nguyen lieu",
-            "Quay lai"
+            "Tim kiem nguyen lieu"
         };
 
         while (true) {
@@ -313,7 +50,7 @@ public class SupplyManager implements ManagerHandler {
 
             switch (choice) {
                 case 1:
-                    Xuat("nguyenlieu");
+                    XuatNguyenLieu();
                     break;
                 case 2:
                     createReport();
@@ -344,45 +81,6 @@ public class SupplyManager implements ManagerHandler {
             inputHandler.enter2Continue();
             inputHandler.resetOption();
         }
-    }
-
-    // Print a guest-friendly menu: name, price, ingredient names only
-    public void printMenuForGuests() {
-        if (dishList.isEmpty()) {
-            System.out.println("Khong co mon an trong menu.");
-            return;
-        }
-        for (Dish dish : dishList) {
-            displayer.singleSeperate();
-            System.out.println("Ten: " + dish.getName());
-            System.out.println("Gia: " + String.format("%.2f", dish.getPrice()));
-            System.out.println("Nguyen lieu: ");
-            for (String ing : dish.readIngredients().keySet()) {
-                System.out.println(" - " + ing);
-            }
-        }
-    }
-
-    // Interactive add-dish routine (name + list of ingredient|amount pairs)
-    public void addDishInteractive() {
-        System.out.print("Nhap ten mon moi (nhap 0 de huy): ");
-        String name = inputHandler.getScanner().nextLine().trim();
-        if (name.equals("0") || name.isEmpty()) { System.out.println("Huy them mon."); return; }
-        Dish dish = new Dish(name);
-        System.out.println("Nhap nguyen lieu cho mon (ten|soLuong). Nhap dong rong hoac 0 de ket thuc.");
-        while (true) {
-            System.out.print("Nhap nguyen lieu va so luong: ");
-            String line = inputHandler.getScanner().nextLine().trim();
-            if (line.equals("0") || line.isEmpty()) break;
-            String[] parts = line.split("\\|");
-            if (parts.length != 2) { System.out.println("Dinh dang phai la: Ten|SoLuong"); continue; }
-            String ing = parts[0].trim();
-            int amt = 0;
-            try { amt = Integer.parseInt(parts[1].trim()); } catch (Exception e) { System.out.println("So luong khong hop le"); continue; }
-            dish.addIngredient(ing, amt);
-        }
-        dishList.add(dish);
-        System.out.println("Da them mon: " + dish.getName());
     }
 
     
@@ -419,137 +117,7 @@ public class SupplyManager implements ManagerHandler {
         
     }
 
-    // Overloaded Xuat methods
-    // Xuat() with no args: print both aggregates and dishes
-    public void Xuat(){
-        System.out.println("--- Nguyen lieu (aggregate) ---");
-        Xuat("nguyenlieu");
-        System.out.println();
-        System.out.println("--- Danh sach mon an ---");
-        Xuat("monan");
-    }
-
-    // Xuat(kind): kind = "nguyenlieu" or "monan"
-    public void Xuat(String kind){
-        if (kind == null) return;
-        if (kind.equalsIgnoreCase("nguyenlieu")){
-            if (ingredientsData.isEmpty()){
-                System.out.println("Khong co nguyen lieu nao trong aggregate.");
-                return;
-            }
-            for (Map.Entry<String, Ingredient> entry : ingredientsData.entrySet()){
-                Ingredient ing = entry.getValue();
-                displayer.singleSeperate();
-                System.out.println("Name: " + ing.getName() +
-                                    "\nQuantity: " + ing.getQuantity() +
-                                    "\nCost: " + ing.getCost() );
-            }
-            return;
-        }
-
-        if (kind.equalsIgnoreCase("monan")){
-            if (dishList.isEmpty()){
-                System.out.println("Khong co mon an nao.");
-                return;
-            }
-            for (Dish dish : dishList){
-                displayer.singleSeperate();
-                System.out.println("Mon: " + dish.getName());
-                System.out.println("Gia: " + String.format("%.2f", dish.getPrice()));
-                System.out.println("Nguyen lieu:");
-                HashMap<String,Integer> ingMap = dish.readIngredients();
-                for (Map.Entry<String,Integer> e : ingMap.entrySet()){
-                    System.out.println(" - " + e.getKey() + ": " + e.getValue());
-                }
-            }
-            return;
-        }
-
-        System.out.println("Loai Xuat khong ho tro: " + kind);
-    }
-
-    // Add ingredient to a dish's recipe (does not touch stock), returns true if dish exists
-    public boolean addIngredientToDish(String dishName, String ingName, int amount){
-        if (dishName == null || ingName == null) return false;
-        for (Dish dish : dishList){
-            if (dish.getName().equalsIgnoreCase(dishName)){
-                dish.addIngredient(ingName, amount);
-                System.out.println("Da them " + ingName + " vao mon " + dish.getName() + " (so luong: " + amount + ")");
-                return true;
-            }
-        }
-        System.out.println("Khong tim thay mon: " + dishName);
-        return false;
-    }
-
-    // Remove ingredient from a dish's recipe
-    public boolean removeIngredientFromDish(String dishName, String ingName){
-        if (dishName == null || ingName == null) return false;
-        for (Dish dish : dishList){
-            if (dish.getName().equalsIgnoreCase(dishName)){
-                dish.removeIngredient(ingName.toLowerCase());
-                System.out.println("Da xoa " + ingName + " khoi mon " + dish.getName());
-                return true;
-            }
-        }
-        System.out.println("Khong tim thay mon: " + dishName);
-        return false;
-    }
-
-    // Change ingredient amount in a dish's recipe
-    public boolean changeIngredientAmountInDish(String dishName, String ingName, int amount){
-        if (dishName == null || ingName == null) return false;
-        for (Dish dish : dishList){
-            if (dish.getName().equalsIgnoreCase(dishName)){
-                dish.changeIngredientAmount(ingName.toLowerCase(), amount);
-                System.out.println("Da cap nhat so luong " + ingName + " trong mon " + dish.getName() + " = " + amount);
-                return true;
-            }
-        }
-        System.out.println("Khong tim thay mon: " + dishName);
-        return false;
-    }
-
-    // === Load dữ liệu món ăn ===
-    private void loadDishesFromFile() {
-        BufferedReader reader = null;
-        try {
-            InputStream is = SupplyManager.class.getClassLoader().getResourceAsStream("resources/Dishes.txt");
-            if (is != null) {
-                reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-            } else {
-                Path p1 = Paths.get("resources", "Dishes.txt");
-                Path p2 = Paths.get("src", "resources", "Dishes.txt");
-                if (Files.exists(p1)) reader = Files.newBufferedReader(p1, StandardCharsets.UTF_8);
-                else if (Files.exists(p2)) reader = Files.newBufferedReader(p2, StandardCharsets.UTF_8);
-                else throw new FileNotFoundException("Dishes.txt not found in classpath or resources folders");
-            }
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                line = line.trim();
-                if (!line.isEmpty()) {
-                    String[] ing = line.split(" ");
-                    Dish dish = new Dish(ing[0]);
-                    for (int i = 1; i < ing.length; i++) {
-                        String[] parts = ing[i].split("\\|");
-                        if (parts.length == 2) {
-                            dish.addIngredient(parts[0].trim(), Integer.parseInt(parts[1].trim()));
-                        } else {
-                            System.err.println("Sai dinh dang dong trong file Dishes.txt");
-                            return;
-                        }
-                    }
-                    dishList.add(dish);
-                }
-            }
-            System.out.println("Loading dishes successful");
-        } catch (IOException e) {
-            System.err.println("Error loading dishes: " + e.getMessage());
-        } finally {
-            if (reader != null) try { reader.close(); } catch (IOException ignored) {}
-        }
-    }
+    
 
     // === Load nguyên liệu ===
     private void loadIngredientsFromFile() {
@@ -657,7 +225,7 @@ public class SupplyManager implements ManagerHandler {
             return null;
         }
     Ingredient removed = ingredients.remove(id);
-    String key = removed.getName() != null ? removed.getName().trim().toLowerCase() : "";
+    String key = normalizeKey(removed.getName());
         Ingredient agg = ingredientsData.get(key);
         if (agg != null){
             agg.decreaseQuantity(removed.getQuantity());
@@ -694,7 +262,7 @@ public class SupplyManager implements ManagerHandler {
         ing.setCost(original.getCost());
         ing.setQuantity(original.getQuantity());
 
-    String key = normalizeKey(lotName);
+        String key = normalizeKey(lotName);
         int qtyToAdd = ing.getQuantity();
 
         // Update aggregate (create if needed)
@@ -847,23 +415,51 @@ public class SupplyManager implements ManagerHandler {
         boolean anyMakeable = false;
         System.out.println("Kiem tra kho de biet co the lam duoc may phan cua moi mon:");
         for (Dish dish : dishList) {
-            for (Map.Entry<String, Integer> need : dish.readIngredients().entrySet()) {
-                String ingName = normalizeKey(need.getKey());
-                int requiredAmount = need.getValue();
+            Map<String, Integer> needs = dish.readIngredients();
+            if (needs == null || needs.isEmpty()) {
+                System.out.println("- " + dish.getName() + ": Khong co nguyen lieu yeu cau (bo qua).");
+                continue;
+            }
 
-                Ingredient inStock = ingredientsData.get(ingName);
+            // For each ingredient compute how many portions it allows
+            int maxPortions = Integer.MAX_VALUE;
+            List<String> shortages = new ArrayList<>();
 
-                // B3. Kiểm tra tồn kho
-                if (inStock == null) {
-                    System.out.println("Thieu nguyen lieu " + need.getKey() +
-                                    " de lam mon " + dish.getName());
-                    allEnough = false;
-                } else if (inStock.getQuantity() < requiredAmount) {
-                    System.out.println("Khong du nguyen lieu " + need.getKey() +
-                                    " de lam mon " + dish.getName() +
-                                    " (can " + requiredAmount + ", co " +
-                                    inStock.getQuantity() + ")");   
-                    allEnough = false;
+            for (Map.Entry<String, Integer> need : needs.entrySet()) {
+                String needRaw = need.getKey();
+                String key = normalizeKey(needRaw);
+                int required = need.getValue() != null ? need.getValue() : 0;
+
+                Ingredient agg = ingredientsData.get(key);
+                int available = (agg != null) ? agg.getQuantity() : 0;
+
+                if (required <= 0) {
+                    // ignore invalid requirement
+                    continue;
+                }
+
+                if (available <= 0) {
+                    shortages.add(needRaw + " (thieu: " + required + ")");
+                    maxPortions = 0;
+                } else if (available < required) {
+                    shortages.add(needRaw + " (can: " + required + ", co: " + available + ")");
+                    maxPortions = Math.min(maxPortions, available / required);
+                } else {
+                    maxPortions = Math.min(maxPortions, available / required);
+                }
+            }
+
+            if (maxPortions > 0 && maxPortions != Integer.MAX_VALUE) {
+                System.out.println("- " + dish.getName() + ": Co the lam duoc " + maxPortions + " phan.");
+                anyMakeable = true;
+            } else if (maxPortions == Integer.MAX_VALUE) {
+                // rare: all requirements had required<=0
+                System.out.println("- " + dish.getName() + ": Yeu cau nguyen lieu khong hop le.");
+            } else {
+                System.out.println("- " + dish.getName() + ": Khong the lam phan nao.");
+                if (!shortages.isEmpty()) {
+                    System.out.println("  Nguyen lieu thieu/khong du:");
+                    for (String s : shortages) System.out.println("    - " + s);
                 }
             }
         }
@@ -964,115 +560,4 @@ public class SupplyManager implements ManagerHandler {
     }
 
 
-    //case 5, show tất cả nguyên liệu ở kho
-    public void showStorage(){
-        String[] message = {
-            "Tat ca nguyen lieu co trong kho: "
-        };
-        String[] exit = {
-            "Chon 0 de quay lai..."
-        };
-        while (inputHandler.getCurrentOption() != GO_BACK_OPTION) {
-            displayer.clearScreen();
-            displayer.displayMessage(message);
-
-            XuatNguyenLieu(); //đã sửa 
-            displayer.displayMessage(exit);
-            inputHandler.getUserOption();
-        }
-        inputHandler.resetOption();
-    }
-        public void showAddRemoveIngredients() {
-        String[] messageMenu = {
-            "Nhap 0 de quay lai",
-            "Chon them hoac xoa nguyen lieu"
-        };
-        String[] option = {
-            "1. Them nguyen lieu moi vao kho",
-            "2. Xoa nguyen lieu khoi kho"
-        };
-
-        while (true) {
-            // Name
-            System.out.print("Nhap ten nguyen lieu (nhap 0 de huy): ");
-            String name = input.getScanner().nextLine().trim();
-            if (name.equals("0")) return null;
-            if (name.isEmpty()) {
-                System.out.println("Ten nguyen lieu khong duoc de trong. Vui long nhap lai.");
-                continue;
-            }
-
-            // Quantity
-            Integer quantity = null;
-            while (quantity == null) {
-                System.out.print("Nhap so luong (so nguyen duong, nhap 0 de huy): ");
-                String qline = input.getScanner().nextLine().trim();
-                if (qline.equals("0")) return null;
-                try {
-                    quantity = Integer.parseInt(qline);
-                    if (quantity <= 0) {
-                        System.out.println("So luong phai la so nguyen duong. Nhap lai.");
-                        quantity = null;
-                    }
-                } catch (NumberFormatException e) {
-                    System.out.println("Dinh dang so luong khong hop le. Vui long nhap lai.");
-                }
-            }
-
-            // Cost
-            Double cost = null;
-            while (cost == null) {
-                System.out.print("Nhap gia nhap (so, nhap 0 de huy): ");
-                String cline = input.getScanner().nextLine().trim();
-                if (cline.equals("0")) return null;
-                try {
-                    cost = Double.parseDouble(cline);
-                    if (cost < 0) {
-                        System.out.println("Gia phai la so khong am. Nhap lai.");
-                        cost = null;
-                    }
-                } catch (NumberFormatException e) {
-                    System.out.println("Dinh dang gia khong hop le. Vui long nhap lai.");
-                }
-            }
-
-            // Ngay nhap
-            LocalDate ngayNhap = null;
-            while (ngayNhap == null) {
-                System.out.print("Nhap ngay nhap (dd/MM/yyyy) (nhap 0 de huy): ");
-                String ngayNhap1 = input.getScanner().nextLine().trim();
-                if (ngayNhap1.equals("0")) return null;
-                try {
-                    ngayNhap = LocalDate.parse(ngayNhap1, fmt);
-                } catch (Exception e) {
-                    System.out.println("Dinh dang ngay nhap khong hop le. Vui long nhap lai theo dd/MM/yyyy.");
-                }
-            }
-
-            // HSD
-            LocalDate hsd = null;
-            while (hsd == null) {
-                System.out.print("Nhap HSD (dd/MM/yyyy) (nhap 0 de huy): ");
-                String hsd1 = input.getScanner().nextLine().trim();
-                if (hsd1.equals("0")) return null;
-                try {
-                    hsd = LocalDate.parse(hsd1, fmt);
-                    if (hsd.isBefore(ngayNhap)) {
-                        System.out.println("HSD khong duoc nho hon ngay nhap. Vui long nhap lai.");
-                        hsd = null;
-                    }
-                } catch (Exception e) {
-                    System.out.println("Dinh dang HSD khong hop le. Vui long nhap lai theo dd/MM/yyyy.");
-                }
-            }
-
-            Ingredient moi = new Ingredient(name);
-            moi.setQuantity(quantity);
-            moi.setCost(cost);
-            moi.setHSD(hsd);
-            moi.setNgayNhap(ngayNhap);
-            return moi;
-        }
-    }
 }
-    

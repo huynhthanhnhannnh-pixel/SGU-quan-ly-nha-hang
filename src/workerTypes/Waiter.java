@@ -1,9 +1,7 @@
 package workerTypes;
-import java.util.ArrayList;
-import java.util.List;
-
 import controllers.EventHandler;
 import enums.OrderState;
+import java.util.List;
 import models.Order;
 import models.Table;
 
