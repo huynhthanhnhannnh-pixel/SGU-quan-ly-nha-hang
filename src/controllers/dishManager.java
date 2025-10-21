@@ -37,7 +37,7 @@ public class dishManager implements ManagerHandler {
     public List<Dish> getDishList() {
         return new ArrayList<>(dishList.values());
     }
-    // === Load dữ liệu món ăn ===
+    // === Load dữ liệu món ăn === 
     private void loadDishesFromFile() {
         BufferedReader reader = null;
         try {
