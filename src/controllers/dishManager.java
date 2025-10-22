@@ -1,23 +1,14 @@
 package controllers;
 
 import contracts.ManagerHandler;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.*;
+import java.util.*;
+import controllers.SupplyManager;
 import models.Dish;
-import utils.Displayer;
-import utils.UserInputHandler;
+import models.Ingredient;
+import utils.*;
 
 public class dishManager implements ManagerHandler {
     public static dishManager self;
@@ -90,14 +81,13 @@ public class dishManager implements ManagerHandler {
         // Replace showGeneralInfo with an interactive menu that manages dishes
         String[] header = {"Nhap 0 de quay lai", "Quan ly mon an"};
         String[] options = {
-            "1. Xem tat ca mon va nguyen lieu",
-            "2. Them mon moi",
-            "3. Xoa mon (theo ID)",
-            "4. Tim mon (theo ten, gia hoac khoang gia)",
-            "5. Tim mon va them nguyen lieu",
-            "6. Tim mon va xoa nguyen lieu (theo ten nguyen lieu)",
-            "7. Thay doi so luong nguyen lieu trong mon (theo ID)",
-            "0. Quay lai"
+            "Xem tat ca mon va nguyen lieu",
+            "Them mon moi",
+            "Xoa mon (theo ID)",
+            "Tim mon (theo ten, gia hoac khoang gia)",
+            "Tim mon va them nguyen lieu",
+            "Tim mon va xoa nguyen lieu (theo ten nguyen lieu)",
+            "Thay doi so luong nguyen lieu trong mon (theo ID)",
         };
 
         while (true) {
@@ -271,21 +261,41 @@ public class dishManager implements ManagerHandler {
     public boolean add(String dishName, String ingName, int amount) {
         if (dishName == null || ingName == null) return false;
         for (Dish dish : dishList.values()) {
+            // Tim mon an
             if (dish.getName().equalsIgnoreCase(dishName)) {
                 HashMap<String, Integer> ingOfDish = dish.readIngredients();
-                boolean found = false;
-                for (String key : ingOfDish.keySet()) {
-                    if (key.equalsIgnoreCase(ingName)) {
-                        int newAmount = ingOfDish.get(key) + amount;
-                        dish.getIngredients().put(key, newAmount);
+                boolean found = false; // tìm nguyên liệu có trong món
+
+                // Cộng dồn nguyên liệu đã có
+                for (String ingredientName : ingOfDish.keySet()) {
+                    if (ingredientName.equalsIgnoreCase(ingName)) {
+                        int newAmount = ingOfDish.get(ingredientName) + amount;
+                        dish.getIngredients().put(ingredientName, newAmount);
                         found = true;
                         
-                        break;  
+                        break;
                     }
                 }
-                if (!found) {
-                    dish.addIngredient(ingName, amount);
+
+                // Nếu không có nguyên liệu thì tìm trong kho 
+                if (!found) {  
+                    for (Ingredient ingredient : SupplyManager.getManager().getKho().values()) {
+                        if (ingredient.getName().equalsIgnoreCase(ingName)) {
+                            dish.addIngredient(ingName, amount);
+                            found = true;
+                            break;
+                        }
+                    }
+                    //dish.addIngredient(ingName, amount);
                 }
+
+                // Nếu không tìm thấy nguyên liệu trong kho thì báo là không có trong kho 
+                if (!found) {
+                    System.out.println("Khong the them nguyen lieu: " + ingName + " vi nguyen lieu nay khong co trong kho");
+                    return false;
+                }
+
+
                 System.out.println("Da them " + ingName + " vao mon " + dish.getName() + " (so luong: " + amount + ")");
                 return true;     
             }

@@ -15,7 +15,7 @@ public class SupplyManager implements ManagerHandler {
     private Displayer displayer = Displayer.getDisplayer();
     private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
     // Giờ kho là HashMap<Integer, Ingredient>
-    private HashMap<Integer, Ingredient> ingredients = new LinkedHashMap<>();
+    private HashMap<Integer, Ingredient> ingredients = new LinkedHashMap<>(); // kho
     int GO_BACK_OPTION = 0;
     private HashMap <String, Ingredient> ingredientsData = new LinkedHashMap<>();
 
