@@ -24,21 +24,8 @@ public class Displayer {
         singleSeperate();
     }
     public void displayOptions(String[] options) {
-        if (options == null || options.length == 0) return;
-
-        // If first option is an "Exit" or "Quay lai" (or explicitly starts with "0.")
-        // we print it as 0 and then print remaining options numbered from 1.
-        String first = options[0] != null ? options[0].trim().toLowerCase() : "";
-        boolean useZero = first.equals("exit") || first.equals("quay lai") || first.startsWith("0.") || first.equals("0");
-        if (useZero) {
-            System.out.println("0. " + options[0]);
-            for (int i = 1; i < options.length; i++) {
-                System.out.println(i + ". " + options[i]);
-            }
-        } else {
-            for (int i = 0; i < options.length; i++) {
-                System.out.println((i + 1) + ". " + options[i]);
-            }
+        for (int i = 0; i < options.length; i++) {
+            System.out.println((i + 1) + ". " + options[i]);
         }
     }
     public void clearScreen() {

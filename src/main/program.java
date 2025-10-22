@@ -5,42 +5,59 @@ import utils.*;
 
 public class program {
     public static void main(String[] args) {
+        WorkerManager workerMgr = WorkerManager.getManager();
         Displayer displayer = Displayer.getDisplayer();
         UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
-        WorkerManager workerMgr = WorkerManager.getManager();
+        EventHandler eventHlr = EventHandler.getEventHandler();
         SupplyManager splManager = SupplyManager.getManager();
         dishManager dishMgr = dishManager.getManager();
 
-        String[] message = {"WELCOME TO QUAN LY NHA HANG"};
-        String[] roles = {
-            "Exit",
-            "You are Supply Manager",
-            "You are Worker Manager",
-            "Other..."
+        String[] message = {
+            "WELCOME TO QUAN LY NHA HANG"
         };
+        String[] options = { 
+            "Exit", 
+            "Thue nhan vien moi", 
+            "Hien thi nhan vien cua nha hang",
+            "Hien thi lich lam",
+            "Kiem tra kho nguyen lieu", 
+            "Kiem tra danh sach menu"
+        };
+        boolean sessionActive = true;
 
-        while (true) {
-            displayer.clearScreen();
+        while (sessionActive) {
+
             displayer.displayMessage(message);
-            displayer.displayOptions(roles);
+            displayer.displayOptions(options);
             inputHandler.getUserOption();
-            int choice = inputHandler.getCurrentOption();
-            if (choice == 0) { inputHandler.closeScanner(); return; }
 
-            switch (choice) {
+            switch (inputHandler.getCurrentOption()) {
                 case 1:
-                    // Run interactive flow for supply manager
-                    splManager.runSupplyManagerConsole();
-                    break;
+                    inputHandler.closeScanner();
+                    return;
                 case 2:
-                    // show worker manager general info / menu
-                    workerMgr.showGeneralInfo();
+                    workerMgr.showWorkerToHire();
+                    break;
+                case 3:
+                    workerMgr.showHiredWorker();
+                    break;
+                case 4:
+                    workerMgr.showSchedule();
+                    break;
+                // Xem lại file txt của ingredients và dishes, tại có những món trùng hoặc bị dư, sửa lại cho chuẩn là oke 
+                case 5:
+                    splManager.showGeneralInfo();
+                    break;
+                case 6:
+                    dishMgr.showGeneralInfo();
                     break;
                 default:
-                    System.out.println("Role not implemented yet.");
+                    System.out.println("Invalid input!");
                     inputHandler.enter2Continue();
+                    break;
             }
+
+            displayer.clearScreen();
         }
     }
 }
-

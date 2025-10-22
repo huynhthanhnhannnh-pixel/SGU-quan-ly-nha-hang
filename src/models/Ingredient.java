@@ -32,7 +32,7 @@ public class Ingredient {
         this.cost = newCost;
     }
     // Ham set ngay nhap hang 
-    public void setNgayNhap(LocalDate date){    
+    public void setNgayNhap(LocalDate date){
         ngaynhap = date;
     }
     //Ham set han su dung 
@@ -64,5 +64,5 @@ public class Ingredient {
             return available; // Return what was available
         }
     }
-    
+
 }
