@@ -4,10 +4,6 @@ import base.Worker;
 import enums.*;
 import java.util.*;
 import models.*;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 
 public class EventHandler {
     private WorkerManager wrkMgr = WorkerManager.getManager();
