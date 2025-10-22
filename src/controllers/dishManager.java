@@ -273,7 +273,7 @@ public class dishManager implements ManagerHandler {
 
 
         HashMap<String, Integer> ingOfDish = targetDish.readIngredients(); // Lấy nguyên liệu từ món ăn
-        boolean ingredientIsNotFound = true;
+        boolean ingredientIsFound = true;
 
         // Tìm nguyên liệu trong món, nếu có thì cộng dồn nhưng không được vực quá số lượng trong kho 
         for (String ingredientName : ingOfDish.keySet()) {
@@ -287,31 +287,27 @@ public class dishManager implements ManagerHandler {
 
             int newAmount = ingOfDish.get(ingredientName) + amount;
             targetDish.getIngredients().put(ingredientName, newAmount);
-            ingredientIsNotFound = false; // Nguyên liệu đã được tìm thấy và đã cập nhật
+            ingredientIsFound = true; // Nguyên liệu đã được tìm thấy và đã cập nhật
             
             break;
         }
 
         // Nếu nguyên liệu không có trong món thì tìm trong kho 
-        if (ingredientIsNotFound) {  
-            for (Ingredient ingredient : SupplyManager.getManager().getKho().values()) {
-                if (!ingredient.getName().equalsIgnoreCase(ingName)) { continue; }
+        if (ingredientIsFound) return ingredientIsFound;
+        for (Ingredient ingredient : SupplyManager.getManager().getKho().values()) {
+            if (!ingredient.getName().equalsIgnoreCase(ingName)) continue;
 
-                targetDish.addIngredient(ingName, amount);
-                ingredientIsNotFound = false;
-                break;
-            }
-            //dish.addIngredient(ingName, amount);
+            targetDish.addIngredient(ingName, amount);
+            ingredientIsFound = true;
+            break;
         }
 
         // Nếu không tìm thấy nguyên liệu trong kho thì báo là không có trong kho 
-        if (ingredientIsNotFound) {
-            System.out.println("Khong the them nguyen lieu: " + ingName + " vi nguyen lieu nay khong co trong kho");
-            return false;
-        }
-        
+        if (ingredientIsFound) return ingredientIsFound;
+        System.out.println("Khong the them nguyen lieu: " + ingName + " vi nguyen lieu nay khong co trong kho");
+  
         System.out.println("Da them " + ingName + " vao mon " + targetDish.getName() + " (so luong: " + amount + ")");
-        return ingredientIsNotFound;     
+        return ingredientIsFound;     
     }
 
     @Override
