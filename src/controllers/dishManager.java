@@ -1,5 +1,6 @@
 package controllers;
 
+import contracts.ManagerHandler;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -10,12 +11,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
-
-import models.Dish;
-import contracts.ManagerHandler;
+import java.util.List;
 import java.util.Map;
+import models.Dish;
 import utils.Displayer;
 import utils.UserInputHandler;
 
@@ -95,8 +95,8 @@ public class dishManager implements ManagerHandler {
             "3. Xoa mon (theo ID)",
             "4. Tim mon (theo ten, gia hoac khoang gia)",
             "5. Tim mon va them nguyen lieu",
-            "6. Tim mon va xoa nguyen lieu",
-            "7. Thay doi so luong nguyen lieu trong mon",
+            "6. Tim mon va xoa nguyen lieu (theo ten nguyen lieu)",
+            "7. Thay doi so luong nguyen lieu trong mon (theo ID)",
             "0. Quay lai"
         };
 
@@ -112,6 +112,7 @@ public class dishManager implements ManagerHandler {
                 case 1:
                     createReport();
                     break;
+                // === LỖI LOGIC KHÔNG HỢP LÝ CÁCH SẮP XẾP===    
                 case 2: {
                     // Build Dish via helper then add via ManagerHandler.add(Object)
                     Dish d = DishInput();
@@ -128,7 +129,7 @@ public class dishManager implements ManagerHandler {
                 }
                 case 4: {
                     System.out.print("Nhap ten mon, mot gia, hoac khoang gia (min-max). Nhap 0 de huy: ");
-                    String q = inputHandler.getScanner().nextLine().trim();
+                    String q = inputHandler.getScanner().nextLine().trim().replaceAll("\\s+", "");
                     if (q.equals("0")) break;
                     // If contains '-', treat as range; else try parse number; otherwise treat as name
                     if (q.contains("-")) {
@@ -146,27 +147,33 @@ public class dishManager implements ManagerHandler {
                 case 5: {
                     // Find dish, then add ingredient
                     System.out.print("Nhap ID hoac ten mon can tim de them nguyen lieu (nhap 0 de huy): ");
-                    String q = inputHandler.getScanner().nextLine().trim();
+                    String q = inputHandler.getScanner().nextLine().trim().replaceAll("\\s+", "");
                     if (q.equals("0")) break;
                     String dishName = resolveDishName(q);
                     if (dishName == null) break;
                     System.out.print("Nhap nguyen lieu va so luong (Ten|SoLuong): ");
-                    String line = inputHandler.getScanner().nextLine().trim();
+                    String line = inputHandler.getScanner().nextLine().trim().replaceAll("\\s+", "");
                     String[] parts = line.split("\\|");
                     if (parts.length != 2) { System.out.println("Dinh dang khong hop le"); break; }
-                    String ing = parts[0].trim(); int amt = 0; try { amt = Integer.parseInt(parts[1].trim()); } catch (Exception e) { System.out.println("So luong khong hop le"); break; }
+                    String ing = parts[0].trim(); 
+                    int amt = 0; 
+                    try { amt = Integer.parseInt(parts[1].trim()); }
+                     catch (Exception e) { 
+                        System.out.println("So luong khong hop le"); 
+                        break; 
+                     }
                     add(dishName, ing, amt);
                     break;
                 }
                 case 6: {
                     // Find dish, then remove ingredient
                     System.out.print("Nhap ID hoac ten mon can tim de xoa nguyen lieu (nhap 0 de huy): ");
-                    String q2 = inputHandler.getScanner().nextLine().trim();
+                    String q2 = inputHandler.getScanner().nextLine().trim().replaceAll("\\s+", "");
                     if (q2.equals("0")) break;
                     String dishName2 = resolveDishName(q2);
                     if (dishName2 == null) break;
                     System.out.print("Nhap ten nguyen lieu can xoa: ");
-                    String ingRem = inputHandler.getScanner().nextLine().trim();
+                    String ingRem = inputHandler.getScanner().nextLine().trim().replaceAll("\\s+", "");
                     if (ingRem.isEmpty()) { System.out.println("Ten nguyen lieu khong hop le"); break; }
                     remove(dishName2, ingRem);
                     break;
@@ -174,12 +181,12 @@ public class dishManager implements ManagerHandler {
                 case 7: {
                     // Find dish, then change ingredient amount
                     System.out.print("Nhap ID hoac ten mon can tim de thay doi so luong (nhap 0 de huy): ");
-                    String q3 = inputHandler.getScanner().nextLine().trim();
+                    String q3 = inputHandler.getScanner().nextLine().trim().replaceAll("\\s+", "");
                     if (q3.equals("0")) break;
                     String dishName3 = resolveDishName(q3);
                     if (dishName3 == null) break;
                     System.out.print("Nhap ten nguyen lieu va so luong moi (Ten|SoLuong): ");
-                    String line2 = inputHandler.getScanner().nextLine().trim();
+                    String line2 = inputHandler.getScanner().nextLine().trim().replaceAll("\\s+", "");
                     String[] parts2 = line2.split("\\|");
                     if (parts2.length != 2) { System.out.println("Dinh dang khong hop le"); break; }
                     String ingName = parts2[0].trim(); int newAmt = 0; try { newAmt = Integer.parseInt(parts2[1].trim()); } catch (Exception e) { System.out.println("So luong khong hop le"); break; }
@@ -265,9 +272,22 @@ public class dishManager implements ManagerHandler {
         if (dishName == null || ingName == null) return false;
         for (Dish dish : dishList.values()) {
             if (dish.getName().equalsIgnoreCase(dishName)) {
-                dish.addIngredient(ingName, amount);
+                HashMap<String, Integer> ingOfDish = dish.readIngredients();
+                boolean found = false;
+                for (String key : ingOfDish.keySet()) {
+                    if (key.equalsIgnoreCase(ingName)) {
+                        int newAmount = ingOfDish.get(key) + amount;
+                        dish.getIngredients().put(key, newAmount);
+                        found = true;
+                        
+                        break;  
+                    }
+                }
+                if (!found) {
+                    dish.addIngredient(ingName, amount);
+                }
                 System.out.println("Da them " + ingName + " vao mon " + dish.getName() + " (so luong: " + amount + ")");
-                return true;
+                return true;     
             }
         }
         System.out.println("Khong tim thay mon: " + dishName);

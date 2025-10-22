@@ -30,7 +30,7 @@ public class program {
             displayer.displayMessage(message);
             displayer.displayOptions(options);
             inputHandler.getUserOption();
-            
+
             switch (inputHandler.getCurrentOption()) {
                 case 1:
                     inputHandler.closeScanner();
@@ -44,6 +44,7 @@ public class program {
                 case 4:
                     workerMgr.showSchedule();
                     break;
+                // Xem lại file txt của ingredients và dishes, tại có những món trùng hoặc bị dư, sửa lại cho chuẩn là oke 
                 case 5:
                     splManager.showGeneralInfo();
                     break;
@@ -55,9 +56,8 @@ public class program {
                     inputHandler.enter2Continue();
                     break;
             }
-            
+
             displayer.clearScreen();
         }
     }
 }
-

@@ -1,4 +1,4 @@
-    package models;
+package models;
 
     import java.util.*;
     import controllers.*;
@@ -15,6 +15,8 @@
         public HashMap<String, Integer> readIngredients(){
             return new HashMap<>(nguyenLieu);
         }
+
+        public HashMap<String, Integer> getIngredients(){ return nguyenLieu; }
         
         public void addIngredient (String name , int amount){
             nguyenLieu.put(name.toLowerCase(),amount);
@@ -52,4 +54,3 @@
             return total*3;
         }
     }
-

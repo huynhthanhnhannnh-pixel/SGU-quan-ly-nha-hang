@@ -2,8 +2,8 @@ package controllers;
 
 import contracts.ManagerHandler;
 import java.io.*;
-import java.nio.file.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -29,15 +29,15 @@ public class SupplyManager implements ManagerHandler {
     // Ingredient management submenu per spec
     @Override
     public void showGeneralInfo() {
-        String[] header = {"Quan ly nguyen lieu"};
+        String[] header = {"Quan ly nguyen lieu",           
+         "Chon 0 de quay lai"};
         String[] options = {
             "Xem nguyen lieu trong kho (aggregate)",
             "Xem cac lo nguyen lieu hien dang co (chi tiet lo)",
             "Xem cac nguyen lieu khong du de lam mot mon",
             "Them nguyen lieu",
             "Xoa nguyen lieu (theo ID)",
-            "Tim kiem nguyen lieu",
-            "Chon 0 de quay lai"
+            "Tim kiem nguyen lieu"
         };
 
         while (true) {
@@ -561,4 +561,3 @@ public class SupplyManager implements ManagerHandler {
 
 
 }
-    
