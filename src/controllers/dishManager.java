@@ -273,7 +273,7 @@ public class dishManager implements ManagerHandler {
 
 
         HashMap<String, Integer> ingOfDish = targetDish.readIngredients(); // Lấy nguyên liệu từ món ăn
-        boolean ingredientIsFound = true;
+        boolean ingredientIsFound = false;
 
         // Tìm nguyên liệu trong món, nếu có thì cộng dồn nhưng không được vực quá số lượng trong kho 
         for (String ingredientName : ingOfDish.keySet()) {
