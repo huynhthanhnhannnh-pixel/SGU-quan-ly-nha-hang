@@ -162,7 +162,7 @@ public class dishManager implements ManagerHandler {
                         System.out.println("So luong khong hop le"); 
                         break; 
                      }
-                    add(dishName, ing, amt);
+                    addIngToDish(dishName, dishName, amt);
                     break;
                 }
                 case 6: {
@@ -268,7 +268,7 @@ public class dishManager implements ManagerHandler {
     }
 
     // Overload: add ingredient into an existing dish (does not touch stock)
-    public boolean add(String dishName, String ingName, int amount) {
+    public boolean addIngToDish(String dishName, String ingName, int amount) {
         if (dishName == null || ingName == null) return false;
         for (Dish dish : dishList.values()) {
             if (dish.getName().equalsIgnoreCase(dishName)) {

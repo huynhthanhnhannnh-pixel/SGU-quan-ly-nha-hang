@@ -37,7 +37,8 @@ public class SupplyManager implements ManagerHandler {
             "Xem cac nguyen lieu khong du de lam mot mon",
             "Them nguyen lieu",
             "Xoa nguyen lieu (theo ID)",
-            "Tim kiem nguyen lieu"
+            "Tim kiem nguyen lieu",
+            "TEST xoa nguyen lieu het han"
         };
 
         while (true) {
@@ -71,6 +72,11 @@ public class SupplyManager implements ManagerHandler {
                 case 6: {
                     System.out.print("Nhap ten nguyen lieu can tim: ");
                     String name = inputHandler.getScanner().nextLine().trim(); if (!name.equals("0")) search(name);
+                    break;
+                }
+                // test hàm
+                case 7: {
+                    deleteExpiredandLowQuantityIngredients();
                     break;
                 }
                 default:
@@ -333,7 +339,7 @@ public class SupplyManager implements ManagerHandler {
         }
 
 
-    // Xóa nguyên liệu hết hạn và số lượng = 0 và trả về giá hàng bị hủy 
+    // Xóa nguyên liệu hết hạn và số lượng = 0 và trả về giá hàng bị hủy ( dùng để tính tiền thất thoát nguyên liệu để trừ vào lợi nhuận trong ngày )
     public double deleteExpiredandLowQuantityIngredients() {
         LocalDate today = LocalDate.now();
         double total = 0;
@@ -479,7 +485,7 @@ public class SupplyManager implements ManagerHandler {
         while (true) {
             // Name
             System.out.print("Nhap ten nguyen lieu (nhap 0 de huy): ");
-            String name = input.getScanner().nextLine().trim();
+            String name = input.getScanner().nextLine().trim().replaceAll("\\s+", "");
             if (name.equals("0")) return null;
             if (name.isEmpty()) {
                 System.out.println("Ten nguyen lieu khong duoc de trong. Vui long nhap lai.");
@@ -490,7 +496,7 @@ public class SupplyManager implements ManagerHandler {
             Integer quantity = null;
             while (quantity == null) {
                 System.out.print("Nhap so luong (so nguyen duong, nhap 0 de huy): ");
-                String qline = input.getScanner().nextLine().trim();
+                String qline = input.getScanner().nextLine().trim().replaceAll("\\s+", "");
                 if (qline.equals("0")) return null;
                 try {
                     quantity = Integer.parseInt(qline);
