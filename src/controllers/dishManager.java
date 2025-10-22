@@ -277,7 +277,7 @@ public class dishManager implements ManagerHandler {
                     }
                 }
 
-                // Nếu không có nguyên liệu thì tạo nguyên liệu mới
+                // Nếu không có nguyên liệu thì tìm trong kho 
                 if (!found) {  
                     for (Ingredient ingredient : SupplyManager.getManager().getKho().values()) {
                         if (ingredient.getName().equalsIgnoreCase(ingName)) {
@@ -289,10 +289,12 @@ public class dishManager implements ManagerHandler {
                     //dish.addIngredient(ingName, amount);
                 }
 
+                // Nếu không tìm thấy nguyên liệu trong kho thì báo là không có trong kho 
                 if (!found) {
                     System.out.println("Khong the them nguyen lieu: " + ingName + " vi nguyen lieu nay khong co trong kho");
                     return false;
                 }
+
 
                 System.out.println("Da them " + ingName + " vao mon " + dish.getName() + " (so luong: " + amount + ")");
                 return true;     
