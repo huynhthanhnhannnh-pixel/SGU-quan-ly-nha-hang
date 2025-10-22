@@ -1,11 +1,10 @@
 package models;
 
-import controllers.SupplyManager;
 import java.util.*;
 
 public class Table {
     private final int size;
-    private List<String> FOOD_MENU = null; // menu của bàn
+    private List<String> FOOD_MENU = new ArrayList<String>(); // menu của bàn
 
     // Constructor
     public Table(int size) {
@@ -20,7 +19,7 @@ public class Table {
 
     // add menu cho bàn
     public void addMenu() {
-        List<Dish> convertToMenu = SupplyManager.getManager().getDishList();
+        List<Dish> convertToMenu = controllers.dishManager.getManager().getDishList();
         for (Dish dish : convertToMenu){
             FOOD_MENU.add(dish.getName());
         }

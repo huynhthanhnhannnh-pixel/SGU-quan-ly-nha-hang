@@ -2,6 +2,7 @@ package models;
 
 import java.time.LocalDate;
 
+
 public class Ingredient {
         private final String name;
         private LocalDate date;
@@ -31,12 +32,16 @@ public class Ingredient {
         this.cost = newCost;
     }
     // Ham set ngay nhap hang 
-    public void setNgayNhap(LocalDate date){    
+    public void setNgayNhap(LocalDate date){
         ngaynhap = date;
     }
     //Ham set han su dung 
     public void setHSD (LocalDate date){
         this.date = date;
+    }
+    //Ham set so luong 
+    public void setQuantity (int quantity){
+        this.quantity = quantity;
     }
     // Method to increase quantity
     public void increaseQuantity(int amount) {
@@ -59,4 +64,5 @@ public class Ingredient {
             return available; // Return what was available
         }
     }
+
 }

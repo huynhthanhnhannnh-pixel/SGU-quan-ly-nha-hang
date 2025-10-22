@@ -9,6 +9,8 @@ public class program {
         Displayer displayer = Displayer.getDisplayer();
         UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
         EventHandler eventHlr = EventHandler.getEventHandler();
+        SupplyManager splManager = SupplyManager.getManager();
+        dishManager dishMgr = dishManager.getManager();
 
         String[] message = {
             "WELCOME TO QUAN LY NHA HANG"
@@ -18,16 +20,17 @@ public class program {
             "Thue nhan vien moi", 
             "Hien thi nhan vien cua nha hang",
             "Hien thi lich lam",
-            "Thu nghiem tinh nang"
+            "Kiem tra kho nguyen lieu", 
+            "Kiem tra danh sach menu"
         };
         boolean sessionActive = true;
 
         while (sessionActive) {
-            displayer.clearScreen();
+
             displayer.displayMessage(message);
             displayer.displayOptions(options);
             inputHandler.getUserOption();
-            
+
             switch (inputHandler.getCurrentOption()) {
                 case 1:
                     inputHandler.closeScanner();
@@ -41,24 +44,20 @@ public class program {
                 case 4:
                     workerMgr.showSchedule();
                     break;
+                // Xem lại file txt của ingredients và dishes, tại có những món trùng hoặc bị dư, sửa lại cho chuẩn là oke 
                 case 5:
-                    // sử dụng eventHandler để test tính năng
-                    // nhập EvenHandler.[Hàm cần test]
-
-                    //==================================
-
-
-
-
-
-
-                    //==================================
-                    inputHandler.enter2Continue();
+                    splManager.showGeneralInfo();
+                    break;
+                case 6:
+                    dishMgr.showGeneralInfo();
                     break;
                 default:
                     System.out.println("Invalid input!");
+                    inputHandler.enter2Continue();
+                    break;
             }
+
+            displayer.clearScreen();
         }
     }
 }
-

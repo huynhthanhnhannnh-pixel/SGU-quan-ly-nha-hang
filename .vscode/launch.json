@@ -10,6 +10,6 @@
             "request": "launch",
             "console": "externalTerminal",
             "mainClass": "main.program"
-        }
+        },
     ]
 }
