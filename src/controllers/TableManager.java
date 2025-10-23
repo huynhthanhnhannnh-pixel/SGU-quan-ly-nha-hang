@@ -35,7 +35,7 @@ public class TableManager implements ManagerHandler {
 
     }
     @Override
-    public Object remove(int objID){
+    public Object remove(Object objID){
         return null;
     }
     @Override

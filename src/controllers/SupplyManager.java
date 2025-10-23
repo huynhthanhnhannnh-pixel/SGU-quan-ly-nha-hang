@@ -13,11 +13,12 @@ import utils.*;
 public class SupplyManager implements ManagerHandler {
     private static SupplyManager self;
     private Displayer displayer = Displayer.getDisplayer();
-    private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
+    // private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
     // Giờ kho là HashMap<Integer, Ingredient>
     private HashMap<Integer, Ingredient> ingredients = new LinkedHashMap<>(); // kho
-    int GO_BACK_OPTION = 0;
+    // int GO_BACK_OPTION = 0;
     private HashMap <String, Ingredient> ingredientsData = new LinkedHashMap<>();
+
 
     // normalize keys: trim, toLowerCase, remove spaces to match variants like "Tra Bong" and "TraBong"
     private String normalizeKey(String s) {
@@ -38,7 +39,7 @@ public class SupplyManager implements ManagerHandler {
             "Them nguyen lieu",
             "Xoa nguyen lieu (theo ID)",
             "Tim kiem nguyen lieu",
-            "TEST xoa nguyen lieu het han"
+            "TEST nguyen lieu date thap nhat"
         };
 
         while (true) {
@@ -76,7 +77,7 @@ public class SupplyManager implements ManagerHandler {
                 }
                 // test hàm
                 case 7: {
-                    deleteExpiredandLowQuantityIngredients();
+
                     break;
                 }
                 default:
@@ -225,7 +226,7 @@ public class SupplyManager implements ManagerHandler {
     
     //hàm xóa 
     @Override
-    public Ingredient remove(int id) {
+    public Ingredient remove(Object id) {
         if (!ingredients.containsKey(id)) {
             System.out.println("Khong the xoa: id " + id + " khong ton tai.");
             return null;
@@ -339,9 +340,8 @@ public class SupplyManager implements ManagerHandler {
         }
 
 
-    // Xóa nguyên liệu hết hạn và số lượng = 0 và trả về giá hàng bị hủy ( dùng để tính tiền thất thoát nguyên liệu để trừ vào lợi nhuận trong ngày )
-    public double deleteExpiredandLowQuantityIngredients() {
-        LocalDate today = LocalDate.now();
+    // Xóa nguyên liệu hết hạn và số lượng = 0 và trả về giá hàng bị hủy ( dùng để tính chi phí khấu hao của nguyên liệu )
+    public double deleteExpiredandLowQuantityIngredients(LocalDate today) {
         double total = 0;
         Iterator<Map.Entry<Integer, Ingredient>> iterator = ingredients.entrySet().iterator();
 
@@ -358,11 +358,13 @@ public class SupplyManager implements ManagerHandler {
                     agg.decreaseQuantity(ing.getQuantity());
                     if (agg.getQuantity() <= 0 ) {
                         agg.setQuantity(0);
-                    }
+                    }   
                 }
                 System.out.println("Da xoa nguyen lieu het han: " + ing.getName());
             }
         }
+        // thêm số hao hụt hàng hóa vào tổng cost 1 ngày
+        RevenueManager.getManager().getProfitLoss().put(today, total);
         return total;
     }
 
