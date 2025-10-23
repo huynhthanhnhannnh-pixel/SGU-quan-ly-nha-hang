@@ -79,8 +79,11 @@ public class RevenueManager implements ManagerHandler {
 
         if (revenue != null) {
             System.out.println("Doanh thu cua ngay " + date.format(formatter) + ": " + revenue.getTotalAmount());
+            System.out.println("==================================================");
             System.out.println("Loi nhuan cua ngay " + date.format(formatter) + ": " + revenue.getTotalProfit());
-        } else {
+            System.out.println("Chi phi hoat dong cua ngay + " + date.format(formatter) + ": " + profitLoss.get(date));
+            System.out.println("Tien von nguyen lieu cua ngay + " + date.format(formatter) + ": " + revenue.getTotalAmount()/3*1);
+        } else {    
             System.out.println("Khong tin thay doanh thu va loi nhuan cua ngay " + date.format(formatter));
         }
 
