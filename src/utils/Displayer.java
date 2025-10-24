@@ -1,7 +1,7 @@
 package utils;
 
 public class Displayer {
-    public final int SEPERATOR_LENGTH = 112;
+    public final int SEPERATOR_LENGTH = 113;
     private static Displayer self = null;
 
     private Displayer() {}

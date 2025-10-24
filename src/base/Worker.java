@@ -53,7 +53,7 @@ public abstract class Worker extends Human {
         System.out.println("Mo ta: "+description);
     }
     public void shortDisplay() {
-        System.out.printf("| %-3d | %-20s |\n", id, name);
+        System.out.printf("| %-4d | %-20s |\n", id, name);
     }
     public void gridDisplay() {
         String _position = getPosition();
@@ -76,7 +76,7 @@ public abstract class Worker extends Human {
             default:
                 break;
         }
-        System.out.printf("| %-3d | %-20s | %-5d | %-10s | %-25s | %-30.1f |\n", id, name, age, gender, _position, salaries);
+        System.out.printf("| %-4d | %-20s | %-5d | %-10s | %-25s | %-30.1f |\n", id, name, age, gender, _position, salaries);
     }
 
     public abstract void interact();

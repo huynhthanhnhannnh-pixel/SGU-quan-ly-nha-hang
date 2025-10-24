@@ -139,6 +139,7 @@ public class SupplyManager implements ManagerHandler {
                 // 2) Try common relative paths. These depend on the current working directory.
                 Path p1 = Paths.get("resources", "Ingredients.txt");
                 Path p2 = Paths.get("src", "resources", "Ingredients.txt");
+                
                 if (Files.exists(p1)) {
                     reader = Files.newBufferedReader(p1, StandardCharsets.UTF_8);
                 } else if (Files.exists(p2)) {

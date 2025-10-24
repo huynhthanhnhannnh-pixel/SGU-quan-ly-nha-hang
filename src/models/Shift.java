@@ -10,11 +10,13 @@ import base.Worker;
 
 public class Shift {
     private final String shiftName;
+    private final int id;
     private Displayer displayer = Displayer.getDisplayer();
     private HashSet<Worker> workerList = new HashSet<Worker>();
     
-    public Shift(String shiftName) {
+    public Shift(String shiftName, int id) {
         this.shiftName = shiftName;
+        this.id = id;
     }
 
     // Getter
@@ -24,14 +26,18 @@ public class Shift {
 
     // Hiện thị tất cả nhân viên trong ca này
     public void display() {
-        System.out.println(shiftName + "\nCac nhan vien cua ca nay: ");
-        displayer.printFormatLine(new int[]{3, 20});
-        System.out.printf("| %-3s | %-20s |\n", "ID", "Ten");
-        displayer.printFormatLine(new int[]{3, 20});
+        System.out.println();
+        displayer.printFormatLine(new int[]{4, 20});
+        System.out.printf("| %-4d | %-20s |\n", id, shiftName);
+        displayer.printFormatLine(new int[]{27});
+        System.out.printf("| %-27s |\n", "Nhan vien trong ca:");
+        displayer.printFormatLine(new int[]{4, 20});
+        System.out.printf("| %-4s | %-20s |\n", "ID", "Ten");
+        displayer.printFormatLine(new int[]{4, 20});
         for (Worker worker : workerList) { 
            worker.shortDisplay();
         }
-        displayer.printFormatLine(new int[]{3, 20});
+        displayer.printFormatLine(new int[]{4, 20});
     }
 
     // Thêm nhân viên vào ca làm
