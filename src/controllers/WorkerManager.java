@@ -13,6 +13,7 @@ import models.*;
 public class WorkerManager implements ManagerHandler {
     private static WorkerManager self = null;
     private Displayer displayer = Displayer.getDisplayer();
+    private int[] displayLineConfig = {3, 20, 5, 10, 25, 30};
     // private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
 
     // private final int GO_BACK_OPTION = 0; 
@@ -24,8 +25,6 @@ public class WorkerManager implements ManagerHandler {
         "Sang Thu 6", "Chieu Thu 6",
         "Sang Thu 7", "Chieu Thu 7",
     };
-
-
 
     private HashMap<Integer, Worker> workerToHire = new HashMap<Integer, Worker>(); // available workers
     private HashMap<Integer, Worker> hiredWorkers = new HashMap<Integer, Worker>(); // hired workers
@@ -177,11 +176,15 @@ public class WorkerManager implements ManagerHandler {
             displayer.singleSeperate();
             System.out.println("Cac nhan vien chua co trong lich nay");
 
+            displayer.printFormatLine(new int[]{3, 20});
+            System.out.printf("| %-3s | %-20s |\n", "ID", "Ten");
+            displayer.printFormatLine(new int[]{3, 20});
             for (Map.Entry<Integer, Worker> entry : hiredWorkers.entrySet()) {
                 Worker wkr = entry.getValue();
-                if (shift.contain(wkr)) { continue; }
+                if (shift.contain(wkr)) { continue; } // Khong in nhung nhan vien da co trong ca lam
                 wkr.shortDisplay();
             }
+            displayer.printFormatLine(new int[]{3, 20});
 
             inputHandler.getUserOption();
 
@@ -206,9 +209,9 @@ public class WorkerManager implements ManagerHandler {
             displayer.displayMessage(message);
 
             for (Map.Entry<Integer, Shift> entry : schedule.entrySet()) {
+                System.out.println();
                 System.out.print(entry.getKey()+" / ");
                 entry.getValue().display();
-                displayer.dashSeperate();
             }
 
             inputHandler.getUserOption();
@@ -227,6 +230,7 @@ public class WorkerManager implements ManagerHandler {
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
     // Hire and fire workers system
     
+    // Hien thi thong tin chi tiet cua nhan vien
     public void showWorkerDes(Worker worker) {
         String[] message = {
             "Nhap 0 de quay lai",
@@ -236,7 +240,11 @@ public class WorkerManager implements ManagerHandler {
             displayer.clearScreen();
             displayer.displayMessage(message);
 
-            worker.display();
+            System.out.printf("| %-3s | %-20s | %-5s | %-10s | %-25s | %-30s |\n", "ID", "Ten", "Tuoi", "Gioi tinh", "Chuc vu", "Luong thang(nghin dong)");
+            displayer.printFormatLine(displayLineConfig);
+            worker.gridDisplay();
+            displayer.printFormatLine(displayLineConfig);
+            System.out.println("Mo ta:\n" + worker.getDescription() + "\n");
             displayer.singleSeperate();
 
             if (worker.isEmployed()) {
@@ -282,9 +290,12 @@ public class WorkerManager implements ManagerHandler {
             displayer.displayMessage(message);
 
             // Show available workers to hire
+            System.out.printf("| %-3s | %-20s |\n", "ID", "Ten");
+            displayer.printFormatLine(new int[]{3, 20});
             for (Map.Entry<Integer, Worker> entry : workerToHire.entrySet()) {
                 entry.getValue().shortDisplay();
             }
+            displayer.printFormatLine(new int[]{3, 20});
 
             inputHandler.getUserOption();
 
@@ -298,9 +309,10 @@ public class WorkerManager implements ManagerHandler {
     public void showWorkersInPosition(WorkerType position) {
         for (Map.Entry<Integer, Worker> entry : hiredWorkers.entrySet()) {
             Worker wkr = entry.getValue();
-            if (WorkerType.fromPosition(wkr.getPosition()) == position) { wkr.shortDisplay(); }
+            if (WorkerType.fromPosition(wkr.getPosition()) == position) { wkr.gridDisplay(); }
         }
     }
+
     public void showHiredWorker() {
         String[] message = {
             "Nhap 0 de quay lai",
@@ -311,16 +323,32 @@ public class WorkerManager implements ManagerHandler {
             displayer.displayMessage(message);
 
             // Show hired workers
-            System.out.println("Managers: ");
+            System.out.println("Quan ly: ");
+            displayer.printFormatLine(displayLineConfig);
+            System.out.printf("| %-3s | %-20s | %-5s | %-10s | %-25s | %-30s |\n", "ID", "Ten", "Tuoi", "Gioi tinh", "Chuc vu", "Luong thang(nghin dong)");
+            displayer.printFormatLine(displayLineConfig);
             showWorkersInPosition(WorkerType.SUPPLY_MANAGER);
             showWorkersInPosition(WorkerType.WORKER_MANAGER);
             showWorkersInPosition(WorkerType.TABLE_MANAGER);
+            displayer.printFormatLine(displayLineConfig);
+
             displayer.doubleSeperate();
-            System.out.println("Waiter: ");
+
+            System.out.println("Phuc vu: ");
+            displayer.printFormatLine(displayLineConfig);
+            System.out.printf("| %-3s | %-20s | %-5s | %-10s | %-25s | %-30s |\n", "ID", "Ten", "Tuoi", "Gioi tinh", "Chuc vu", "Luong thang(nghin dong)");
+            displayer.printFormatLine(displayLineConfig);
             showWorkersInPosition(WorkerType.WAITER);
+            displayer.printFormatLine(displayLineConfig);
+
             displayer.doubleSeperate();
-            System.out.println("chef: ");
+
+            System.out.println("Dau bep: ");
+            displayer.printFormatLine(displayLineConfig);
+            System.out.printf("| %-3s | %-20s | %-5s | %-10s | %-25s | %-30s |\n", "ID", "Ten", "Tuoi", "Gioi tinh", "Chuc vu", "Luong thang(nghin dong)");
+            displayer.printFormatLine(displayLineConfig);
             showWorkersInPosition(WorkerType.CHEF);
+            displayer.printFormatLine(displayLineConfig);
 
             inputHandler.getUserOption();
 
@@ -360,6 +388,7 @@ public class WorkerManager implements ManagerHandler {
         return worker;
     };
 
+    // Chua co sua dung den(ko can sua dung den)
     @Override
     public Object search(Object objID) {
 

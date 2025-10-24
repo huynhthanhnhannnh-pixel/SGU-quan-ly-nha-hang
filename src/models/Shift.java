@@ -3,12 +3,14 @@ package models;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import utils.Displayer;
 
 import enums.WorkerType;
 import base.Worker;
 
 public class Shift {
     private final String shiftName;
+    private Displayer displayer = Displayer.getDisplayer();
     private HashSet<Worker> workerList = new HashSet<Worker>();
     
     public Shift(String shiftName) {
@@ -22,10 +24,14 @@ public class Shift {
 
     // Hiện thị tất cả nhân viên trong ca này
     public void display() {
-        System.out.println(shiftName + "\nCac nhan vien cua ca nay:\n ------------------");
+        System.out.println(shiftName + "\nCac nhan vien cua ca nay: ");
+        displayer.printFormatLine(new int[]{3, 20});
+        System.out.printf("| %-3s | %-20s |\n", "ID", "Ten");
+        displayer.printFormatLine(new int[]{3, 20});
         for (Worker worker : workerList) { 
-            System.out.println("id: "+worker.getId()+" / "+worker.getName()+" / "+worker.getPosition());
+           worker.shortDisplay();
         }
+        displayer.printFormatLine(new int[]{3, 20});
     }
 
     // Thêm nhân viên vào ca làm
