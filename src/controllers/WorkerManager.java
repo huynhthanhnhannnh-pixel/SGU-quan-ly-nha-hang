@@ -12,13 +12,13 @@ import utils.*;
 import workerTypes.*;
 import models.*;
 
-public class WorkerManager implements ManagerHandler {
+public class WorkerManager implements ManagerHandler<Worker> {
     private static WorkerManager self = null;
     private Displayer displayer = Displayer.getDisplayer();
     private int[] displayLineConfig = {4, 20, 5, 10, 25, 30};
-    private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
+    // private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
 
-    private final int GO_BACK_OPTION = 0; 
+    // private final int GO_BACK_OPTION = 0; 
     private final String[] SHIFT_NAMES = {
         "Sang Thu 2", "Chieu Thu 2",
         "Sang Thu 3", "Chieu Thu 3",
@@ -30,6 +30,7 @@ public class WorkerManager implements ManagerHandler {
 
     private HashMap<Integer, Worker> workerToHire = new HashMap<Integer, Worker>(); // available workers
     private HashMap<Integer, Worker> hiredWorkers = new HashMap<Integer, Worker>(); // hired workers
+    private static boolean context = false; // true if in hiring context/ false firing context
     private LinkedHashMap<Integer, Shift> schedule = new LinkedHashMap<Integer, Shift>();
 
     @Override
@@ -77,6 +78,53 @@ public class WorkerManager implements ManagerHandler {
         System.out.println("Nhan vien C nau 30 mon");
     }
 
+    @Override
+        public void add(Worker worker) {
+            hiredWorkers.put(worker.getId(), worker);
+            worker.setEmploymentState(true);
+            System.out.println("Ban da thue "+worker.getName());
+    }
+    @Override
+    public Worker remove(Worker worker) {
+        Worker wrk = hiredWorkers.remove(worker.getId());
+        if (wrk != null) {
+            wrk.setEmploymentState(false);
+            workerToHire.put(wrk.getId(), wrk);
+            System.out.println("Ban da sa thai " + wrk.getName());
+        } else {
+            System.out.println("Khong tim thay nhan vien de sa thai voi id: " + wrk);
+        }
+        return wrk;
+    }
+    @Override
+    public Worker search(Worker worker) { 
+        int workerID = worker.getId();
+        Worker wkr = hiredWorkers.get(workerID);
+        if (wkr != null) {
+            return wkr;
+        } else {
+            System.out.println("Khong tim thay nhan vien voi id: " + workerID);
+            return null;
+        }
+     }
+    @Override
+    public Worker Input() {
+        Displayer.getDisplayer().singleSeperate();
+        System.out.println();
+        System.out.println("Nhap ID nhan vien:");
+        inputHandler.getUserOption();
+        int id = inputHandler.getCurrentOption();
+        Worker worker = null;
+
+        if (context) {
+            worker = self.workerToHire.get(id);
+        } else {
+            worker = self.hiredWorkers.get(id);
+        }
+
+        return worker;
+    }
+
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
     // Initialization
@@ -118,7 +166,6 @@ public class WorkerManager implements ManagerHandler {
             }
         }
     }
-
     private void saveHiredWorkers() {
         BufferedWriter bw = null;
         try {
@@ -150,7 +197,6 @@ public class WorkerManager implements ManagerHandler {
     }
 
     // Loaders
-
     private void loadSchedule() {
         // do nothing if file is null
         BufferedReader br = null;
@@ -203,7 +249,6 @@ public class WorkerManager implements ManagerHandler {
             }
         }
     }
-
     private void loadHiredWorkers() {
         // do nothing if file is null
         BufferedReader br = null;
@@ -245,6 +290,17 @@ public class WorkerManager implements ManagerHandler {
         }
     }
 
+    @Override
+    public void loadFromFile(Runnable func) {
+        // Not implemented
+        func.run();
+    }
+    @Override
+    public void saveToFile(Runnable func) {
+        // Not implemented
+        func.run();
+    }
+    
     // Init a storage of worker objects, read from Worker.txt
     private void initResources() {
         BufferedReader br = null;
@@ -307,14 +363,14 @@ public class WorkerManager implements ManagerHandler {
             }
         }
 
-        loadHiredWorkers();
+        loadFromFile(() -> loadHiredWorkers());
 
         // Init schedule, create shift each shift name in SHIFT_NAMES
         for (int i = 0; i < SHIFT_NAMES.length; i++) {
             schedule.put((i + 1), new Shift(SHIFT_NAMES[i], (i + 1)));
         }
 
-        loadSchedule();
+        loadFromFile(() -> loadSchedule());
     }
 
     // Private constructor to enforce singleton
@@ -391,7 +447,7 @@ public class WorkerManager implements ManagerHandler {
         }
         inputHandler.resetOption();
 
-        saveSchedule();
+        saveToFile(() -> saveSchedule());
     }
     public Shift getShift(int shiftID) {
         return schedule.get(shiftID);
@@ -437,9 +493,10 @@ public class WorkerManager implements ManagerHandler {
                 case 1:
 
                     if (worker.isEmployed()) {   
-                        fireWorker(worker.getId());
+                        remove(worker);
                     } else {
-                        hireWorker(worker.getId());
+                        // hireWorker(worker.getId());
+                        add(worker);
                     } 
                     inputHandler.enter2Continue();
 
@@ -462,6 +519,7 @@ public class WorkerManager implements ManagerHandler {
             "Day la danh sach nhung nguoi lao dong ma ban co the thue",
             "De thue nguoi lao dong hay nhap id cua ho"
         };       
+        context = true;
         while (inputHandler.getCurrentOption() != GO_BACK_OPTION) {
             displayer.clearScreen();
             displayer.displayMessage(message);
@@ -474,17 +532,19 @@ public class WorkerManager implements ManagerHandler {
             }
             displayer.printFormatLine(new int[]{4, 20});
 
-            inputHandler.getUserOption();
+            Worker worker = Input();
+            if (worker == null) { inputHandler.raiseWarning(); continue; }
 
             // check if the entered id exist
-            if (workerToHire.containsKey(inputHandler.getCurrentOption())) {
-                showWorkerDes(workerToHire.get(inputHandler.getCurrentOption())); // show the selected worker description
+            if (workerToHire.containsKey(worker.getId())) {
+                showWorkerDes(workerToHire.get(worker.getId())); // show the selected worker description
             } else { inputHandler.raiseWarning(); }
         }
         inputHandler.resetOption(); 
 
         // Save hired workers to cache
-        saveHiredWorkers();
+        saveToFile(() -> saveHiredWorkers());
+        context = false;
     }
     public void showWorkersInPosition(WorkerType position) {
         for (Map.Entry<Integer, Worker> entry : hiredWorkers.entrySet()) {
@@ -492,13 +552,11 @@ public class WorkerManager implements ManagerHandler {
             if (WorkerType.fromPosition(wkr.getPosition()) == position) { wkr.gridDisplay(); }
         }
     }
-
-
     public void showHiredWorker() {
         String[] message = {
             "Nhap 0 de quay lai",
             "Nhap id cua nhan vien de xem thong tin cua ho"
-        };          
+        };        
         while (inputHandler.getCurrentOption() != GO_BACK_OPTION) {
             displayer.clearScreen();
             displayer.displayMessage(message);
@@ -530,42 +588,4 @@ public class WorkerManager implements ManagerHandler {
         }
         inputHandler.resetOption();
     }
-    public void hireWorker(int workerID) {
-        Worker worker = workerToHire.remove(workerID);
-        add(worker);
-    };
-    public void fireWorker(int workerID) {
-        Worker wrk = (Worker) remove(workerID);
-        workerToHire.put(workerID, wrk); // put worker back to avaiable workers
-
-        // Save hired workers to cache
-        saveHiredWorkers();
-    };
-
-    @Override
-    public void add(Object obj) {
-        Worker worker = (Worker) obj;
-        hiredWorkers.put(worker.getId(), worker);
-        worker.setEmploymentState(true);
-        System.out.println("Ban da thue "+worker.getName());
-    };
-
-    @Override
-    public Object remove(Object objID) {
-        Worker worker = hiredWorkers.remove(objID);
-        if (worker != null) {
-            worker.setEmploymentState(false);
-            System.out.println("Ban da sa thai " + worker.getName());
-        } else {
-            System.out.println("Khong tim thay nhan vien de sa thai voi id: " + objID);
-        }
-        return worker;
-    };
-
-    // Chua co sua dung den(ko can sua dung den)
-    @Override
-    public Object search(Object objID) {
-
-        return null;
-    };
 }

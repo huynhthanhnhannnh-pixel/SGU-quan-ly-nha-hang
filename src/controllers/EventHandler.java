@@ -10,7 +10,7 @@ public class EventHandler {
     private Shift curShift = wrkMgr.getShift(1); // lấy thông tin ca làm, mặc định là sáng thứ 2
     private static EventHandler self;
 
-    private List<Worker> workerList;
+    private HashSet<Worker> workerList;
     private List<Order> orderList; // danh sách các order đã được lấy
     private List<Table> unsatisfiedTables; // danh sách các bàn cần phục vụ hay chưa thảo order
 
