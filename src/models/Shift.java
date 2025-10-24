@@ -20,9 +20,8 @@ public class Shift {
     }
 
     // Getter
-    public String getShiftName() {
-        return shiftName;
-    }
+    public String getShiftName() { return shiftName; }
+    public int getID() { return id; }
 
     // Hiện thị tất cả nhân viên trong ca này
     public void display() {
@@ -67,10 +66,8 @@ public class Shift {
     }
 
     // Lấy danh sách các nhân viên của ca làm
-    public List<Worker> getAllWorkers() {
-       List<Worker> temp = new ArrayList<>();
-        for (Worker worker : workerList) { temp.add(worker); }
-        return temp;
+    public HashSet<Worker> getAllWorkers() {
+        return workerList;
     }
 
     // Lấy Nhân viên đâu tiên có vị trí trùng với vị trí đã cho

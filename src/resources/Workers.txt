@@ -1,16 +1,16 @@
-NguyenVanA 20 nam waiter 500
+1 NguyenVanA 20 nam waiter 500
 Toi se lam viec cham chi
-NguyenVanB 18 nu waiter 700
+2 NguyenVanB 18 nu waiter 700
 Toi se thu hut khach hang den quan cua chung ta 
-NguyenVanC 30 nam chef 1400
+3 NguyenVanC 30 nam chef 1400
 Toi co the nau ra nhung mon an chat luong cao
-Thien 19 nam chef 500
+4 Thien 19 nam chef 500
 Toi se nau ra nhung mon an that tinh te
-Minh 19 nam waiter 500
+5 Minh 19 nam waiter 500
 Toi se phuc vu khach hang that nhiet tinh
-QuanLyThucPham 32 nam supplyManager 10000
+6 QuanLyThucPham 32 nam supplyManager 10000
 Toi se quan ly nguon cung thuc pham cua chung ta, dam bao khong co chuot, gian va nguyen lieu luon duoc tuoi moi
-QuanLyNhanVien 28 nam workerManager 10000
+7 QuanLyNhanVien 28 nam workerManager 10000
 Toi se giam xac nhan vien cua chung ta, dam bao rang ko co ai noi xau khach hang, trom cap tien, nguyen lieu cua chung ta hay ngu trong gio lam viec
-QuanLyBan 27 nam tableManager 10000
+8 QuanLyBan 27 nam tableManager 10000
 Toi se kiem tra va dat ban cho khach, voi kinh nghiem cua minh, toi dam bao la nha hang cua minh luon full nhung em chubby
