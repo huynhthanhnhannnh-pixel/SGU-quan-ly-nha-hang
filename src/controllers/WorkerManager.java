@@ -13,9 +13,9 @@ import models.*;
 public class WorkerManager implements ManagerHandler {
     private static WorkerManager self = null;
     private Displayer displayer = Displayer.getDisplayer();
-    private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
+    // private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
 
-    private final int GO_BACK_OPTION = 0; 
+    // private final int GO_BACK_OPTION = 0; 
     private final String[] SHIFT_NAMES = {
         "Sang Thu 2", "Chieu Thu 2",
         "Sang Thu 3", "Chieu Thu 3",
@@ -348,7 +348,7 @@ public class WorkerManager implements ManagerHandler {
     };
 
     @Override
-    public Object remove(int objID) {
+    public Object remove(Object objID) {
         Worker worker = hiredWorkers.remove(objID);
         workerToHire.remove(objID);
         if (worker != null) {
