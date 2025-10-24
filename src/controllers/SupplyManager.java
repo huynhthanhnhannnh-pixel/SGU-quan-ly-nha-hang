@@ -13,11 +13,12 @@ import utils.*;
 public class SupplyManager implements ManagerHandler {
     private static SupplyManager self;
     private Displayer displayer = Displayer.getDisplayer();
-    private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
+    // private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
     // Giờ kho là HashMap<Integer, Ingredient>
     private HashMap<Integer, Ingredient> ingredients = new LinkedHashMap<>(); // kho
-    int GO_BACK_OPTION = 0;
+    // int GO_BACK_OPTION = 0;
     private HashMap <String, Ingredient> ingredientsData = new LinkedHashMap<>();
+
 
     // normalize keys: trim, toLowerCase, remove spaces to match variants like "Tra Bong" and "TraBong"
     private String normalizeKey(String s) {
@@ -37,7 +38,8 @@ public class SupplyManager implements ManagerHandler {
             "Xem cac nguyen lieu khong du de lam mot mon",
             "Them nguyen lieu",
             "Xoa nguyen lieu (theo ID)",
-            "Tim kiem nguyen lieu"
+            "Tim kiem nguyen lieu",
+            "TEST nguyen lieu date thap nhat"
         };
 
         while (true) {
@@ -71,6 +73,11 @@ public class SupplyManager implements ManagerHandler {
                 case 6: {
                     System.out.print("Nhap ten nguyen lieu can tim: ");
                     String name = inputHandler.getScanner().nextLine().trim(); if (!name.equals("0")) search(name);
+                    break;
+                }
+                // test hàm
+                case 7: {
+
                     break;
                 }
                 default:
@@ -219,7 +226,7 @@ public class SupplyManager implements ManagerHandler {
     
     //hàm xóa 
     @Override
-    public Ingredient remove(int id) {
+    public Ingredient remove(Object id) {
         if (!ingredients.containsKey(id)) {
             System.out.println("Khong the xoa: id " + id + " khong ton tai.");
             return null;
@@ -333,9 +340,8 @@ public class SupplyManager implements ManagerHandler {
         }
 
 
-    // Xóa nguyên liệu hết hạn và số lượng = 0 và trả về giá hàng bị hủy 
-    public double deleteExpiredandLowQuantityIngredients() {
-        LocalDate today = LocalDate.now();
+    // Xóa nguyên liệu hết hạn và số lượng = 0 và trả về giá hàng bị hủy ( dùng để tính chi phí khấu hao của nguyên liệu )
+    public double deleteExpiredandLowQuantityIngredients(LocalDate today) {
         double total = 0;
         Iterator<Map.Entry<Integer, Ingredient>> iterator = ingredients.entrySet().iterator();
 
@@ -352,11 +358,13 @@ public class SupplyManager implements ManagerHandler {
                     agg.decreaseQuantity(ing.getQuantity());
                     if (agg.getQuantity() <= 0 ) {
                         agg.setQuantity(0);
-                    }
+                    }   
                 }
                 System.out.println("Da xoa nguyen lieu het han: " + ing.getName());
             }
         }
+        // thêm số hao hụt hàng hóa vào tổng cost 1 ngày
+        RevenueManager.getManager().getProfitLoss().put(today, total);
         return total;
     }
 
@@ -479,7 +487,7 @@ public class SupplyManager implements ManagerHandler {
         while (true) {
             // Name
             System.out.print("Nhap ten nguyen lieu (nhap 0 de huy): ");
-            String name = input.getScanner().nextLine().trim();
+            String name = input.getScanner().nextLine().trim().replaceAll("\\s+", "");
             if (name.equals("0")) return null;
             if (name.isEmpty()) {
                 System.out.println("Ten nguyen lieu khong duoc de trong. Vui long nhap lai.");
@@ -490,7 +498,7 @@ public class SupplyManager implements ManagerHandler {
             Integer quantity = null;
             while (quantity == null) {
                 System.out.print("Nhap so luong (so nguyen duong, nhap 0 de huy): ");
-                String qline = input.getScanner().nextLine().trim();
+                String qline = input.getScanner().nextLine().trim().replaceAll("\\s+", "");
                 if (qline.equals("0")) return null;
                 try {
                     quantity = Integer.parseInt(qline);

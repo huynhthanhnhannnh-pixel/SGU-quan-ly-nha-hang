@@ -5,7 +5,6 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
-import controllers.SupplyManager;
 import models.Dish;
 import models.Ingredient;
 import utils.*;
@@ -13,10 +12,10 @@ import utils.*;
 public class dishManager implements ManagerHandler {
     public static dishManager self;
     private Displayer displayer = Displayer.getDisplayer();
-    private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
+    // private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
     private LinkedHashMap<Integer, Dish> dishList = new LinkedHashMap<>();
     private int nextId = 1; // incremental ID for dishes
-    int GO_BACK_OPTION = 0;
+    // int GO_BACK_OPTION = 0;
     
     public static dishManager getManager() {
         if (self == null) {
@@ -152,7 +151,7 @@ public class dishManager implements ManagerHandler {
                         System.out.println("So luong khong hop le"); 
                         break; 
                      }
-                    add(dishName, ing, amt);
+                    addIngToDish(dishName, ing, amt);
                     break;
                 }
                 case 6: {
@@ -258,13 +257,13 @@ public class dishManager implements ManagerHandler {
     }
 
     // Overload: add ingredient into an existing dish (does not touch stock)
-    public boolean add(String dishName, String ingName, int amount) {
+    public boolean addIngToDish(String dishName, String ingName, int amount) {
         if (dishName == null || ingName == null) return false; 
 
         Dish targetDish = null; // món ăn cần tìm
         for (Dish dish : dishList.values()) { // Lặp qua danh sách các món ăn để tìm món ăn cần tìm
             if (!dish.getName().equalsIgnoreCase(dishName)) continue; // Nếu không phải món cần tìm thì bỏ qua
-            targetDish = dish;
+            targetDish = dish;  
         }
         if (targetDish == null) {
             System.out.println("Khong tim thay mon: " + dishName);
@@ -315,7 +314,7 @@ public class dishManager implements ManagerHandler {
     }
 
     @Override
-    public Object remove(int objID) {
+    public Object remove(Object objID) {
         // Interpret objID as dish ID key
         if (!dishList.containsKey(objID)) {
             System.out.println("Khong the xoa: ID khong ton tai: " + objID);
