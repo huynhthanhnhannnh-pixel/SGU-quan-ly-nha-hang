@@ -20,12 +20,12 @@ public class WorkerManager implements ManagerHandler {
 
     // private final int GO_BACK_OPTION = 0; 
     private final String[] SHIFT_NAMES = {
-        "Sang Thu 3", "Chieu Thu 2",
-        "Sang Thu 3", "Chieu Thu 3",
-        "Sang Thu 4", "Chieu Thu 4",
-        "Sang Thu 5", "Chieu Thu 5",
-        "Sang Thu 6", "Chieu Thu 6",
-        "Sang Thu 7", "Chieu Thu 7",
+        "Thu 2",
+        "Thu 3",
+        "Thu 4",
+        "Thu 5",
+        "Thu 6",
+        "Thu 7",
     };
 
     private HashMap<Integer, Worker> workerToHire = new HashMap<Integer, Worker>(); // available workers

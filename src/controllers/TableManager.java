@@ -1,26 +1,18 @@
 package controllers;
-import java.util.Scanner;
+import java.util.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import contracts.ManagerHandler;
 import models.Table;
 import utils.*;
-import workerTypes.Chef;
-import workerTypes.Waiter;
-import controllers.*;
-import enums.OrderState;
 import models.Order;
-import base.*;
 import models.DailyRevenue;
 
 public class TableManager implements ManagerHandler {
     private static TableManager self;
     private Displayer displayer = Displayer.getDisplayer();
     private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
+    private WorkerManager workerMgr = WorkerManager.getManager();
 
     private HashMap<Integer, Table> tableList = new HashMap<Integer, Table>(); // Danh sách bàn, <Mã bàn, bàn> ví dụ: tìm bàn số 5 => <5, bàn>
     private int numOfTable = 10; // Số lượng bàn ăn
@@ -52,6 +44,11 @@ public class TableManager implements ManagerHandler {
     }
     @Override
     public Object search(Object objID){
+        return null;
+    }
+
+    @Override
+    public Object Input(){
         return null;
     }
 
@@ -100,6 +97,7 @@ public class TableManager implements ManagerHandler {
     //     return null;
     // }
 
+
     public void showSimulator(){
         Scanner sc = new Scanner(System.in);
         LocalDate today = LocalDate.now();
@@ -117,24 +115,26 @@ public class TableManager implements ManagerHandler {
             switch (choice) {
                 case 1:{
                     System.out.println("Nguyen lieu het han su dung:   "); 
+
                     if(SupplyManager.getManager().deleteExpiredandLowQuantityIngredients(today)==0)
-                    {System.out.println("Hang con han su dung");}
+                        System.out.println("Hang con han su dung");
                     else{
-                    SupplyManager.getManager().deleteExpiredandLowQuantityIngredients(today);}
-                    System.out.print("Dat target hom nay:   "); 
-                    Double money = sc.nextDouble(); 
+                        SupplyManager.getManager().deleteExpiredandLowQuantityIngredients(today);}
+                        System.out.print("Dat target hom nay:   "); 
+                        Double money = sc.nextDouble(); 
+
+                    // Dat target
                     do{
                     
-                    if(money < 5000000){
-                        System.out.print("Target thap qua, khong du tra tien nhan vien, dat lai target:  ");
-                        money =sc.nextDouble(); }
-                        else if( money >50000000){
-                        System.out.print("Nha hang e lam, dat target chi cho cao vậy, dat lai target:  ");
-                        money =sc.nextDouble(); 
+                        if(money < 5000000){
+                            System.out.print("Target thap qua, khong du tra tien nhan vien, dat lai target:  ");
+                            money =sc.nextDouble(); }
+                            else if( money >50000000){
+                            System.out.print("Nha hang e lam, dat target chi cho cao vậy, dat lai target:  ");
+                            money =sc.nextDouble(); 
+                        }
+                    
                     }
-                    
-                }
-                    
                     while(money >5000000 && money <50000000);
     
                        System.out.println("Target hom nay la: "+ money);
@@ -142,17 +142,17 @@ public class TableManager implements ManagerHandler {
 
                    
                     break;
-                        }
+                }
                     default:
                     System.out.println("Lua chon khong hop le");
-    }
-                   
             }
+                   
+        }
 
-            displayer.singleSeperate();
-            inputHandler.enter2Continue();
-            inputHandler.resetOption();
-}
+        displayer.singleSeperate();
+        inputHandler.enter2Continue();
+        inputHandler.resetOption();
+    }
 
 
     public void simulatorChefAndWaiter(double target){
@@ -160,7 +160,7 @@ public class TableManager implements ManagerHandler {
         String[] options ={
             "OPEN",
             "CLOSE"
-    };
+        };
         while (true) {
             displayer.clearScreen();
             displayer.displayMessage(header);
@@ -172,10 +172,10 @@ public class TableManager implements ManagerHandler {
             switch (choice) {
                 case 1: {
                     System.out.println("=== BAT DAU GIA LAP NHA HANG ===");
-                    Table table = tableList.get(1);
+                    Table table = tableList.get(1); // Lấy bàn số 1 để mô phỏng
                     
                     EventHandler.getEventHandler().addTable(table);
-                    EventHandler.getEventHandler().startShift(1);
+                    EventHandler.getEventHandler().startShift();
                     // Sau đó gọi getTable() để Waiter tạo order
                     Order order = EventHandler.getEventHandler().getTable();
                     if (order == null) {

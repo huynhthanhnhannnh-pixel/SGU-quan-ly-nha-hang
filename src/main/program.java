@@ -13,7 +13,6 @@ public class program {
         SupplyManager splManager = SupplyManager.getManager();
         dishManager dishMgr = dishManager.getManager();
         TableManager tbManager = TableManager.getManager();
-        eventHlr.startShift(1);
         RevenueManager revenueMgr = RevenueManager.getManager();
         LocalDate today = LocalDate.now();
 

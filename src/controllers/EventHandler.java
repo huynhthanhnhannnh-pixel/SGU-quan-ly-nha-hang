@@ -1,8 +1,6 @@
 package controllers;
 
 import base.Worker;
-import workerTypes.Waiter;
-import workerTypes.Chef;
 import enums.*;
 import java.util.*;
 import models.*;
@@ -10,26 +8,24 @@ import utils.*;
 
 public class EventHandler {
     private WorkerManager wrkMgr = WorkerManager.getManager();
-    // FIXME: Gọi getShift() ngay ở thời điểm khởi tạo trường có thể gây vấn đề nếu
-    // WorkerManager chưa hoàn toàn khởi tạo hoặc phụ thuộc vào thứ tự khởi tạo singleton.
-    // Đề xuất: chuyển sang lazy-init trong constructor hoặc khi bắt đầu ca.
     private Shift curShift = wrkMgr.getShift(1); // lấy thông tin ca làm, mặc định là sáng thứ 2
     private static EventHandler self;
 
-    private HashSet<Worker> workerList ;
-    // FIXME: Sử dụng raw ArrayList với tham số (0) gây cảnh báo unchecked conversion.
-    // Đề xuất: sử dụng generic: new ArrayList<Order>() hoặc new ArrayList<>()
+    private HashSet<Worker> workerList; // danh sách các nhân viên trong ca làm hiện tại 
     private List<Order> orderList= new ArrayList<>(); // danh sách các order đã được lấy
     private List<Table> unsatisfiedTables = new ArrayList<>(); // danh sách các bàn cần phục vụ hay chưa thảo order
+
+    // Số ngày của chương trình, sử dụng số ngày để tìm shift
+    private int totalDays = 0;
+    private int currentDay = 0; //  Nếu currentDay = 0 -> chủ nhật nghỉ làm, 1->thứ 2, 2->thứ 3,...
+    private boolean isNotActive = false; // Trạng thái nhà hàng đang mở hay đóng
 
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
     // Initialization
 
     // Private constructor to enforce singleton
-    private EventHandler() {
-
-    }
+    private EventHandler() {}
 
     // Public method to get the single self
     public static EventHandler getEventHandler() {
@@ -43,73 +39,62 @@ public class EventHandler {
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
 
     // Bắt đầu ca làm
-    public void startShift(int shiftID) {
+    public void startShift() {
         // lưu danh sách các chef và waiter
-        curShift = wrkMgr.getShift(shiftID);
-        if (curShift != null) {
-            workerList = curShift.getAllWorkers();
-            System.out.println("Ca lam: " + curShift.getShiftName() + ", so nguoi trong ca=" + (workerList == null ? 0 : workerList.size()));
-
-            if (workerList == null || workerList.isEmpty()) {
-                System.out.println("Khong co nguoi trong ca" + shiftID + ", tao chef & waiter de chay chuong trinh");
-   
-                Waiter tempWaiter = new Waiter(100, "TempWaiter", 20, "N/A", WorkerType.WAITER.getPosition(), 0.0, "auto-created");
-                Chef tempChef = new Chef(101, "TempChef", 30, "N/A", WorkerType.CHEF.getPosition(), 0.0, "auto-created");
-                // add to the current shift so other parts that query the shift can see them
-                curShift.addWorker(tempWaiter);
-                curShift.addWorker(tempChef);
-                // refresh workerList from shift
-                workerList = curShift.getAllWorkers();
-            }
-
-            if (workerList != null) {
-                for (Worker w : workerList) {
-                    System.out.println("EventHandler: worker -> id=" + w.getId() + ", name=" + w.getName() + ", position=" + w.getPosition());
-                }
-            }
-            Displayer.getDisplayer().dashSeperate();
+        boolean notReady = false; // Kiểm tra là tiếp tục có được không
+        totalDays++;
+        currentDay = totalDays % 7;
+        if (currentDay == 0) { // Nghỉ làm vào chủ nhật
+            System.out.println("Chu nhat nha hang nghi lam");
+            notReady = true;
+        }
+        // Dừng nếu ca làm không tồn tại
+        curShift = wrkMgr.getShift(currentDay);
+        if (curShift != null) { 
+            System.out.println("Ca lam khong ton tai: " + currentDay);
+            notReady = true;
         }
 
+        boolean shiftValid = curShift.isShiftValid();
+        // Nếu shift không có nhân viên hay không đủ nhân viên thì kết thúc ngày
+        if (shiftValid) {
+            System.out.println("Ca lam khong co du waiter hoac chef");
+            notReady = true;
+        }
+
+        // Skip ngày nếu không thỏa mãn
+        if (notReady) {
+            endShift();
+            return;
+        }
+
+        System.out.println("Bat dau ca lam: " + curShift.getShiftName() + "(Tong ngay: " + totalDays + " )");
+        workerList = curShift.getAllWorkers(); // lây danh sách các nhân viên
+        isNotActive = false;
     }
-    // public void startShift(int shiftID) {
-    //     // lưu danh sách các chef và waiter
-    //     curShift = wrkMgr.getShift(shiftID);
-    //     if (curShift != null) {
-    //         workerList = curShift.getAllWorkers();
 
-    //         System.out.println("EventHandler: startShift(" + shiftID + ") loaded shift='" + curShift.getShiftName() + "' with workersCount=" + (workerList == null ? 0 : workerList.size()));
-
-    //         // If shift has no workers, create temporary waiter and chef so simulator can run without manual staffing.
-    //         if (workerList == null || workerList.isEmpty()) {
-    //             System.out.println("EventHandler: no workers in shift " + shiftID + ", creating temporary chef & waiter for simulation");
-    //             // create simple temporary workers with negative ids to avoid colliding with real workers
-    //             Waiter tempWaiter = new Waiter(-1000, "TempWaiter", 20, "N/A", WorkerType.WAITER.getPosition(), 0.0, "auto-created");
-    //             Chef tempChef = new Chef(-1001, "TempChef", 30, "N/A", WorkerType.CHEF.getPosition(), 0.0, "auto-created");
-    //             // add to the current shift so other parts that query the shift can see them
-    //             curShift.addWorker(tempWaiter);
-    //             curShift.addWorker(tempChef);
-    //             // refresh workerList from shift
-    //             workerList = curShift.getAllWorkers();
-    //         }
-
-    //         if (workerList != null) {
-    //             for (Worker w : workerList) {
-    //                 System.out.println("EventHandler: worker -> id=" + w.getId() + ", name=" + w.getName() + ", position=" + w.getPosition());
-    //             }
-    //         }
-    //     }
     public void endShift() { 
+        if (currentDay == 0) { // Nghỉ làm vào chủ nhật
+            System.out.println("Nghi chu nhat");
+            return;
+        }
+
         notifySupplyManager(); // thông báo cho quản lý thực phẩm
         // FIXME: Gán workerList = null sẽ gây NullPointerException tại các phương thức
         // notifyXXX() khác (chúng lặp qua workerList mà không kiểm tra null).
         // Đề xuất: gọi workerList.clear() hoặc kiểm tra null trước khi lặp.
         workerList = null; 
+        isNotActive = true;
     }
     
     // Khi có khách đặt bàn hay chef gửi lại order thì kêu waiter đầu tiên đang rảnh làm việc
     public void notifyWaiters() {
-    // NOTE: workerList có thể null nếu endShift() đã được gọi; cần kiểm tra trước khi lặp.
-    for (Worker worker : workerList) {
+        if (isNotActive) { // Không thể gọi nếu nhà hàng chưa mở cửa
+            endShift();
+            return;
+        } 
+
+        for (Worker worker : workerList) {
             if (worker.getPosition().equals(WorkerType.WAITER.getPosition())) {
                 worker.startWorking();
                 break;
@@ -119,6 +104,11 @@ public class EventHandler {
 
     // Sau khi waiter lấy order xong thì kêu chef đầu tiên đang rảnh bắt đầu nấu ăn
     public void notifyChefs() {
+        if (isNotActive) { // Không thể gọi nếu nhà hàng chưa mở cửa
+            endShift();
+            return;
+        } 
+
         for (Worker worker : workerList) {
             if (worker.getPosition().equals(WorkerType.CHEF.getPosition())) {
                 worker.startWorking();
