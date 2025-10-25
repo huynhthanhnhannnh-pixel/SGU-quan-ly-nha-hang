@@ -11,6 +11,8 @@ public class program {
         EventHandler eventHlr = EventHandler.getEventHandler();
         SupplyManager splManager = SupplyManager.getManager();
         dishManager dishMgr = dishManager.getManager();
+        TableManager tbManager = TableManager.getManager();
+        eventHlr.startShift(1); // <- thêm dòng này (nạp worker cho ca 1)
 
         String[] message = {
             "WELCOME TO QUAN LY NHA HANG"
@@ -21,7 +23,8 @@ public class program {
             "Hien thi nhan vien cua nha hang",
             "Hien thi lich lam",
             "Kiem tra kho nguyen lieu", 
-            "Kiem tra danh sach menu"
+            "Kiem tra danh sach menu",
+            "Mo phong ban hang"
         };
         boolean sessionActive = true;
 
@@ -51,6 +54,10 @@ public class program {
                 case 6:
                     dishMgr.showGeneralInfo();
                     break;
+                case 7:
+                    tbManager.showSimulator();
+                    break;
+                
                 default:
                     System.out.println("Invalid input!");
                     inputHandler.enter2Continue();

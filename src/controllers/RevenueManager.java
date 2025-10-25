@@ -44,6 +44,8 @@ public class RevenueManager implements ManagerHandler {
     public double getRevenueOfDate(LocalDate date){
         double totalAmount = 0;
         DailyRevenue RevenueOfDate = revenueRecords.get(date);
+        // Nếu chưa có bản ghi cho ngày này thì trả về 0 thay vì ném NPE
+        if (RevenueOfDate == null) return 0.0;
         for ( Order order : RevenueOfDate.getTransactions()){
             totalAmount += order.getAmount();
         }
@@ -68,6 +70,14 @@ public class RevenueManager implements ManagerHandler {
         return self;
     }    
 
-    
+    public void addTransaction(java.time.LocalDate date, models.Order order) {
+    DailyRevenue dr = revenueRecords.get(date);
+    if (dr == null) {
+        dr = new DailyRevenue(date);
+        revenueRecords.put(date, dr);
+    }
+    dr.getTransactions().add(order);
+    System.out.println("Doanh thu ngay =" + date + ", hien tai da co danh thu=" + order.getAmount() );
+}
 
 }

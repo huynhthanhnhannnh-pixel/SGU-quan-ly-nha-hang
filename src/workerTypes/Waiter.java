@@ -1,12 +1,14 @@
 package workerTypes;
-import controllers.EventHandler;
+
+import controllers.*;
 import enums.OrderState;
 import java.util.List;
-import models.Order;
-import models.Table;
+
+import models.*;
 
 
 public class Waiter extends base.Worker {
+     
     
     public Waiter(int id, String name, int age, String gender, String position, double salaries, String description) {
         super(id, name, age, gender,position, salaries, description);
@@ -19,44 +21,47 @@ public class Waiter extends base.Worker {
 
     @Override
     public void startWorking() {
-        // Nếu NEW thì dùng getOrder
-        while (true) {
-                    Order order = new Order(null);
-                    Table table = new Table(10);
-            if (order == null) {
-                System.out.println(" không còn order -> tạm nghỉ!");
-                break;
+
+        Order order = EventHandler.getEventHandler().getTable();
+           if (order == null) {
+              System.out.println("Waiter: khong co order,nghi! (startWorking returned null)");
+            return;
             }
 
-            OrderState state = order.getState();
+        OrderState state = order.getState();
+
+        System.out.println("Waiter: picked up order for table: " + order.getTable() + " | state=" + state + " | dishesCount=" + order.getDishes().size());
 
             switch (state) {
                 case NEW:
-                    getOrder(table);
+
+                    makeOrder(order);                    
                     EventHandler.getEventHandler().addOrder(order);
                     EventHandler.getEventHandler().notifyChefs();
                     break;
 
                 case UNFINISHED:
-                    retakeOrder(table);
+                    retakeOrder(order);
                     EventHandler.getEventHandler().addOrder(order);
                     EventHandler.getEventHandler().notifyChefs();
                     break;
 
                 case COMPLETED:
-                    double bill = order.getAmount();
-                    System.out.println("Bàn " + order.getTable() +
-                                       " đã thanh toán: " + bill);
-                    System.out.println("da thanh toan");
+                    double bill = order.calculateAmount();
+                    System.out.println("Ban " + order.getTable() + " da thanh toan: " + bill);
+                    System.out.println("Waiter: order completed, preparing to record transaction. bill=" + bill);
+                    java.time.LocalDate today = java.time.LocalDate.now();
+                    System.out.println("Waiter: calling RevenueManager.addTransaction(date=" + today + ", amount=" + bill + ")");
+                    controllers.RevenueManager.getManager().addTransaction(today, order);
                     EventHandler.getEventHandler().notifyTableManager();
                     break;
 
                 default:
-                    System.out.println(getName() + " -> trạng thái không xác định: " + state);
+                    System.out.println(getName() + " -> Trang thai khong xac dinh " + state);
                     break;
             }
 
-        }
+        
         // Nếu UNFINISHED thì dùng retakeOrder
     }
 
@@ -65,33 +70,30 @@ public class Waiter extends base.Worker {
         
     }
     // Lấy order của bàn
-    private void getOrder(Table table) {
-        Order order = new Order(table);
-        for(String dish : table.orderRNG())
+    private void makeOrder(Order order) {
+        for(String dish : order.getTable().orderRNG())
             order.writeOrder(dish);
-            System.out.println("Waiter: Đã lấy món mới cho order của bàn " );
-        }
+    }
     
     // Lấy lại order nấu mấy món trước không đủ đồ để nấu
-    private void retakeOrder(Table table) {
-    Order order = new Order(table);
+    private void retakeOrder(Order order) {
+        Table table = order.getTable();
+        
         // Sử dụng Order.getNumOfUnsatisfiedRequest để chạy vòng lăp for
         // Dùng vòng lặp for để chọn món rồi lưu vào temp, dùng hàm orderRNG để lấy ngẫu nhiên món
         // Loại trừ các món có trong excludedOrders
-        // Bước 1: Xoá các món không đủ nguyên liệu
-    order.updateOrder();
-    // Bước 2: Lấy số món cần chọn lại
-    int retryCount = order.getNumOfUnsatisfiedRequest();
-    // Bước 3: Truy xuất trực tiếp excludedDishes (không cần get)
-    List<String> excluded = order.getExcludedDishes(); // nếu cùng class Order thì dùng được
-    // Bước 4: Chọn lại các món mới, tránh món bị loại
-    for (int i = 0; i < retryCount; i++) {
-        String dish;
-        do {
-            List<String> randomList = table.orderRNG(); // trả về List<String>
-        dish = randomList.get(0);
-        } while (excluded.contains(dish)); // không chọn lại món lỗi
-        order.writeOrder(dish);
-    }
+    
+        int retryCount = order.getNumOfUnsatisfiedRequest();
+        List<String> excluded = order.getExcludedDishes(); 
+       
+        for (int i = 0; i < retryCount; i++) {
+            String dish;
+            do {
+                List<String> randomList = table.orderRNG(); // trả về List<String>
+                dish = randomList.get(0);
+            } while (excluded.contains(dish)); // không chọn lại món lỗi
+            order.writeOrder(dish);
+        }
 }
+
 }
