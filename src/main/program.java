@@ -40,6 +40,7 @@ public class program {
             switch (inputHandler.getCurrentOption()) {
                 case 1:
                     inputHandler.closeScanner();
+                    eventHlr.End();
                     return;
                 case 2:
                     workerMgr.showWorkerToHire();

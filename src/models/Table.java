@@ -19,7 +19,7 @@ public class Table {
 
     // add menu cho bàn
     public void addMenu() {
-        List<Dish> convertToMenu = controllers.dishManager.getManager().getDishList();
+        List<Dish> convertToMenu = controllers.DishManager.getManager().getDishList();
         for (Dish dish : convertToMenu){
             FOOD_MENU.add(dish.getName());
         }
