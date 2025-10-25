@@ -1,12 +1,16 @@
 package controllers;
 import contracts.ManagerHandler;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import models.*;
 import utils.Displayer;
-
-public class RevenueManager implements ManagerHandler<Object> {
+public class RevenueManager implements ManagerHandler {
     private static RevenueManager self;
     private Displayer displayer = Displayer.getDisplayer();
     private HashMap<LocalDate, DailyRevenue> revenueRecords; //danh sách các DailyRevenue, đc lưu theo từng ngày 
@@ -53,7 +57,7 @@ public class RevenueManager implements ManagerHandler<Object> {
         LocalDate keyToRemove = null;
         for (Map.Entry<LocalDate, DailyRevenue> entry : revenueRecords.entrySet()) {
             DailyRevenue dr = entry.getValue();
-            if (dr.getDate() == (LocalDate)objID) { 
+            if (dr.getDate() == (LocalDate)objID) {   // Giả sử DailyRevenue có phương thức getId()
                 keyToRemove = entry.getKey();
                 break;
             }
@@ -89,13 +93,39 @@ public class RevenueManager implements ManagerHandler<Object> {
 
         return revenue;
     }
-    @Override
-    public void loadFromFile(Runnable func){
 
-    }
-    @Override
-    public void saveToFile(Runnable func){
+    public void saveToFile(){   
+        BufferedWriter bw = null;
+        try {
+            Path p1 = Paths.get("cache", "Revenue.txt");
+            Path p2 = Paths.get("src", "cache", "Revenue.txt");
 
+            if (Files.exists(p1)){
+                bw = Files.newBufferedWriter(p1, StandardCharsets.UTF_8);
+            }
+            else if ( Files.exists(p2)){
+                bw = Files.newBufferedWriter(p2, StandardCharsets.UTF_8);
+            }
+            else {
+                throw new FileNotFoundException("Schedule.txt not found in classpath or cache folders");
+            }
+
+            for (Map.Entry<LocalDate, DailyRevenue> entry : revenueRecords.entrySet()){
+                LocalDate date = entry.getKey();
+                DailyRevenue dr = entry.getValue();
+                bw.write(String.valueOf(date) + "|" + String.valueOf(dr.getTotalAmount()));
+                bw.newLine();
+            }
+
+        } 
+         catch (IOException e) {
+            e.printStackTrace();
+         }
+          finally {
+            if (bw != null) {
+                try { bw.close(); } catch (IOException ignored) {}
+            }
+          }
     }
     @Override
     public Object Input(){
@@ -124,5 +154,15 @@ public class RevenueManager implements ManagerHandler<Object> {
 
     public HashMap<LocalDate, Double> getProfitLoss() { return profitLoss; }
 
+
+    public void addTransaction(java.time.LocalDate date, models.Order order) {
+        DailyRevenue dr = revenueRecords.get(date);
+        if (dr == null) {
+            dr = new DailyRevenue(date);
+            revenueRecords.put(date, dr);
+        }
+        dr.getTransactions().add(order);
+        
+    }
 
 }

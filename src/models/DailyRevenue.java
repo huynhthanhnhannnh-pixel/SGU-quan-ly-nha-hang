@@ -28,6 +28,6 @@ public class DailyRevenue {
     }
 
     public double getTotalProfit(){
-        return getTotalAmount()/3*2 - RevenueManager.getManager().getProfitLoss().get(date);
+        return getTotalAmount()/32 - RevenueManager.getManager().getProfitLoss().get(date);
     }
 }

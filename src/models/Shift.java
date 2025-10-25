@@ -1,11 +1,7 @@
 package models;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import utils.Displayer;
-
-import enums.WorkerType;
 import base.Worker;
 
 public class Shift {
@@ -70,27 +66,21 @@ public class Shift {
         return workerList;
     }
 
-    // Lấy Nhân viên đâu tiên có vị trí trùng với vị trí đã cho
-    public Worker findFirstWorkerWithPosition(WorkerType position) {
+    // Kiểm tra xem shift có ít nhất 1 waiter và 1 chef
+    public boolean isShiftValid() {
+        boolean hasWaiter = false;
+        boolean hasChef = false;
         for (Worker worker : workerList) {
-            if (worker.getPosition().equals(position.getPosition())) {
-                return worker;
+            if (worker.getPosition().equals("Waiter")) {
+                hasWaiter = true;
+            } else if (worker.getPosition().equals("Chef")) {
+                hasChef = true;
+            }
+            if (hasWaiter && hasChef) {
+                return true;
             }
         }
-        return null;
+        return false;
     }
 
-    // Lấy danh sách các nhân viên không phải là quản lý
-    public List<Worker> getWorkersThatIsNotManager() {
-        List<Worker> temp = new ArrayList<>();
-        for (Worker worker : workerList) {
-            if (
-                worker.getPosition().equals(WorkerType.SUPPLY_MANAGER.getPosition()) ||
-                worker.getPosition().equals(WorkerType.WORKER_MANAGER.getPosition()) ||
-                worker.getPosition().equals(WorkerType.TABLE_MANAGER.getPosition())
-            ) { continue; }
-            temp.add(worker);
-        }
-        return temp;
-    }
 }
