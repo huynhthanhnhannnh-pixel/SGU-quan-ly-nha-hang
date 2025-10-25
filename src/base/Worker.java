@@ -29,11 +29,54 @@ public abstract class Worker extends Human {
 
     @Override
     public void display() {
-        System.out.println("ID: "+id+"\nName: "+name+"\nAge: "+age+"\nGender: "+gender+"\nPosition: "+position+"\nSalaries: "+salaries+"$");
-        System.out.println("Description: "+description);
+        String _position = getPosition();
+        switch (_position.toLowerCase()) {
+            case "waiter":
+                _position = "Phuc vu";
+                break;
+            case "chef":
+                _position = "Dau bep";
+                break;
+            case "supplymanager":
+                _position = "Quan ly thuc pham";
+                break;
+            case "workermanager":
+                _position = "Quan ly nhan vien";
+                break;
+            case "tablemanager":
+                _position = "Quan ly ban";   
+                break;
+            default:
+                break;
+        }
+        System.out.println("ID: "+id+"\nTen: "+name+"\nTuoi: "+age+"\nGioi Tinh: "+gender+"\nChuc vu: "+_position+"\nLuong: "+salaries+" dong");
+        System.out.println("Mo ta: "+description);
     }
     public void shortDisplay() {
-        System.out.println(id+" / "+name);
+        System.out.printf("| %-4d | %-20s |\n", id, name);
+    }
+    public void gridDisplay() {
+        String _position = getPosition();
+        switch (_position.toLowerCase()) {
+            case "waiter":
+                _position = "Phuc vu";
+                break;
+            case "chef":
+                _position = "Dau bep";
+                break;
+            case "supplymanager":
+                _position = "Quan ly thuc pham";
+                break;
+            case "workermanager":
+                _position = "Quan ly nhan vien";
+                break;
+            case "tablemanager":
+                _position = "Quan ly ban";   
+                break;
+            default:
+                break;
+        }
+        System.out.printf("| %-4d | %-20s | %-5d | %-10s | %-25s | %-30.1f |\n", id, name, age, gender, _position, salaries);
     }
 
     public abstract void interact();

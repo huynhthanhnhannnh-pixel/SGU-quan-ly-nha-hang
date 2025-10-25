@@ -1,16 +1,16 @@
-John 20 male waiter 500
-Im a simple man
-Jenny 18 female waiter 700
-I have a whole bakery on my ... you know 
-Adam 30 male chef 1400
-I like to make burger with my special white sauce
-Thien 19 male chef 500
-Toi nau khach hang
-Minh 19 male waiter 200
-toi bi an thit cho
-QuanLyThucPham 19 male supplyManager 10000
+1 NguyenVanA 20 nam waiter 500
+Toi se lam viec cham chi
+2 NguyenVanB 18 nu waiter 700
+Toi se thu hut khach hang den quan cua chung ta 
+3 NguyenVanC 30 nam chef 1400
+Toi co the nau ra nhung mon an chat luong cao
+4 Thien 19 nam chef 500
+Toi se nau ra nhung mon an that tinh te
+5 Minh 19 nam waiter 500
+Toi se phuc vu khach hang that nhiet tinh
+6 QuanLyThucPham 32 nam supplyManager 10000
 Toi se quan ly nguon cung thuc pham cua chung ta, dam bao khong co chuot, gian va nguyen lieu luon duoc tuoi moi
-QuanLyNhanVien 19 male workerManager 10000
+7 QuanLyNhanVien 28 nam workerManager 10000
 Toi se giam xac nhan vien cua chung ta, dam bao rang ko co ai noi xau khach hang, trom cap tien, nguyen lieu cua chung ta hay ngu trong gio lam viec
-QuanLyBan 19 male tableManager 10000
+8 QuanLyBan 27 nam tableManager 10000
 Toi se kiem tra va dat ban cho khach, voi kinh nghiem cua minh, toi dam bao la nha hang cua minh luon full nhung em chubby

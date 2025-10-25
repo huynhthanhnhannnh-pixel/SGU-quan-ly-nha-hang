@@ -56,7 +56,6 @@ public class UserInputHandler {
     // get user option(String), show warning when user enter an invalid option
     public void getUserOptionString() {
         System.out.println();   
-        displayer.singleSeperate();
         if (showWarning) {
             System.out.println("The option "+curOption+" is not a valid option, please choose again");
             showWarning = false;

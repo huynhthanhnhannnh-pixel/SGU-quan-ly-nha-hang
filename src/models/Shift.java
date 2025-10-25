@@ -3,29 +3,40 @@ package models;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import utils.Displayer;
 
 import enums.WorkerType;
 import base.Worker;
 
 public class Shift {
     private final String shiftName;
+    private final int id;
+    private Displayer displayer = Displayer.getDisplayer();
     private HashSet<Worker> workerList = new HashSet<Worker>();
     
-    public Shift(String shiftName) {
+    public Shift(String shiftName, int id) {
         this.shiftName = shiftName;
+        this.id = id;
     }
 
     // Getter
-    public String getShiftName() {
-        return shiftName;
-    }
+    public String getShiftName() { return shiftName; }
+    public int getID() { return id; }
 
     // Hiện thị tất cả nhân viên trong ca này
     public void display() {
-        System.out.println(shiftName + "\nCac nhan vien cua ca nay:\n ------------------");
+        System.out.println();
+        displayer.printFormatLine(new int[]{4, 20});
+        System.out.printf("| %-4d | %-20s |\n", id, shiftName);
+        displayer.printFormatLine(new int[]{27});
+        System.out.printf("| %-27s |\n", "Nhan vien trong ca:");
+        displayer.printFormatLine(new int[]{4, 20});
+        System.out.printf("| %-4s | %-20s |\n", "ID", "Ten");
+        displayer.printFormatLine(new int[]{4, 20});
         for (Worker worker : workerList) { 
-            System.out.println("id: "+worker.getId()+" / "+worker.getName()+" / "+worker.getPosition());
+           worker.shortDisplay();
         }
+        displayer.printFormatLine(new int[]{4, 20});
     }
 
     // Thêm nhân viên vào ca làm
@@ -55,10 +66,8 @@ public class Shift {
     }
 
     // Lấy danh sách các nhân viên của ca làm
-    public List<Worker> getAllWorkers() {
-       List<Worker> temp = new ArrayList<>();
-        for (Worker worker : workerList) { temp.add(worker); }
-        return temp;
+    public HashSet<Worker> getAllWorkers() {
+        return workerList;
     }
 
     // Lấy Nhân viên đâu tiên có vị trí trùng với vị trí đã cho

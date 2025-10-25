@@ -1,6 +1,7 @@
 package main;
 
 import controllers.*;
+import java.time.*;
 import utils.*;
 
 public class program {
@@ -12,7 +13,9 @@ public class program {
         SupplyManager splManager = SupplyManager.getManager();
         dishManager dishMgr = dishManager.getManager();
         TableManager tbManager = TableManager.getManager();
-        eventHlr.startShift(1); // <- thêm dòng này (nạp worker cho ca 1)
+        eventHlr.startShift(1);
+        RevenueManager revenueMgr = RevenueManager.getManager();
+        LocalDate today = LocalDate.now();
 
         String[] message = {
             "WELCOME TO QUAN LY NHA HANG"
@@ -24,6 +27,7 @@ public class program {
             "Hien thi lich lam",
             "Kiem tra kho nguyen lieu", 
             "Kiem tra danh sach menu",
+            "Kiem tra doanh thu",
             "Mo phong ban hang"
         };
         boolean sessionActive = true;
@@ -55,9 +59,11 @@ public class program {
                     dishMgr.showGeneralInfo();
                     break;
                 case 7:
+                    revenueMgr.showGeneralInfo();
+                    break;
+                case 8:
                     tbManager.showSimulator();
                     break;
-                
                 default:
                     System.out.println("Invalid input!");
                     inputHandler.enter2Continue();

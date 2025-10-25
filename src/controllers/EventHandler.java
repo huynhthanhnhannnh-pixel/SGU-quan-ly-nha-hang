@@ -6,10 +6,7 @@ import workerTypes.Chef;
 import enums.*;
 import java.util.*;
 import models.*;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import utils.*;
 
 public class EventHandler {
     private WorkerManager wrkMgr = WorkerManager.getManager();
@@ -19,7 +16,7 @@ public class EventHandler {
     private Shift curShift = wrkMgr.getShift(1); // lấy thông tin ca làm, mặc định là sáng thứ 2
     private static EventHandler self;
 
-    private List<Worker> workerList = new ArrayList<>();
+    private HashSet<Worker> workerList ;
     // FIXME: Sử dụng raw ArrayList với tham số (0) gây cảnh báo unchecked conversion.
     // Đề xuất: sử dụng generic: new ArrayList<Order>() hoặc new ArrayList<>()
     private List<Order> orderList= new ArrayList<>(); // danh sách các order đã được lấy
@@ -51,14 +48,13 @@ public class EventHandler {
         curShift = wrkMgr.getShift(shiftID);
         if (curShift != null) {
             workerList = curShift.getAllWorkers();
-            System.out.println("EventHandler: startShift(" + shiftID + ") loaded shift='" + curShift.getShiftName() + "' with workersCount=" + (workerList == null ? 0 : workerList.size()));
+            System.out.println("Ca lam: " + curShift.getShiftName() + ", so nguoi trong ca=" + (workerList == null ? 0 : workerList.size()));
 
-            // If shift has no workers, create temporary waiter and chef so simulator can run without manual staffing.
             if (workerList == null || workerList.isEmpty()) {
-                System.out.println("EventHandler: no workers in shift " + shiftID + ", creating temporary chef & waiter for simulation");
-                // create simple temporary workers with negative ids to avoid colliding with real workers
-                Waiter tempWaiter = new Waiter(-1000, "TempWaiter", 20, "N/A", WorkerType.WAITER.getPosition(), 0.0, "auto-created");
-                Chef tempChef = new Chef(-1001, "TempChef", 30, "N/A", WorkerType.CHEF.getPosition(), 0.0, "auto-created");
+                System.out.println("Khong co nguoi trong ca" + shiftID + ", tao chef & waiter de chay chuong trinh");
+   
+                Waiter tempWaiter = new Waiter(100, "TempWaiter", 20, "N/A", WorkerType.WAITER.getPosition(), 0.0, "auto-created");
+                Chef tempChef = new Chef(101, "TempChef", 30, "N/A", WorkerType.CHEF.getPosition(), 0.0, "auto-created");
                 // add to the current shift so other parts that query the shift can see them
                 curShift.addWorker(tempWaiter);
                 curShift.addWorker(tempChef);
@@ -71,6 +67,7 @@ public class EventHandler {
                     System.out.println("EventHandler: worker -> id=" + w.getId() + ", name=" + w.getName() + ", position=" + w.getPosition());
                 }
             }
+            Displayer.getDisplayer().dashSeperate();
         }
 
     }

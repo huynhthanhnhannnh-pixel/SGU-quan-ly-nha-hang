@@ -35,7 +35,8 @@ public class Chef extends base.Worker {
                         int requiredAmount = entry.getValue();
 
                         if (!SupplyManager.getManager().checkIngredients(ingredientName, requiredAmount)) {
-                            System.out.println("Khong du nguyen lieu cho mon:  " + dishMENU.getName());
+                            System.out.println("Chef: Khong du nguyen lieu cho mon:  " + dishMENU.getName()+"");
+                            
                             order.addExcludedDish(dishMENU.getName());
                             allAvailable = false;
                             break loop1; // Không cần kiểm tra tiếp nguyên liệu của món này
@@ -47,7 +48,7 @@ public class Chef extends base.Worker {
 
         if (allAvailable) {
             System.out.println("Chef: du nguyen lieu - bat dau nau!");
-
+            System.out.println("");
             for (String dish : order.getDishes()) {
                 for (Dish dishMENU : dishManager.getManager().getDishList()){
                     if (dish.equalsIgnoreCase(dishMENU.getName())){
@@ -59,17 +60,23 @@ public class Chef extends base.Worker {
                             SupplyManager.getManager().getIngredient(ingredientName, requiredAmount);
                         }
 
-                        System.out.println("Chef: Da nau xong " + dish);
+                        System.out.println("Chef: Da nau xong mon:  " + dish);
         
                     }
                 }
             }
 
-            System.out.println("Chef: Hoan thanh mon do");
+            System.out.println("Chef: Hoan thanh tat ca mon do");
             EventHandler.getEventHandler().notifyWaiters();
+            double bill = order.calculateAmount();
+            System.out.println("Ban da thanh toan: " + bill);
+                    java.time.LocalDate today = java.time.LocalDate.now();                   
+                    controllers.RevenueManager.getManager().addTransaction(today, order);
+                    EventHandler.getEventHandler().notifyTableManager();
 
         } else {
             System.out.println("Chef: Thieu nguyen lieu - yeu cau lay lai order");
+            System.out.println("");
 
             order.updateOrder(); // loại món thiếu ra khỏi dishes
             EventHandler.getEventHandler().addOrder(order); // đưa bàn vào hàng chờ
