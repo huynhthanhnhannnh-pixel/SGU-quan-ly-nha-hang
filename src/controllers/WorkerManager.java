@@ -440,6 +440,9 @@ public class WorkerManager implements ManagerHandler {
         saveSchedule();
     }
     public Shift getShift(int shiftID) {
+        for (Map.Entry<Integer, Shift> entry : schedule.entrySet()) {
+            System.out.println("Shift ID in schedule: " + entry.getKey() + " " + entry.getValue());
+        }
         return schedule.get(shiftID);
     }
 

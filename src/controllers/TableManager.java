@@ -114,31 +114,30 @@ public class TableManager implements ManagerHandler {
             if (choice == GO_BACK_OPTION) { inputHandler.resetOption(); break; }
             switch (choice) {
                 case 1:{
-                    System.out.println("Nguyen lieu het han su dung:   "); 
+                    System.out.println("Check co nguyen lieu nao het han su dung hay khong: "); 
 
                     if(SupplyManager.getManager().deleteExpiredandLowQuantityIngredients(today)==0)
                         System.out.println("Hang con han su dung");
                     else{
-                        SupplyManager.getManager().deleteExpiredandLowQuantityIngredients(today);}
-                        System.out.print("Dat target hom nay:   "); 
-                        Double money = sc.nextDouble(); 
+                        SupplyManager.getManager().deleteExpiredandLowQuantityIngredients(today);
+                    }
+                    System.out.print("Dat target hom nay:   "); 
+                    Double money = sc.nextDouble(); 
 
                     // Dat target
                     do{
-                    
                         if(money < 5000000){
                             System.out.print("Target thap qua, khong du tra tien nhan vien, dat lai target:  ");
                             money =sc.nextDouble(); }
-                            else if( money >50000000){
-                            System.out.print("Nha hang e lam, dat target chi cho cao vậy, dat lai target:  ");
+                        else if( money >50000000){
+                            System.out.print("Nha hang e lam, dat target chi cho cao vay, dat lai target:  ");
                             money =sc.nextDouble(); 
                         }
-                    
                     }
-                    while(money >5000000 && money <50000000);
+                    while(money < 5000000 || money > 50000000);
     
-                       System.out.println("Target hom nay la: "+ money);
-                       simulatorChefAndWaiter(money);
+                    System.out.println("Target hom nay la: "+ money);
+                    simulatorChefAndWaiter(money);
 
                    
                     break;

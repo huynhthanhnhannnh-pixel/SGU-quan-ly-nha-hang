@@ -4,20 +4,20 @@ import base.Worker;
 import enums.*;
 import java.util.*;
 import models.*;
-import utils.*;
+import utils.UserInputHandler;
 
 public class EventHandler {
     private WorkerManager wrkMgr = WorkerManager.getManager();
     private Shift curShift = wrkMgr.getShift(1); // lấy thông tin ca làm, mặc định là sáng thứ 2
     private static EventHandler self;
 
-    private HashSet<Worker> workerList; // danh sách các nhân viên trong ca làm hiện tại 
+    private HashSet<Worker> workerList = new HashSet<>(); // danh sách các nhân viên trong ca làm hiện tại 
     private List<Order> orderList= new ArrayList<>(); // danh sách các order đã được lấy
     private List<Table> unsatisfiedTables = new ArrayList<>(); // danh sách các bàn cần phục vụ hay chưa thảo order
 
     // Số ngày của chương trình, sử dụng số ngày để tìm shift
     private int totalDays = 0;
-    private int currentDay = 0; //  Nếu currentDay = 0 -> chủ nhật nghỉ làm, 1->thứ 2, 2->thứ 3,...
+    private Integer currentDay = 0; //  Nếu currentDay = 0 -> chủ nhật nghỉ làm, 1->thứ 2, 2->thứ 3,...
     private boolean isNotActive = false; // Trạng thái nhà hàng đang mở hay đóng
 
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
@@ -50,6 +50,7 @@ public class EventHandler {
         }
         // Dừng nếu ca làm không tồn tại
         curShift = wrkMgr.getShift(currentDay);
+        System.out.println("Current day: " + currentDay);
         if (curShift != null) { 
             System.out.println("Ca lam khong ton tai: " + currentDay);
             notReady = true;
@@ -78,11 +79,16 @@ public class EventHandler {
             System.out.println("Nghi chu nhat");
             return;
         }
-
+        if (workerList == null) {
+            System.out.println("Khong co nhan vien trong ca lam hien tai");
+            UserInputHandler.getUserInputHandler().enter2Continue();
+            return;
+        }
         notifySupplyManager(); // thông báo cho quản lý thực phẩm
         // FIXME: Gán workerList = null sẽ gây NullPointerException tại các phương thức
         // notifyXXX() khác (chúng lặp qua workerList mà không kiểm tra null).
         // Đề xuất: gọi workerList.clear() hoặc kiểm tra null trước khi lặp.
+        // workerList.clear();
         workerList = null; 
         isNotActive = true;
     }
