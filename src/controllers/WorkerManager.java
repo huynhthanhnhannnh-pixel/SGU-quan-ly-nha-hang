@@ -81,7 +81,7 @@ public class WorkerManager implements ManagerHandler {
     @Override
     public void add(Object worker) {
         Worker wkr = (Worker) worker;
-        hiredWorkers.put(wkr.getId(), wkr);
+        hiredWorkers.put(wkr.getId(), workerToHire.remove(wkr.getId()));
         wkr.setEmploymentState(true);
         System.out.println("Ban da thue "+wkr.getName());
     }
@@ -335,12 +335,6 @@ public class WorkerManager implements ManagerHandler {
                         worker = new Chef(id, name, age, gender, position, salaries, description);
                         workerToHire.put(id, worker);
                         break;
-                    case SUPPLY_MANAGER:
-                    case WORKER_MANAGER:
-                    case TABLE_MANAGER:
-                        worker = new Manager(id, name, age, gender, position, salaries, description);
-                        workerToHire.put(id, worker);
-                        break;
                     default:
                         break;
                 }
@@ -353,13 +347,12 @@ public class WorkerManager implements ManagerHandler {
             }
         }
 
-        loadHiredWorkers();
-
         // Init schedule, create shift each shift name in SHIFT_NAMES
         for (int i = 0; i < SHIFT_NAMES.length; i++) {
             schedule.put((i + 1), new Shift(SHIFT_NAMES[i], (i + 1)));
         }
 
+        loadHiredWorkers();
         loadSchedule();
     }
 
@@ -551,14 +544,6 @@ public class WorkerManager implements ManagerHandler {
         while (inputHandler.getCurrentOption() != GO_BACK_OPTION) {
             displayer.clearScreen();
             displayer.displayMessage(message);
-
-            // Show hired workers
-            System.out.println("\nQuan ly: ");
-            displayInfoBar();
-            showWorkersInPosition(WorkerType.SUPPLY_MANAGER);
-            showWorkersInPosition(WorkerType.WORKER_MANAGER);
-            showWorkersInPosition(WorkerType.TABLE_MANAGER);
-            displayer.printFormatLine(displayLineConfig);
 
             System.out.println("\nPhuc vu: ");
             displayInfoBar();

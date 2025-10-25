@@ -40,6 +40,10 @@ public class EventHandler {
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
 
+    public boolean isNotActive() {
+        return isNotActive;
+    }
+
     // Bắt đầu ca làm
     public void startShift() {
         // lưu danh sách các chef và waiter
@@ -89,8 +93,11 @@ public class EventHandler {
         }
         notifySupplyManager(); // thông báo cho quản lý thực phẩm
 
+        System.out.println("Ket thuc ngay lam");
         workerList = null; 
-        isNotActive = true;
+        isNotActive = true; // dat ket thuc ngay
+
+        inputHandler.enter2Continue();
     }
     
     // Khi có khách đặt bàn hay chef gửi lại order thì kêu waiter đầu tiên đang rảnh làm việc
@@ -129,7 +136,7 @@ public class EventHandler {
 
     public void notifySupplyManager() {
         spMgr.createReport();
-        
+
         inputHandler.enter2Continue();
     }
 
