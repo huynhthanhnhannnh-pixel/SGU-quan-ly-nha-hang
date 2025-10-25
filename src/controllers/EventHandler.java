@@ -8,6 +8,8 @@ import utils.UserInputHandler;
 
 public class EventHandler {
     private WorkerManager wrkMgr = WorkerManager.getManager();
+    private SupplyManager spMgr = SupplyManager.getManager();
+    private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
     private Shift curShift = wrkMgr.getShift(1); // lấy thông tin ca làm, mặc định là sáng thứ 2
     private static EventHandler self;
 
@@ -50,17 +52,18 @@ public class EventHandler {
         }
         // Dừng nếu ca làm không tồn tại
         curShift = wrkMgr.getShift(currentDay);
-        System.out.println("Current day: " + currentDay);
-        if (curShift != null) { 
+        if (curShift == null) { 
             System.out.println("Ca lam khong ton tai: " + currentDay);
             notReady = true;
         }
 
-        boolean shiftValid = curShift.isShiftValid();
         // Nếu shift không có nhân viên hay không đủ nhân viên thì kết thúc ngày
-        if (shiftValid) {
-            System.out.println("Ca lam khong co du waiter hoac chef");
-            notReady = true;
+        if (curShift != null) {
+            boolean shiftValid = curShift.isShiftValid();
+            if (!shiftValid) {
+                System.out.println("Ca lam hien tai khong du nhan vien de mo cua");
+                notReady = true;
+            }
         }
 
         // Skip ngày nếu không thỏa mãn
@@ -85,10 +88,7 @@ public class EventHandler {
             return;
         }
         notifySupplyManager(); // thông báo cho quản lý thực phẩm
-        // FIXME: Gán workerList = null sẽ gây NullPointerException tại các phương thức
-        // notifyXXX() khác (chúng lặp qua workerList mà không kiểm tra null).
-        // Đề xuất: gọi workerList.clear() hoặc kiểm tra null trước khi lặp.
-        // workerList.clear();
+
         workerList = null; 
         isNotActive = true;
     }
@@ -124,39 +124,15 @@ public class EventHandler {
     }
 
     public void notifyTableManager() {
-        for (Worker worker : workerList) {
-            if (worker.getPosition().equals(WorkerType.TABLE_MANAGER.getPosition())) {
-                worker.startWorking();
-                break;
-            }
-        }
+        
     }
 
     public void notifySupplyManager() {
-        for (Worker worker : workerList) {
-            if (worker.getPosition().equals(WorkerType.SUPPLY_MANAGER.getPosition())) {
-                worker.startWorking();
-                break;
-            }
-        }
+        spMgr.createReport();
+        
+        inputHandler.enter2Continue();
     }
 
-    // lấy Order chứa bàn cần được phục vụ, nếu order chưa có thì tạo mới
-    // public Order getTable() {
-    //     Table table;
-    //     if (!orderList.isEmpty()) {
-    //         table = unsatisfiedTables.remove(0);
-    //         for (Order order : orderList) {
-    //             if (table.equals(order.getTable())) {
-    //                 return order;
-    //             }
-    //         }
-    //         return new Order(table);
-
-    //     } else {
-    //         return null;
-    //     }
-    // }
     public Order getTable() {
         if (unsatisfiedTables == null || unsatisfiedTables.isEmpty()) return null;
             Table table = unsatisfiedTables.remove(0);
@@ -168,15 +144,6 @@ public class EventHandler {
             return new Order(table);
     }
 
-    // thêm bàn vào danh sách các bàn cần phục vụ
-    // public void addTable(Table table){
-    //     // FIXME: unsatisfiedTables có thể null; cần khởi tạo trước khi dùng.
-    //     // Đề xuất: nếu (unsatisfiedTables == null) unsatisfiedTables = new ArrayList<>();
-    //     if (unsatisfiedTables.contains(table)) {
-    //         return;
-    //     }
-    //     unsatisfiedTables.add(table);
-    // }
     public void addTable(Table table) {
         if (unsatisfiedTables == null) unsatisfiedTables = new ArrayList<>();
         if (!unsatisfiedTables.contains(table)) unsatisfiedTables.add(table);
