@@ -96,10 +96,10 @@ public class EventHandler {
         // Thông tin được hiện thị vào cuối ngày
         spMgr.createReport(); // thông báo cho quản lý thực phẩm
 
-
-
-
         
+
+
+
         // ====================================================
 
         System.out.println("Ket thuc ngay lam");
