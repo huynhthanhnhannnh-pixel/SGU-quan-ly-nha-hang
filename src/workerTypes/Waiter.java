@@ -21,8 +21,8 @@ public class Waiter extends base.Worker {
     public void startWorking() {
         // Nếu NEW thì dùng getOrder
         while (true) {
-                    Order order = new Order(null);
-                    Table table = new Table(10);
+            Order order = new Order(null);
+            Table table = new Table(10);
             if (order == null) {
                 System.out.println(" không còn order -> tạm nghỉ!");
                 break;

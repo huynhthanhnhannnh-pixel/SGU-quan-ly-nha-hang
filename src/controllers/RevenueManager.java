@@ -6,7 +6,7 @@ import java.util.*;
 import models.*;
 import utils.Displayer;
 
-public class RevenueManager implements ManagerHandler {
+public class RevenueManager implements ManagerHandler<Object> {
     private static RevenueManager self;
     private Displayer displayer = Displayer.getDisplayer();
     private HashMap<LocalDate, DailyRevenue> revenueRecords; //danh sách các DailyRevenue, đc lưu theo từng ngày 
@@ -53,7 +53,7 @@ public class RevenueManager implements ManagerHandler {
         LocalDate keyToRemove = null;
         for (Map.Entry<LocalDate, DailyRevenue> entry : revenueRecords.entrySet()) {
             DailyRevenue dr = entry.getValue();
-            if (dr.getID() == (double)objID) {   // Giả sử DailyRevenue có phương thức getId()
+            if (dr.getDate() == (LocalDate)objID) { 
                 keyToRemove = entry.getKey();
                 break;
             }
@@ -89,13 +89,25 @@ public class RevenueManager implements ManagerHandler {
 
         return revenue;
     }
+    @Override
+    public void loadFromFile(Runnable func){
+
+    }
+    @Override
+    public void saveToFile(Runnable func){
+
+    }
+    @Override
+    public Object Input(){
+        return  null;
+    }
 
     public HashMap<LocalDate, DailyRevenue> getRevenueRecords(){ return revenueRecords; }
 
     //Lấy doanh thu của ngày nào đó 
-    // public double getRevenueOfDate(LocalDate date){ return revenueRecords.get(date).getTotalAmount(); }
+    public double getRevenueOfDate(LocalDate date){ return revenueRecords.get(date).getTotalAmount(); }
 
-    // public double getProfitOfDate(LocalDate date){ return revenueRecords.get(date).getTotalProfit(); }
+    public double getProfitOfDate(LocalDate date){ return revenueRecords.get(date).getTotalProfit(); }
 
     // Private constructor to enforce singleton
     private RevenueManager() {
@@ -112,6 +124,5 @@ public class RevenueManager implements ManagerHandler {
 
     public HashMap<LocalDate, Double> getProfitLoss() { return profitLoss; }
 
-    
 
 }

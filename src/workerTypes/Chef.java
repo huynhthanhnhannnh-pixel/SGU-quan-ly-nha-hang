@@ -20,8 +20,8 @@ public class Chef extends base.Worker {
     @Override
     public void startWorking() {
         EventHandler event = EventHandler.getEventHandler();
-    controllers.dishManager dm = controllers.dishManager.getManager();
-    SupplyManager sm = SupplyManager.getManager();
+        controllers.dishManager dm = controllers.dishManager.getManager();
+        SupplyManager sm = SupplyManager.getManager();
         Order order = new Order(null);   
         if (order.getDishes().isEmpty()) {
             System.out.println("Chef: Không có order nào, nghỉ!");
