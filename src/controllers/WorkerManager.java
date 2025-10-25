@@ -12,7 +12,7 @@ import utils.*;
 import workerTypes.*;
 import models.*;
 
-public class WorkerManager implements ManagerHandler<Worker> {
+public class WorkerManager implements ManagerHandler {
     private static WorkerManager self = null;
     private Displayer displayer = Displayer.getDisplayer();
     private int[] displayLineConfig = {4, 20, 5, 10, 25, 30};
@@ -79,14 +79,15 @@ public class WorkerManager implements ManagerHandler<Worker> {
     }
 
     @Override
-        public void add(Worker worker) {
-            hiredWorkers.put(worker.getId(), worker);
-            worker.setEmploymentState(true);
-            System.out.println("Ban da thue "+worker.getName());
+    public void add(Object worker) {
+        Worker wkr = (Worker) worker;
+        hiredWorkers.put(wkr.getId(), wkr);
+        wkr.setEmploymentState(true);
+        System.out.println("Ban da thue "+wkr.getName());
     }
     @Override
-    public Worker remove(Worker worker) {
-        Worker wrk = hiredWorkers.remove(worker.getId());
+    public Object remove(Object worker) {
+        Worker wrk = hiredWorkers.remove(((Worker) worker).getId());
         if (wrk != null) {
             wrk.setEmploymentState(false);
             workerToHire.put(wrk.getId(), wrk);
@@ -97,8 +98,8 @@ public class WorkerManager implements ManagerHandler<Worker> {
         return wrk;
     }
     @Override
-    public Worker search(Worker worker) { 
-        int workerID = worker.getId();
+    public Object search(Object worker) { 
+        int workerID = ((Worker) worker).getId();
         Worker wkr = hiredWorkers.get(workerID);
         if (wkr != null) {
             return wkr;
@@ -108,7 +109,7 @@ public class WorkerManager implements ManagerHandler<Worker> {
         }
      }
     @Override
-    public Worker Input() {
+    public Object Input() {
         Displayer.getDisplayer().singleSeperate();
         System.out.println();
         System.out.println("Nhap ID nhan vien:");
@@ -363,14 +364,14 @@ public class WorkerManager implements ManagerHandler<Worker> {
             }
         }
 
-        loadFromFile(() -> loadHiredWorkers());
+        loadFromFile(this::loadHiredWorkers);
 
         // Init schedule, create shift each shift name in SHIFT_NAMES
         for (int i = 0; i < SHIFT_NAMES.length; i++) {
             schedule.put((i + 1), new Shift(SHIFT_NAMES[i], (i + 1)));
         }
 
-        loadFromFile(() -> loadSchedule());
+        loadFromFile(this::loadSchedule);
     }
 
     // Private constructor to enforce singleton
@@ -447,7 +448,7 @@ public class WorkerManager implements ManagerHandler<Worker> {
         }
         inputHandler.resetOption();
 
-        saveToFile(() -> saveSchedule());
+        saveToFile(this::saveSchedule);
     }
     public Shift getShift(int shiftID) {
         return schedule.get(shiftID);
@@ -532,7 +533,8 @@ public class WorkerManager implements ManagerHandler<Worker> {
             }
             displayer.printFormatLine(new int[]{4, 20});
 
-            Worker worker = Input();
+            Object obj = Input();
+            Worker worker = (Worker) obj;
             if (worker == null) { inputHandler.raiseWarning(); continue; }
 
             // check if the entered id exist
@@ -543,7 +545,7 @@ public class WorkerManager implements ManagerHandler<Worker> {
         inputHandler.resetOption(); 
 
         // Save hired workers to cache
-        saveToFile(() -> saveHiredWorkers());
+        saveToFile(this::saveHiredWorkers);
         context = false;
     }
     public void showWorkersInPosition(WorkerType position) {
