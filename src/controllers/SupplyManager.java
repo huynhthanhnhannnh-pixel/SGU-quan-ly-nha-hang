@@ -26,6 +26,8 @@ public class SupplyManager implements ManagerHandler {
         return s.trim().toLowerCase().replaceAll("\\s+", "");
     }
 
+    @Override 
+    public Object Input() { return null;}
 
     // Ingredient management submenu per spec
     @Override

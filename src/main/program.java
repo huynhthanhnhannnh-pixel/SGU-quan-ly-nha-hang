@@ -11,7 +11,8 @@ public class program {
         UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
         EventHandler eventHlr = EventHandler.getEventHandler();
         SupplyManager splManager = SupplyManager.getManager();
-        DishManager dishMgr = DishManager.getManager();
+        dishManager dishMgr = dishManager.getManager();
+        TableManager tbManager = TableManager.getManager();
         RevenueManager revenueMgr = RevenueManager.getManager();
         LocalDate today = LocalDate.now();
 
@@ -25,7 +26,8 @@ public class program {
             "Hien thi lich lam",
             "Kiem tra kho nguyen lieu", 
             "Kiem tra danh sach menu",
-            "Kiem tra doanh thu"
+            "Kiem tra doanh thu",
+            "Mo phong ban hang"
         };
         boolean sessionActive = true;
 
@@ -58,6 +60,9 @@ public class program {
                     break;
                 case 7:
                     revenueMgr.showGeneralInfo();
+                    break;
+                case 8:
+                    tbManager.showSimulator();
                     break;
                 default:
                     System.out.println("Invalid input!");

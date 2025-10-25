@@ -1,7 +1,6 @@
 package workerTypes;
 
-import controllers.EventHandler;
-import controllers.SupplyManager;
+import controllers.*;
 import java.util.Map;
 import models.Dish;
 import models.Order;
@@ -13,74 +12,75 @@ public class Chef extends base.Worker {
     }
 
     @Override
-    public void interact() {
-        
-    }
+    public void interact() {}
 
     @Override
     public void startWorking() {
-        EventHandler event = EventHandler.getEventHandler();
-    controllers.DishManager dm = controllers.DishManager.getManager();
-    SupplyManager sm = SupplyManager.getManager();
-        Order order = new Order(null);   
-        if (order.getDishes().isEmpty()) {
-            System.out.println("Chef: Không có order nào, nghỉ!");
+        Order order = EventHandler.getEventHandler().getOrder(); 
+        if (order == null) {
+            System.out.println("Chef: khong co order nao, nghi!");
             return;
         }
     
         boolean allAvailable = true;
 
         for (String dish : order.getDishes()) {
-            loop1:
-            for (Dish dishMENU : dm.getDishList()){
+            loop1: // khai bao loop bên ngoài để break
+            for (Dish dishMENU : dishManager.getManager().getDishList()){
                 if (dish.equalsIgnoreCase(dishMENU.getName())){
                     Map<String, Integer> requiredIngredients = dishMENU.readIngredients(); // nguyên liệu cần cho món
                 
-                for (Map.Entry<String, Integer> entry : requiredIngredients.entrySet()) {
-                    String ingredientName = entry.getKey();
-                    int requiredAmount = entry.getValue();
+                    for (Map.Entry<String, Integer> entry : requiredIngredients.entrySet()) {
+                        String ingredientName = entry.getKey();
+                        int requiredAmount = entry.getValue();
 
-                    // Gọi hàm checkIngredients của bạn
-                    if (!sm.checkIngredients(ingredientName, requiredAmount)) {
-                        System.out.println("❌ Không đủ nguyên liệu cho món " + dishMENU.getName());
-                        order.addExcludedDish(dishMENU.getName());
-                        allAvailable = false;
-                        break loop1; // Không cần kiểm tra tiếp nguyên liệu của món này
+                        if (!SupplyManager.getManager().checkIngredients(ingredientName, requiredAmount)) {
+                            System.out.println("Chef: Khong du nguyen lieu cho mon:  " + dishMENU.getName()+"");
+                            
+                            order.addExcludedDish(dishMENU.getName());
+                            allAvailable = false;
+                            break loop1; // Không cần kiểm tra tiếp nguyên liệu của món này
+                        }
+                    }
+                }
             }
-        }
-    }
-    }
         }
 
         if (allAvailable) {
-        System.out.println("Chef: Đủ nguyên liệu -> Bắt đầu nấu!");
+            System.out.println("Chef: du nguyen lieu - bat dau nau!");
+            System.out.println("");
+            for (String dish : order.getDishes()) {
+                for (Dish dishMENU : dishManager.getManager().getDishList()){
+                    if (dish.equalsIgnoreCase(dishMENU.getName())){
+                        Map<String, Integer> requiredIngredients = dishMENU.readIngredients(); // nguyên liệu cần cho món
+                    
+                        for (Map.Entry<String, Integer> entry : requiredIngredients.entrySet()) {
+                            String ingredientName = entry.getKey();
+                            int requiredAmount = entry.getValue();
+                            SupplyManager.getManager().getIngredient(ingredientName, requiredAmount);
+                        }
 
-        for (String dish : order.getDishes()) {
-            for (Dish dishMENU : dm.getDishList()){
-                if (dish.equalsIgnoreCase(dishMENU.getName())){
-        Map<String, Integer> requiredIngredients = dishMENU.readIngredients(); // nguyên liệu cần cho món
+                        System.out.println("Chef: Da nau xong mon:  " + dish);
+        
+                    }
+                }
+            }
 
-        for (Map.Entry<String, Integer> entry : requiredIngredients.entrySet()) {
-        String ingredientName = entry.getKey();
-        int requiredAmount = entry.getValue();
-
-        sm.getIngredient(ingredientName, requiredAmount);
-        }
-
-        System.out.println("Chef: Đã nấu xong món " + dish);
-    }
-}
-}
-
-            System.out.println("Chef: Hoàn tất! -> Báo waiter mang món ra");
-            event.notifyWaiters();
+            System.out.println("Chef: Hoan thanh tat ca mon do");
+            EventHandler.getEventHandler().notifyWaiters();
+            double bill = order.calculateAmount();
+            System.out.println("Ban da thanh toan: " + bill);
+                    java.time.LocalDate today = java.time.LocalDate.now();                   
+                    controllers.RevenueManager.getManager().addTransaction(today, order);
+                    EventHandler.getEventHandler().notifyTableManager();
 
         } else {
-            System.out.println("Chef: Thiếu nguyên liệu -> Cập nhật lại Order và gửi về waiter");
+            System.out.println("Chef: Thieu nguyen lieu - yeu cau lay lai order");
+            System.out.println("");
 
             order.updateOrder(); // loại món thiếu ra khỏi dishes
-            event.addTable(order.getTable()); // đưa bàn vào hàng chờ
-            event.notifyWaiters(); // kêu waiter tới lấy lại order
+            EventHandler.getEventHandler().addOrder(order); // đưa bàn vào hàng chờ
+            EventHandler.getEventHandler().notifyWaiters(); // kêu waiter tới lấy lại order
         }
     }
         
