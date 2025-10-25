@@ -20,7 +20,7 @@ public class WorkerManager implements ManagerHandler {
 
     // private final int GO_BACK_OPTION = 0; 
     private final String[] SHIFT_NAMES = {
-        "Sang Thu 2", "Chieu Thu 2",
+        "Sang Thu 3", "Chieu Thu 2",
         "Sang Thu 3", "Chieu Thu 3",
         "Sang Thu 4", "Chieu Thu 4",
         "Sang Thu 5", "Chieu Thu 5",
@@ -290,17 +290,6 @@ public class WorkerManager implements ManagerHandler {
             }
         }
     }
-
-    @Override
-    public void loadFromFile(Runnable func) {
-        // Not implemented
-        func.run();
-    }
-    @Override
-    public void saveToFile(Runnable func) {
-        // Not implemented
-        func.run();
-    }
     
     // Init a storage of worker objects, read from Worker.txt
     private void initResources() {
@@ -364,14 +353,14 @@ public class WorkerManager implements ManagerHandler {
             }
         }
 
-        loadFromFile(this::loadHiredWorkers);
+        loadHiredWorkers();
 
         // Init schedule, create shift each shift name in SHIFT_NAMES
         for (int i = 0; i < SHIFT_NAMES.length; i++) {
             schedule.put((i + 1), new Shift(SHIFT_NAMES[i], (i + 1)));
         }
 
-        loadFromFile(this::loadSchedule);
+        loadSchedule();
     }
 
     // Private constructor to enforce singleton
@@ -448,7 +437,7 @@ public class WorkerManager implements ManagerHandler {
         }
         inputHandler.resetOption();
 
-        saveToFile(this::saveSchedule);
+        saveSchedule();
     }
     public Shift getShift(int shiftID) {
         return schedule.get(shiftID);
@@ -545,7 +534,7 @@ public class WorkerManager implements ManagerHandler {
         inputHandler.resetOption(); 
 
         // Save hired workers to cache
-        saveToFile(this::saveHiredWorkers);
+        saveHiredWorkers();
         context = false;
     }
     public void showWorkersInPosition(WorkerType position) {
