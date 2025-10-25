@@ -11,7 +11,7 @@ public class program {
         UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
         EventHandler eventHlr = EventHandler.getEventHandler();
         SupplyManager splManager = SupplyManager.getManager();
-        dishManager dishMgr = dishManager.getManager();
+        DishManager dishMgr = DishManager.getManager();
         RevenueManager revenueMgr = RevenueManager.getManager();
         LocalDate today = LocalDate.now();
 
@@ -38,6 +38,7 @@ public class program {
             switch (inputHandler.getCurrentOption()) {
                 case 1:
                     inputHandler.closeScanner();
+                    eventHlr.End();
                     return;
                 case 2:
                     workerMgr.showWorkerToHire();

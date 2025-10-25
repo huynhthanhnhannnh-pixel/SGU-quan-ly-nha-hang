@@ -2,6 +2,12 @@ package controllers;
 
 import base.Worker;
 import enums.*;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 import models.*;
 
@@ -112,4 +118,38 @@ public class EventHandler {
         orderList.add(newOrder);
     }
     
-}
+    /**
+     * Truncate common cache copy files so they become empty.
+     * This will try both "src/cache" and "cache" folders and clear
+     * Dishes(copy).txt, Ingredients(copy).txt, HiredWorkers.txt and Schedule.txt if present.
+     */
+    public void clearCache() {
+        Path[] dirs = { Paths.get("src", "cache"), Paths.get("cache") };
+        String[] filenames = { "Dishes(copy).txt", "Ingredients(copy).txt", "HiredWorkers.txt", "Schedule.txt" };
+        for (Path dir : dirs) {
+            for (String name : filenames) {
+                try {
+                    Path p = dir.resolve(name);
+                    if (Files.exists(p)) {
+                        // write zero bytes -> truncate file
+                        Files.write(p, new byte[0], StandardOpenOption.TRUNCATE_EXISTING);
+                    }
+                } catch (IOException e) {
+                    System.err.println("Lỗi khi xóa nội dung file cache " + name + " tại " + dir + ": " + e.getMessage());
+                }
+            }
+        }
+    }
+
+    public void End(){
+        // register shutdown hook to clear cache copy files when program exits
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                clearCache();
+                System.out.println("Cache files cleared on shutdown.");
+            } catch (Exception ex) {
+                System.err.println("Error clearing cache on shutdown: " + ex.getMessage());
+            }
+        }));
+    }
+}   

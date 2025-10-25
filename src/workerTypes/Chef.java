@@ -20,7 +20,7 @@ public class Chef extends base.Worker {
     @Override
     public void startWorking() {
         EventHandler event = EventHandler.getEventHandler();
-    controllers.dishManager dm = controllers.dishManager.getManager();
+    controllers.DishManager dm = controllers.DishManager.getManager();
     SupplyManager sm = SupplyManager.getManager();
         Order order = new Order(null);   
         if (order.getDishes().isEmpty()) {

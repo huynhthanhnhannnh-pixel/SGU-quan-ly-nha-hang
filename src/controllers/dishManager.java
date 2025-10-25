@@ -9,17 +9,54 @@ import models.Dish;
 import models.Ingredient;
 import utils.*;
 
-public class dishManager implements ManagerHandler {
-    public static dishManager self;
+public class DishManager implements ManagerHandler {
+    public static DishManager self;
     private Displayer displayer = Displayer.getDisplayer();
     // private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
     private LinkedHashMap<Integer, Dish> dishList = new LinkedHashMap<>();
     private int nextId = 1; // incremental ID for dishes
     // int GO_BACK_OPTION = 0;
     
-    public static dishManager getManager() {
+    public void saveDishesToFile() {
+    BufferedWriter bw = null;
+    try {
+        Path p1 = Paths.get("cache", "Dishes(copy).txt");
+        Path p2 = Paths.get("src", "cache", "Dishes(copy).txt");
+
+    if (Files.exists(p1)) {
+        // overwrite existing file instead of appending
+        bw = Files.newBufferedWriter(p1, StandardCharsets.UTF_8,
+            StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+    } else if (Files.exists(p2)) {
+        // overwrite existing file instead of appending
+        bw = Files.newBufferedWriter(p2, StandardCharsets.UTF_8,
+            StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        } else {
+            throw new FileNotFoundException("Dishes(copy).txt not found in cache folders");
+        }
+
+        for (Dish ex : dishList.values()) {
+            bw.write(ex.getName());
+            bw.write(" ");
+            for (Map.Entry<String, Integer> ing : ex.readIngredients().entrySet()) {
+                bw.write(ing.getKey() + "|" + ing.getValue() + " ");
+            }
+            bw.newLine();
+        }
+        System.out.println("Đã lưu thành công vào file!");
+    } catch (IOException e) {
+        System.err.println("Lỗi khi ghi file: " + e.getMessage());
+    } finally {
+        try {
+            if (bw != null) bw.close();
+        } catch (IOException ignored) {}
+    }
+}
+
+    
+    public static DishManager getManager() {
         if (self == null) {
-            self = new dishManager();
+            self = new DishManager();
         } 
         return self;
     }
@@ -68,10 +105,43 @@ public class dishManager implements ManagerHandler {
             if (reader != null) try { reader.close(); } catch (IOException ignored) {}
         }
     }
-    // Private constructor to enforce singleton
-    private dishManager() {
-        loadDishesFromFile();
+
+    public void copyFile(){
+        // write the copy to the runtime cache folder (same folder used by saveDishesToFile)
+        Path destination = Paths.get("cache", "Dishes(copy).txt");
+        try {
+            // Try copying from classpath resource first (works when running from jar/IDE)
+            InputStream is = DishManager.class.getClassLoader().getResourceAsStream("resources/Dishes.txt");
+            Files.createDirectories(destination.getParent());
+            if (is != null) {
+                try (InputStream in = is) {
+                    Files.copy(in, destination, StandardCopyOption.REPLACE_EXISTING);
+                    System.out.println("Đã copy file từ classpath thành công!");
+                }
+            } else {
+                // Fallback to filesystem path relative to working directory
+                Path source = Paths.get("src", "resources", "Dishes.txt");
+                if (Files.exists(source)) {
+                    Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
+                    System.out.println("Đã copy file từ src/resources thành công!");
+                } else {
+                    System.err.println("Nguon Dishes.txt khong tim thay (checked classpath and src/resources)");
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+    
+
+
+    // Private constructor to enforce singleton
+    private DishManager() {
+        loadDishesFromFile();
+        copyFile();
+    }
+
+    
     
 
     // -------- ManagerHandler implementations for Dish objects --------
@@ -104,7 +174,7 @@ public class dishManager implements ManagerHandler {
                 // === LỖI LOGIC KHÔNG HỢP LÝ CÁCH SẮP XẾP===    
                 case 2: {
                     // Build Dish via helper then add via ManagerHandler.add(Object)
-                    Dish d = DishInput();
+                    Dish d = Input();
                     if (d != null) add(d);
                     break;
                 }
@@ -193,7 +263,8 @@ public class dishManager implements ManagerHandler {
     }
 
     // Helper to read a Dish from console (name + ingredient list). Returns null if cancelled.
-    public static Dish DishInput() {
+    @Override
+    public Dish Input() {
         UserInputHandler input = UserInputHandler.getUserInputHandler();
         System.out.print("Nhap ten mon moi (nhap 0 de huy): ");
         String name = input.getScanner().nextLine().trim();
@@ -251,6 +322,7 @@ public class dishManager implements ManagerHandler {
             }
             dishList.put(nextId++, d);
             System.out.println("Da them mon: " + d.getName());
+            saveDishesToFile();
             return;
         }
         System.out.println("Khong the them: doi tuong khong phai Dish");
@@ -287,7 +359,7 @@ public class dishManager implements ManagerHandler {
             int newAmount = ingOfDish.get(ingredientName) + amount;
             targetDish.getIngredients().put(ingredientName, newAmount);
             ingredientIsNotFound = false; // Nguyên liệu đã được tìm thấy và đã cập nhật
-            
+            saveDishesToFile();
             break;
         }
 
@@ -298,6 +370,7 @@ public class dishManager implements ManagerHandler {
 
                 targetDish.addIngredient(ingName, amount);
                 ingredientIsNotFound = false;
+                saveDishesToFile();
                 break;
             }
             //dish.addIngredient(ingName, amount);
@@ -322,6 +395,7 @@ public class dishManager implements ManagerHandler {
         }
         Dish removed = dishList.remove(objID);
         System.out.println("Da xoa mon: " + removed.getName());
+        saveDishesToFile();
         return removed;
     }
 
@@ -332,6 +406,7 @@ public class dishManager implements ManagerHandler {
             if (dish.getName().equalsIgnoreCase(dishName)) {
                 dish.removeIngredient(ingName.toLowerCase());
                 System.out.println("Da xoa " + ingName + " khoi mon " + dish.getName());
+                saveDishesToFile();
                 return true;
             }
         }
@@ -424,6 +499,7 @@ public class dishManager implements ManagerHandler {
             if (dish.getName().equalsIgnoreCase(dishName)) {
                 dish.changeIngredientAmount(ingName.toLowerCase(), amount);
                 System.out.println("Da cap nhat so luong " + ingName + " trong mon " + dish.getName() + " = " + amount);
+                saveDishesToFile();
                 return true;
             }
         }
