@@ -2,6 +2,8 @@ package controllers;
 
 import java.io.*;
 import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
 
 import base.Worker;
 import contracts.ManagerHandler;
@@ -10,7 +12,7 @@ import utils.*;
 import workerTypes.*;
 import models.*;
 
-public class WorkerManager implements ManagerHandler {
+public class WorkerManager implements ManagerHandler<Worker> {
     private static WorkerManager self = null;
     private Displayer displayer = Displayer.getDisplayer();
     private int[] displayLineConfig = {4, 20, 5, 10, 25, 30};
@@ -28,6 +30,7 @@ public class WorkerManager implements ManagerHandler {
 
     private HashMap<Integer, Worker> workerToHire = new HashMap<Integer, Worker>(); // available workers
     private HashMap<Integer, Worker> hiredWorkers = new HashMap<Integer, Worker>(); // hired workers
+    private static boolean context = false; // true if in hiring context/ false firing context
     private LinkedHashMap<Integer, Shift> schedule = new LinkedHashMap<Integer, Shift>();
 
     @Override
@@ -70,69 +73,214 @@ public class WorkerManager implements ManagerHandler {
     }
     @Override
     public void createReport() {
-        System.out.println("Nhan vien A vua hut thuoc vua choi da");
-        System.out.println("Nhan vien B moi mo tai khoan only quat");
-        System.out.println("Nhan vien C vua bi cooked");
+        System.out.println("Nhan vien A ban 10 mon");
+        System.out.println("Nhan vien B ban 20 mon");
+        System.out.println("Nhan vien C nau 30 mon");
+    }
+
+    @Override
+        public void add(Worker worker) {
+            hiredWorkers.put(worker.getId(), worker);
+            worker.setEmploymentState(true);
+            System.out.println("Ban da thue "+worker.getName());
+    }
+    @Override
+    public Worker remove(Worker worker) {
+        Worker wrk = hiredWorkers.remove(worker.getId());
+        if (wrk != null) {
+            wrk.setEmploymentState(false);
+            workerToHire.put(wrk.getId(), wrk);
+            System.out.println("Ban da sa thai " + wrk.getName());
+        } else {
+            System.out.println("Khong tim thay nhan vien de sa thai voi id: " + wrk);
+        }
+        return wrk;
+    }
+    @Override
+    public Worker search(Worker worker) { 
+        int workerID = worker.getId();
+        Worker wkr = hiredWorkers.get(workerID);
+        if (wkr != null) {
+            return wkr;
+        } else {
+            System.out.println("Khong tim thay nhan vien voi id: " + workerID);
+            return null;
+        }
+     }
+    @Override
+    public Worker Input() {
+        Displayer.getDisplayer().singleSeperate();
+        System.out.println();
+        System.out.println("Nhap ID nhan vien:");
+        inputHandler.getUserOption();
+        int id = inputHandler.getCurrentOption();
+        Worker worker = null;
+
+        if (context) {
+            worker = self.workerToHire.get(id);
+        } else {
+            worker = self.hiredWorkers.get(id);
+        }
+
+        return worker;
     }
 
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
     // Initialization
 
-    // Init a storage of worker objects, read from Worker.txt
-    private void initResources() {
+    // Writers
+    private void saveSchedule() {
+        BufferedWriter bw = null;
+        try {
+            Path p1 = Paths.get("cache", "Schedule.txt");
+            Path p2 = Paths.get("src", "cache", "Schedule.txt");
+
+            if (Files.exists(p1)) {
+                bw = Files.newBufferedWriter(p1, StandardCharsets.UTF_8);
+            } else if (Files.exists(p2)) {
+                bw = Files.newBufferedWriter(p2, StandardCharsets.UTF_8);
+            } else {
+                throw new FileNotFoundException("Schedule.txt not found in classpath or cache folders");
+            }
+
+            
+            // Write each shift and its workers
+            for (Map.Entry<Integer, Shift> entry : schedule.entrySet()) {
+                Shift shift = entry.getValue();
+                bw.write(String.valueOf(shift.getID()));
+                bw.newLine();
+                for (Worker worker : shift.getAllWorkers()) {
+                    bw.write(String.valueOf(worker.getId()));
+                    bw.newLine();
+                }
+                bw.newLine(); // empty line to separate shifts
+            }
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bw != null) {
+                try { bw.close(); } catch (IOException ignored) {}
+            }
+        }
+    }
+    private void saveHiredWorkers() {
+        BufferedWriter bw = null;
+        try {
+            Path p1 = Paths.get("cache", "HiredWorkers.txt");
+            Path p2 = Paths.get("src", "cache", "HiredWorkers.txt");
+
+            if (Files.exists(p1)) {
+                bw = Files.newBufferedWriter(p1, StandardCharsets.UTF_8);
+            } else if (Files.exists(p2)) {
+                bw = Files.newBufferedWriter(p2, StandardCharsets.UTF_8);
+            } else {
+                throw new FileNotFoundException("HiredWorkers.txt not found in classpath or cache folders");
+            }
+
+            // Write each hired worker ID in a new line
+            for (Map.Entry<Integer, Worker> entry : hiredWorkers.entrySet()) {
+                bw.write(String.valueOf(entry.getKey()));
+                bw.newLine();
+            }
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bw != null) {
+                try { bw.close(); } catch (IOException ignored) {}
+            }
+        }
+    }
+
+    // Loaders
+    private void loadSchedule() {
+        // do nothing if file is null
         BufferedReader br = null;
         try {
             // try classpath resource first
-            InputStream is = WorkerManager.class.getClassLoader().getResourceAsStream("resources/Workers.txt");
+            InputStream is = WorkerManager.class.getClassLoader().getResourceAsStream("cache/Schedule.txt");
             if (is != null) {
-                br = new BufferedReader(new InputStreamReader(is, java.nio.charset.StandardCharsets.UTF_8));
+                br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+
+            // Check secondary location 
             } else {
-                java.nio.file.Path p1 = java.nio.file.Paths.get("resources", "Workers.txt");
-                java.nio.file.Path p2 = java.nio.file.Paths.get("src", "resources", "Workers.txt");
-                if (java.nio.file.Files.exists(p1)) {
-                    br = java.nio.file.Files.newBufferedReader(p1, java.nio.charset.StandardCharsets.UTF_8);
-                } else if (java.nio.file.Files.exists(p2)) {
-                    br = java.nio.file.Files.newBufferedReader(p2, java.nio.charset.StandardCharsets.UTF_8);
+                Path path = Paths.get("src", "cache", "Schedule.txt");
+                if (Files.exists(path)) {
+                    br = Files.newBufferedReader(path, StandardCharsets.UTF_8);
                 } else {
-                    throw new FileNotFoundException("Workers.txt not found in classpath or resources folders");
+                    throw new FileNotFoundException("Schedule.txt not found in classpath or cache folders");
                 }
             }
 
-            String basicInfo; // read the odd lines
-            int counter = 1;
-            while ((basicInfo = br.readLine()) != null) {
-                String description = br.readLine(); // go to next line(even line) then read it
-                if (description == null) description = "";
-                String[] parts = basicInfo.split(" ");
-                if (parts.length < 5) continue;
-                String name = parts[0];
-                int age = Integer.parseInt(parts[1]);
-                String gender = parts[2];
-                String position = parts[3];
-                double salaries = Double.parseDouble(parts[4]);
-                Worker worker = null;
-                switch (WorkerType.fromPosition(position)) {
-                    case WAITER:
-                        worker = new Waiter(counter, name, age, gender, position, salaries, description);
-                        workerToHire.put(counter, worker);
-                        break;
-                    case CHEF:
-                        worker = new Chef(counter, name, age, gender, position, salaries, description);
-                        workerToHire.put(counter, worker);
-                        break;
-                    case SUPPLY_MANAGER:
-                    case WORKER_MANAGER:
-                    case TABLE_MANAGER:
-                        worker = new Manager(counter, name, age, gender, position, salaries, description);
-                        workerToHire.put(counter, worker);
-                        break;
-                    default:
-                        break;
-                }
+            String line;
+            // read each line as worker id, the first number is shift ID
+            // an empty line means the shift end
+            boolean shiftEnded = true;
+            int shiftID = -1;
+            while ((line = br.readLine()) != null) {
+                // end shift when empty line is found
+                if (line.trim().isEmpty()) {
+                    shiftEnded = true;
 
-                counter++;
+                // if shift ended then read the next number as shift ID else use it as worker ID
+                } else if (shiftEnded) {
+                    shiftID = Integer.parseInt(line.trim());
+                    shiftEnded = false;
+
+                } else if (!shiftEnded) {
+                    int workerID = Integer.parseInt(line.trim());
+                    Worker worker = hiredWorkers.get(workerID);
+                    if (worker != null) {
+                        Shift shift = schedule.get(shiftID); // Get current shift
+                        shift.addWorker(worker);
+                    }
+                }
             }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try { br.close(); } catch (IOException ignored) {}
+            }
+        }
+    }
+    private void loadHiredWorkers() {
+        // do nothing if file is null
+        BufferedReader br = null;
+        try {
+            // try classpath resource first
+            InputStream is = WorkerManager.class.getClassLoader().getResourceAsStream("cache/HiredWorkers.txt");
+            if (is != null) {
+                br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+
+            // Check secondary location 
+            } else {
+                Path path = Paths.get("src", "cache", "HiredWorkers.txt");
+                if (Files.exists(path)) {
+                    br = Files.newBufferedReader(path, StandardCharsets.UTF_8);
+                } else {
+                    throw new FileNotFoundException("HiredWorkers.txt not found in classpath or cache folders");
+                }
+            }
+
+
+            String line;
+            // read each line as worker ID then move worker from workerToHire to hiredWorkers
+            while ((line = br.readLine()) != null) {
+                int workerID = Integer.parseInt(line.trim());
+                Worker worker = workerToHire.remove(workerID);
+                if (worker != null) {
+                    hiredWorkers.put(workerID, worker);
+                    worker.setEmploymentState(true);
+                }
+            }
+
+
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -142,13 +290,91 @@ public class WorkerManager implements ManagerHandler {
         }
     }
 
-    // Private constructor to enforce singleton
-    private WorkerManager() {
+    @Override
+    public void loadFromFile(Runnable func) {
+        // Not implemented
+        func.run();
+    }
+    @Override
+    public void saveToFile(Runnable func) {
+        // Not implemented
+        func.run();
+    }
+    
+    // Init a storage of worker objects, read from Worker.txt
+    private void initResources() {
+        BufferedReader br = null;
+        try {
+            // try classpath resource first
+            InputStream is = WorkerManager.class.getClassLoader().getResourceAsStream("resources/Workers.txt");
+            if (is != null) {
+                br = new BufferedReader(new InputStreamReader(is, java.nio.charset.StandardCharsets.UTF_8));
+            
+            // check secondary location
+            } else { 
+                
+                Path path = Paths.get("src", "resources", "Workers.txt");
+                if (Files.exists(path)) {
+                    br = Files.newBufferedReader(path, StandardCharsets.UTF_8);
+                } else {
+                    throw new FileNotFoundException("Workers.txt not found in classpath or resources folders");
+                }
+            }
+
+            String basicInfo; // read the odd lines
+            while ((basicInfo = br.readLine()) != null) {
+                String description = br.readLine(); // go to next line(even line) then read it
+                if (description == null) description = "";
+                String[] parts = basicInfo.split(" ");
+                if (parts.length < 6) continue; // skip invalid lines
+
+                int id = Integer.parseInt(parts[0]);
+                String name = parts[1];
+                int age = Integer.parseInt(parts[2]);
+                String gender = parts[3];
+                String position = parts[4];
+                double salaries = Double.parseDouble(parts[5]);
+
+                Worker worker = null;
+                switch (WorkerType.fromPosition(position)) {
+                    case WAITER:
+                        worker = new Waiter(id, name, age, gender, position, salaries, description);
+                        workerToHire.put(id, worker);
+                        break;
+                    case CHEF:
+                        worker = new Chef(id, name, age, gender, position, salaries, description);
+                        workerToHire.put(id, worker);
+                        break;
+                    case SUPPLY_MANAGER:
+                    case WORKER_MANAGER:
+                    case TABLE_MANAGER:
+                        worker = new Manager(id, name, age, gender, position, salaries, description);
+                        workerToHire.put(id, worker);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try { br.close(); } catch (IOException ignored) {}
+            }
+        }
+
+        loadFromFile(() -> loadHiredWorkers());
+
         // Init schedule, create shift each shift name in SHIFT_NAMES
         for (int i = 0; i < SHIFT_NAMES.length; i++) {
             schedule.put((i + 1), new Shift(SHIFT_NAMES[i], (i + 1)));
         }
+
+        loadFromFile(() -> loadSchedule());
     }
+
+    // Private constructor to enforce singleton
+    private WorkerManager() {}
 
     // Public method to get the single self
     public static WorkerManager getManager() {
@@ -220,6 +446,8 @@ public class WorkerManager implements ManagerHandler {
             } else { inputHandler.raiseWarning(); }
         }
         inputHandler.resetOption();
+
+        saveToFile(() -> saveSchedule());
     }
     public Shift getShift(int shiftID) {
         return schedule.get(shiftID);
@@ -265,9 +493,10 @@ public class WorkerManager implements ManagerHandler {
                 case 1:
 
                     if (worker.isEmployed()) {   
-                        fireWorker(worker.getId());
+                        remove(worker);
                     } else {
-                        hireWorker(worker.getId());
+                        // hireWorker(worker.getId());
+                        add(worker);
                     } 
                     inputHandler.enter2Continue();
 
@@ -290,6 +519,7 @@ public class WorkerManager implements ManagerHandler {
             "Day la danh sach nhung nguoi lao dong ma ban co the thue",
             "De thue nguoi lao dong hay nhap id cua ho"
         };       
+        context = true;
         while (inputHandler.getCurrentOption() != GO_BACK_OPTION) {
             displayer.clearScreen();
             displayer.displayMessage(message);
@@ -302,14 +532,19 @@ public class WorkerManager implements ManagerHandler {
             }
             displayer.printFormatLine(new int[]{4, 20});
 
-            inputHandler.getUserOption();
+            Worker worker = Input();
+            if (worker == null) { inputHandler.raiseWarning(); continue; }
 
             // check if the entered id exist
-            if (workerToHire.containsKey(inputHandler.getCurrentOption())) {
-                showWorkerDes(workerToHire.get(inputHandler.getCurrentOption())); // show the selected worker description
+            if (workerToHire.containsKey(worker.getId())) {
+                showWorkerDes(workerToHire.get(worker.getId())); // show the selected worker description
             } else { inputHandler.raiseWarning(); }
         }
         inputHandler.resetOption(); 
+
+        // Save hired workers to cache
+        saveToFile(() -> saveHiredWorkers());
+        context = false;
     }
     public void showWorkersInPosition(WorkerType position) {
         for (Map.Entry<Integer, Worker> entry : hiredWorkers.entrySet()) {
@@ -317,13 +552,11 @@ public class WorkerManager implements ManagerHandler {
             if (WorkerType.fromPosition(wkr.getPosition()) == position) { wkr.gridDisplay(); }
         }
     }
-
-
     public void showHiredWorker() {
         String[] message = {
             "Nhap 0 de quay lai",
             "Nhap id cua nhan vien de xem thong tin cua ho"
-        };          
+        };        
         while (inputHandler.getCurrentOption() != GO_BACK_OPTION) {
             displayer.clearScreen();
             displayer.displayMessage(message);
@@ -355,39 +588,4 @@ public class WorkerManager implements ManagerHandler {
         }
         inputHandler.resetOption();
     }
-    public void hireWorker(int workerID) {
-        Worker worker = workerToHire.remove(workerID);
-        add(worker);
-    };
-    public void fireWorker(int workerID) {
-        remove(workerID);
-    };
-
-    @Override
-    public void add(Object obj) {
-        Worker worker = (Worker) obj;
-        hiredWorkers.put(worker.getId(), worker);
-        worker.setEmploymentState(true);
-        System.out.println("Ban da thue "+worker.getName());
-    };
-
-    @Override
-    public Object remove(Object objID) {
-        Worker worker = hiredWorkers.remove(objID);
-        workerToHire.remove(objID);
-        if (worker != null) {
-            worker.setEmploymentState(false);
-            System.out.println("Ban da sa thai " + worker.getName());
-        } else {
-            System.out.println("Khong tim thay nhan vien de sa thai voi id: " + objID);
-        }
-        return worker;
-    };
-
-    // Chua co sua dung den(ko can sua dung den)
-    @Override
-    public Object search(Object objID) {
-
-        return null;
-    };
 }
