@@ -91,7 +91,16 @@ public class EventHandler {
             UserInputHandler.getUserInputHandler().enter2Continue();
             return;
         }
-        notifySupplyManager(); // thông báo cho quản lý thực phẩm
+
+        // ====================================================
+        // Thông tin được hiện thị vào cuối ngày
+        spMgr.createReport(); // thông báo cho quản lý thực phẩm
+
+
+
+
+        
+        // ====================================================
 
         System.out.println("Ket thuc ngay lam");
         workerList = null; 
@@ -128,16 +137,6 @@ public class EventHandler {
                 break;
             }
         }
-    }
-
-    public void notifyTableManager() {
-        
-    }
-
-    public void notifySupplyManager() {
-        spMgr.createReport();
-
-        inputHandler.enter2Continue();
     }
 
     public Order getTable() {
