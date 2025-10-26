@@ -1,5 +1,7 @@
 package base;
 
+import models.Order;
+
 public abstract class Worker extends Human {
     private final int id;
     private String position;
@@ -80,6 +82,6 @@ public abstract class Worker extends Human {
     }
 
     public abstract void interact();
-    public abstract void startWorking();
+    public abstract void startWorking(Order order);
     public abstract void stopWorking();
 }

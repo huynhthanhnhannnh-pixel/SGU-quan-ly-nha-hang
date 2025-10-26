@@ -22,22 +22,42 @@ public class Order {
     public List<String> getDishes(){ return dishes; }
     public List<String> getExcludedDishes(){ return excludedDishes; }
 
+    public void setNumOfUnsatisfiedRequest(int num) { this.numOfUnsatisfiedRequest = num; } 
+
     public void writeOrder(String dishName) {   dishes.add(dishName); }
 
     // chef thêm món không thể nấu được vào danh sách loại trừ
     public void addExcludedDish(String dishName) { excludedDishes.add(dishName); }
 
     // chef update lại order để thêm món không thể nấu được
+    // public void updateOrder() {
+    //     for (String excludedDish : excludedDishes) {
+    //         int length = dishes.size();
+    //         for (int i = 0; i < length; i++) {
+    //             if (excludedDish.equals(dishes.get(i))) {
+    //                 dishes.remove(i);
+    //                 numOfUnsatisfiedRequest++;
+    //                 length--;
+    //             }
+    //         }
+    //     }
+    // }
+
     public void updateOrder() {
-        for (String excludedDish : excludedDishes) {
-            int length = dishes.size();
-            for (int i = 0; i < length; i++) {
-                if (excludedDish.equals(dishes.get(i))) {
-                    dishes.remove(i);
-                    length--;
-                }
+        int countRemoved = 0;
+        Iterator<String> it = dishes.iterator();
+        while (it.hasNext()) {
+            String dish = it.next();
+            if (excludedDishes.contains(dish)) {
+                it.remove();
+                countRemoved++;
             }
         }
+        numOfUnsatisfiedRequest += countRemoved;
+        System.out.println("Dishes after update: " + dishes);
+        System.out.println("Excluded: " + excludedDishes);
+        System.out.println("numOfUnsatisfiedRequest: " + numOfUnsatisfiedRequest);
+
     }
 
     public OrderState getState() {
