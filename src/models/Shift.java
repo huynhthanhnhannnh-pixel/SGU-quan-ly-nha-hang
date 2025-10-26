@@ -46,11 +46,7 @@ public class Shift {
 
     // Loại bỏ nhân viên khỏi ca làm
     public void removeWorker(Worker worker) {
-        boolean success = workerList.remove(worker);
-        if (!success) {
-            String message = String.format("Nhan vien %s khong ton tai trong ca nay", worker.getName());
-            System.out.println(message);
-        }
+        workerList.remove(worker);
     }
 
     // Kiểm tra nếu ca này đã có nhân viên đó

@@ -95,6 +95,13 @@ public class WorkerManager implements ManagerHandler {
         } else {
             System.out.println("Khong tim thay nhan vien de sa thai voi id: " + wrk);
         }
+
+        // Xóa nhân viên ra khỏi lịch
+        for (Map.Entry<Integer, Shift> entry : schedule.entrySet()) {
+            System.out.println();
+            entry.getValue().removeWorker(wrk);
+        }
+
         return wrk;
     }
     @Override

@@ -64,7 +64,7 @@ public class TableManager implements ManagerHandler {
         // Sử dụng vòng lăp để tạo bàn rồi lưu vào dang sách bàn
         for ( int i = 1; i <= numberOfTable; i++){
             Table table = new Table(8);
-            tableList.put(i,table);
+            tableList.put(i, table);
         }
     }
     
@@ -122,7 +122,7 @@ public class TableManager implements ManagerHandler {
     }
 
     // Bắt đầu chạy giả lập, gọi waiter và chef(eventHandler.notifyWaiter/notifyChef)
-    private void startSimation() {
+    private void startSimulation() {
         // ================================================================================
         // Kiểm tra trước khi bắt đầu
 
@@ -200,7 +200,7 @@ public class TableManager implements ManagerHandler {
                     break;
                 case 2:
                     // Bắt đầu chạy giả lập, gọi waiter và chef(eventHandler.notifyWaiter/notifyChef)
-                    startSimation();
+                    startSimulation();
 
                     break;
                 default:
@@ -209,7 +209,6 @@ public class TableManager implements ManagerHandler {
             }
         }
         displayer.singleSeperate();
-        inputHandler.enter2Continue();
         inputHandler.resetOption();
         date = date.plusDays(1); // Chuyển sang ngày mới
     }
