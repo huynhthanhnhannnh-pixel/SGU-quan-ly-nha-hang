@@ -48,7 +48,6 @@ MyTrungXaoXaXiu Mi|2 XaXiu|2 Rau|1
 MiUdonHaiSan MiUdon|2 Tom|1 Muc|1 Rau|1
 KemVani Sua|2 Duong|1 Vani|1
 KemSocola Sua|2 Socola|2 Duong|1
-BanhFlan Trung|2 Sua|2 Duong|1
 BanhCrepe Bot|2 Trung|1 Sua|1 TraiCay|1
 BanhPancake Bot|2 Trung|1 Sua|1 MatOng|1
 BanhTiramisu PhoMai|2 Trung|1 CaPhe|1 Duong|1

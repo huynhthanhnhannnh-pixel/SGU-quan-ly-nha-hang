@@ -90,6 +90,9 @@ public class TableManager implements ManagerHandler {
         return dayOfWeek == 7 ? 0 : dayOfWeek; // Nếu là Chủ nhật => 0
     }
     
+    public HashMap<Integer, Table> getTableList() {
+        return tableList;
+    }
     // Đặt mục tiêu danh thu
     private void setTargetProfit() {
         System.out.println("Target hien tai: " + target); 
@@ -149,15 +152,18 @@ public class TableManager implements ManagerHandler {
         // ================================================================================
         // Phục vụ cho đến khi đủ danh thu
 
-        Table table = tableList.get(1); // Lấy bàn số 1 để mô phỏng
+        
         double todayProgress = 0.0;
         while (todayProgress < target) {
             
-            eventHlr.addTable(table); // Đưa bàn vào hàng chờ để waiter tạo order
-            eventHlr.notifyWaiters(); // Bắt đầu kêu waiter ra phục vụ
+            Table table = TableManager.getManager().getTableList().get(1); // Lấy bàn số 1 để mô phỏng
+            EventHandler.getEventHandler().addTable(table);
+            Order order = new Order(table);
+            EventHandler.getEventHandler().addOrder(order);  // Tạo order cho bàn số 1
+            eventHlr.notifyWaiters(EventHandler.getEventHandler().getOrderOfTable()); // Bắt đầu kêu waiter ra phục vụ
 
 
-            todayProgress += 100000; // Testing, ô fix dòng này sau
+            todayProgress += 1000000; // Testing, ô fix dòng này sau
 
 
             // Đọc doanh thu hiện tại (Waiter sẽ ghi transaction khi thanh toán)

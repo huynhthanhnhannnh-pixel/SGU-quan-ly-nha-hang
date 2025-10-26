@@ -15,8 +15,8 @@ public class Chef extends base.Worker {
     public void interact() {}
 
     @Override
-    public void startWorking() {
-        Order order = EventHandler.getEventHandler().getOrder(); 
+    public void startWorking(Order order) {
+        // Order order = EventHandler.getEventHandler().getOrder(); 
         if (order == null) {
             System.out.println("Chef: khong co order nao, nghi!");
             return;
@@ -25,6 +25,7 @@ public class Chef extends base.Worker {
         boolean allAvailable = true;
 
         for (String dish : order.getDishes()) {
+            System.out.println("---------" + dish+"");
             loop1: // khai bao loop bên ngoài để break
             for (Dish dishMENU : DishManager.getManager().getDishList()){
                 if (dish.equalsIgnoreCase(dishMENU.getName())){
@@ -67,7 +68,7 @@ public class Chef extends base.Worker {
             }
 
             System.out.println("Chef: Hoan thanh tat ca mon do");
-            EventHandler.getEventHandler().notifyWaiters();
+            EventHandler.getEventHandler().notifyWaiters(order);
             double bill = order.calculateAmount();
             System.out.println("Ban da thanh toan: " + bill);
                     java.time.LocalDate today = java.time.LocalDate.now();                   
@@ -80,7 +81,7 @@ public class Chef extends base.Worker {
 
             order.updateOrder(); // loại món thiếu ra khỏi dishes
             EventHandler.getEventHandler().addOrder(order); // đưa bàn vào hàng chờ
-            EventHandler.getEventHandler().notifyWaiters(); // kêu waiter tới lấy lại order
+            EventHandler.getEventHandler().notifyWaiters(order); // kêu waiter tới lấy lại order
         }
     }
         
