@@ -21,7 +21,7 @@ public class Waiter extends base.Worker {
     @Override
     public void startWorking() {
 
-        Order order = EventHandler.getEventHandler().getTable();
+        Order order = EventHandler.getEventHandler().getOrderOfTable();
            if (order == null) {
               System.out.println("Waiter: khong co order,nghi! ");
             return;

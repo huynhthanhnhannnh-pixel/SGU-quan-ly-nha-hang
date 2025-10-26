@@ -11,9 +11,9 @@ public class program {
         UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
         EventHandler eventHlr = EventHandler.getEventHandler();
         SupplyManager splManager = SupplyManager.getManager();
-        dishManager dishMgr = dishManager.getManager();
-        TableManager tbManager = TableManager.getManager();
+        DishManager dishMgr = DishManager.getManager();
         RevenueManager revenueMgr = RevenueManager.getManager();
+        TableManager tbManager = TableManager.getManager();
         LocalDate today = LocalDate.now();
 
         String[] message = {

@@ -71,9 +71,10 @@ public class Shift {
         boolean hasWaiter = false;
         boolean hasChef = false;
         for (Worker worker : workerList) {
-            if (worker.getPosition().equals("Waiter")) {
+            if (worker.getPosition().equalsIgnoreCase("Waiter")) {
                 hasWaiter = true;
-            } else if (worker.getPosition().equals("Chef")) {
+            } 
+            else if (worker.getPosition().equalsIgnoreCase("Chef")) {
                 hasChef = true;
             }
             if (hasWaiter && hasChef) {

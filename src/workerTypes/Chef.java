@@ -26,7 +26,7 @@ public class Chef extends base.Worker {
 
         for (String dish : order.getDishes()) {
             loop1: // khai bao loop bên ngoài để break
-            for (Dish dishMENU : dishManager.getManager().getDishList()){
+            for (Dish dishMENU : DishManager.getManager().getDishList()){
                 if (dish.equalsIgnoreCase(dishMENU.getName())){
                     Map<String, Integer> requiredIngredients = dishMENU.readIngredients(); // nguyên liệu cần cho món
                 
@@ -50,7 +50,7 @@ public class Chef extends base.Worker {
             System.out.println("Chef: du nguyen lieu - bat dau nau!");
             System.out.println("");
             for (String dish : order.getDishes()) {
-                for (Dish dishMENU : dishManager.getManager().getDishList()){
+                for (Dish dishMENU : DishManager.getManager().getDishList()){
                     if (dish.equalsIgnoreCase(dishMENU.getName())){
                         Map<String, Integer> requiredIngredients = dishMENU.readIngredients(); // nguyên liệu cần cho món
                     
@@ -72,7 +72,7 @@ public class Chef extends base.Worker {
             System.out.println("Ban da thanh toan: " + bill);
                     java.time.LocalDate today = java.time.LocalDate.now();                   
                     controllers.RevenueManager.getManager().addTransaction(today, order);
-                    EventHandler.getEventHandler().notifyTableManager();
+                    // EventHandler.getEventHandler().notifyTableManager();
 
         } else {
             System.out.println("Chef: Thieu nguyen lieu - yeu cau lay lai order");

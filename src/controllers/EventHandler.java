@@ -25,7 +25,7 @@ public class EventHandler {
 
     // Số ngày của chương trình, sử dụng số ngày để tìm shift
     private int totalDays = 0;
-    private Integer currentDay = 0; //  Nếu currentDay = 0 -> chủ nhật nghỉ làm, 1->thứ 2, 2->thứ 3,...
+    // private Integer currentDay = 0; //  Nếu currentDay = 0 -> chủ nhật nghỉ làm, 1->thứ 2, 2->thứ 3,...
     private boolean isNotActive = false; // Trạng thái nhà hàng đang mở hay đóng
 
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
@@ -51,19 +51,21 @@ public class EventHandler {
     }
 
     // Bắt đầu ca làm
-    public void startShift() {
+    public void startShift(int id) {
         // lưu danh sách các chef và waiter
         boolean notReady = false; // Kiểm tra là tiếp tục có được không
         totalDays++;
-        currentDay = totalDays % 7;
-        if (currentDay == 0) { // Nghỉ làm vào chủ nhật
+        // currentDay = totalDays % 7;
+
+        if (id == 0) { // Nghỉ làm vào chủ nhật
             System.out.println("Chu nhat nha hang nghi lam");
             notReady = true;
         }
+        
         // Dừng nếu ca làm không tồn tại
-        curShift = wrkMgr.getShift(currentDay);
+        curShift = wrkMgr.getShift(id);
         if (curShift == null) { 
-            System.out.println("Ca lam khong ton tai: " + currentDay);
+            System.out.println("Ca lam khong ton tai: " + id);
             notReady = true;
         }
 
@@ -88,10 +90,10 @@ public class EventHandler {
     }
 
     public void endShift() { 
-        if (currentDay == 0) { // Nghỉ làm vào chủ nhật
-            System.out.println("Nghi chu nhat");
-            return;
-        }
+        // if (currentDay == 0) { // Nghỉ làm vào chủ nhật
+        //     System.out.println("Nghi chu nhat");
+        //     return;
+        // }
         if (workerList == null) {
             System.out.println("Khong co nhan vien trong ca lam hien tai");
             UserInputHandler.getUserInputHandler().enter2Continue();
@@ -145,7 +147,7 @@ public class EventHandler {
         }
     }
 
-    public Order getTable() {
+    public Order getOrderOfTable() {
         if (unsatisfiedTables == null || unsatisfiedTables.isEmpty()) return null;
             Table table = unsatisfiedTables.remove(0);
             for (Order order : orderList) {
@@ -184,4 +186,39 @@ public class EventHandler {
     public Order orderList() {
         return null;
     }
-}
+    
+    /**
+     * Truncate common cache copy files so they become empty.
+     * This will try both "src/cache" and "cache" folders and clear
+     * Dishes(copy).txt, Ingredients(copy).txt, HiredWorkers.txt and Schedule.txt if present.
+     */
+    public void clearCache() {
+        Path[] dirs = { Paths.get("src", "cache"), Paths.get("cache") };
+        String[] filenames = { "Dishes(copy).txt", "Ingredients(copy).txt", "HiredWorkers.txt", "Schedule.txt" };
+        for (Path dir : dirs) {
+            for (String name : filenames) {
+                try {
+                    Path p = dir.resolve(name);
+                    if (Files.exists(p)) {
+                        // write zero bytes -> truncate file
+                        Files.write(p, new byte[0], StandardOpenOption.TRUNCATE_EXISTING);
+                    }
+                } catch (IOException e) {
+                    System.err.println("Lỗi khi xóa nội dung file cache " + name + " tại " + dir + ": " + e.getMessage());
+                }
+            }
+        }
+    }
+
+    public void End(){
+        // register shutdown hook to clear cache copy files when program exits
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                clearCache();
+                System.out.println("Cache files cleared on shutdown.");
+            } catch (Exception ex) {
+                System.err.println("Error clearing cache on shutdown: " + ex.getMessage());
+            }
+        }));
+    }
+}   

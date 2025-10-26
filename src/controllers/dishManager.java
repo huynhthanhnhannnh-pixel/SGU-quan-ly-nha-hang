@@ -20,18 +20,14 @@ public class DishManager implements ManagerHandler {
     public void saveDishesToFile() {
     BufferedWriter bw = null;
     try {
-        Path p1 = Paths.get("cache", "Dishes(copy).txt");
-        Path p2 = Paths.get("src", "cache", "Dishes(copy).txt");
+        Path p1 = Paths.get("src","cache", "Dishes(copy).txt");
 
     if (Files.exists(p1)) {
         // overwrite existing file instead of appending
         bw = Files.newBufferedWriter(p1, StandardCharsets.UTF_8,
             StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-    } else if (Files.exists(p2)) {
-        // overwrite existing file instead of appending
-        bw = Files.newBufferedWriter(p2, StandardCharsets.UTF_8,
-            StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-        } else {
+            }
+    else {
             throw new FileNotFoundException("Dishes(copy).txt not found in cache folders");
         }
 
@@ -108,7 +104,7 @@ public class DishManager implements ManagerHandler {
 
     public void copyFile(){
         // write the copy to the runtime cache folder (same folder used by saveDishesToFile)
-        Path destination = Paths.get("cache", "Dishes(copy).txt");
+        Path destination = Paths.get("src","cache", "Dishes(copy).txt");
         try {
             // Try copying from classpath resource first (works when running from jar/IDE)
             InputStream is = DishManager.class.getClassLoader().getResourceAsStream("resources/Dishes.txt");
@@ -117,6 +113,8 @@ public class DishManager implements ManagerHandler {
                 try (InputStream in = is) {
                     Files.copy(in, destination, StandardCopyOption.REPLACE_EXISTING);
                     System.out.println("Đã copy file từ classpath thành công!");
+                    // reload in-memory cache from the copied file so runtime state matches the cache
+                    
                 }
             } else {
                 // Fallback to filesystem path relative to working directory
@@ -124,6 +122,8 @@ public class DishManager implements ManagerHandler {
                 if (Files.exists(source)) {
                     Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
                     System.out.println("Đã copy file từ src/resources thành công!");
+                    // reload in-memory cache from the copied file so runtime state matches the cache
+                    
                 } else {
                     System.err.println("Nguon Dishes.txt khong tim thay (checked classpath and src/resources)");
                 }
