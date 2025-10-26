@@ -2,7 +2,7 @@ package models;
 
 import java.util.*;
 
-import controllers.dishManager;
+import controllers.DishManager;
 import enums.*;
 
 public class Order {
@@ -53,7 +53,7 @@ public class Order {
 
     public double calculateAmount() {
         double total = 0.0;
-    dishManager dm = dishManager.getManager();     
+        DishManager dm = DishManager.getManager();     
     for (String dishName : this.dishes) {
         if (dishName == null) continue;
         for (Dish dish : dm.getDishList()) {

@@ -12,12 +12,14 @@ public class TableManager implements ManagerHandler {
     private static TableManager self;
     private EventHandler eventHlr = EventHandler.getEventHandler();
     private Displayer displayer = Displayer.getDisplayer();
-    private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
-    private WorkerManager workerMgr = WorkerManager.getManager();
+    private LocalDate date = LocalDate.now();
+
+    private int lowerLimit = 5000000; // 5,000,000
+    private int upperLimmit = 500000000; // 500,000,000
+    private double target = lowerLimit; // Target cua ngay
 
     private HashMap<Integer, Table> tableList = new HashMap<Integer, Table>(); // Danh sách bàn, <Mã bàn, bàn> ví dụ: tìm bàn số 5 => <5, bàn>
     private int numOfTable = 10; // Số lượng bàn ăn
-    int GO_BACK_OPTION = 0;
 
     @Override
     public void showGeneralInfo() {
@@ -83,148 +85,132 @@ public class TableManager implements ManagerHandler {
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
     // Your codes go here
 
+    private int getDayNumber(LocalDate date) {
+        int dayOfWeek = date.getDayOfWeek().getValue(); // Thứ Hai=1, ... Chủ nhật=7
+        return dayOfWeek == 7 ? 0 : dayOfWeek; // Nếu là Chủ nhật => 0
+    }
+    
+    // Đặt mục tiêu danh thu
+    private void setTargetProfit() {
+        System.out.println("Target hien tai: " + target); 
+        System.out.print("Dat target moi: "); 
+        inputHandler.getUserOption();
+        target = (double) inputHandler.getCurrentOption(); 
+        do{
+            if(target < lowerLimit){ 
+                System.out.print("Target thap qua, khong du tra tien nhan vien, dat lai target:  ");
+                inputHandler.getUserOption();
+                target = (double) inputHandler.getCurrentOption();  
+            }
+            else if(target > upperLimmit){ // 500,000,000
+                System.out.print("Nha hang e lam, dat target chi cho cao vay, dat lai target:  ");
+                inputHandler.getUserOption();
+                target = (double) inputHandler.getCurrentOption();  
+            }
+        }
+        while(target < lowerLimit || target > upperLimmit);
+
+        System.out.println("Target hom nay la: "+ target);   
+    }
+
+    // Đóng cửa nhà hàng(được tự động gọi bởi startSimation)
+    private void closeRestaurant() {
+        System.out.println("==== DONG CUA HANG ====");
+        eventHlr.endShift();
+        date = date.plusDays(1);
+        inputHandler.enter2Continue();
+    }
+
+    // Bắt đầu chạy giả lập, gọi waiter và chef(eventHandler.notifyWaiter/notifyChef)
+    private void startSimation() {
+        // ================================================================================
+        // Kiểm tra trước khi bắt đầu
+
+        System.out.println("Check co nguyen lieu nao het han su dung hay khong: "); 
+        // Kiểm tra và xóa nguyên liệu ko đủ hsd
+        if(SupplyManager.getManager().deleteExpiredandLowQuantityIngredients(date) == 0) 
+            System.out.println("Hang con han su dung");
+        else{
+            SupplyManager.getManager().deleteExpiredandLowQuantityIngredients(date);
+        }
+
+        // ================================================================================
+
+        System.out.println("===== BAT DAU GIA LAP NHA HANG =====");
+        System.out.println("Ngay: " + date + "\n\n");  
+
+        eventHlr.startShift(getDayNumber(date)); // bắt đầu làm
+        // Nếu không đủ nhân viên hoặc chủ nhật thì nghỉ
+        if (eventHlr.isNotActive()) {
+            closeRestaurant(); // Đóng cửa nhà hàng
+            return; // Nếu nhà hàng không hoạt động, thoát khỏi mô phỏng
+        }
+
+        // ================================================================================
+        // Phục vụ cho đến khi đủ danh thu
+
+        Table table = tableList.get(1); // Lấy bàn số 1 để mô phỏng
+        double todayProgress = 0.0;
+        while (todayProgress < target) {
+            
+            eventHlr.addTable(table); // Đưa bàn vào hàng chờ để waiter tạo order
+            eventHlr.notifyWaiters(); // Bắt đầu kêu waiter ra phục vụ
+
+
+            todayProgress += 100000; // Testing, ô fix dòng này sau
+
+
+            // Đọc doanh thu hiện tại (Waiter sẽ ghi transaction khi thanh toán)
+            // double revenueNow = controllers.RevenueManager.getManager().getRevenueOfDate(date);
+            // double delta = revenueNow - revenueBefore;
+            // if (delta > 0) {
+            //     totalRevenue += delta;
+            //     revenueBefore = revenueNow; // cập nhật baseline
+            //     displayer.dashSeperate(); 
+            //     System.out.println("Thu: " + delta + " | Tong: " + totalRevenue); 
+            //     displayer.dashSeperate(); 
+            // }
+            // inputHandler.enter2Continue();
+        }
+
+        closeRestaurant();
+    }
+    
+    // Hiện thị bản điều khiển giả lập
     public void showSimulator(){
-        Scanner sc = new Scanner(System.in);
-        LocalDate today = LocalDate.now();
-        String[] header = {"Nhap 0 de quay lai", "Mo phong ban hang"};
-        String[] options ={
-            "Bat dau ngay moi"
+        String[] header = {
+            "Nhap 0 de quay lai",
+            "De them/xoa nguyen lieu thi hay quay lai(bam 0) va thuc hien thu cong",
         };
-        while (true) {
+        String[] options ={
+            "Dat target",
+            "OPEN",
+        };
+        while (inputHandler.getCurrentOption() != GO_BACK_OPTION) {
             displayer.clearScreen();
             displayer.displayMessage(header);
             displayer.displayOptions(options);
             inputHandler.getUserOption();
-            int choice = inputHandler.getCurrentOption();
-            if (choice == GO_BACK_OPTION) { inputHandler.resetOption(); break; }
-            switch (choice) {
-                case 1:{
-                    System.out.println("Check co nguyen lieu nao het han su dung hay khong: "); 
 
-                    if(SupplyManager.getManager().deleteExpiredandLowQuantityIngredients(today)==0)
-                        System.out.println("Hang con han su dung");
-                    else{
-                        SupplyManager.getManager().deleteExpiredandLowQuantityIngredients(today);
-                    }
-                    System.out.print("Dat target hom nay:   "); 
-                    Double money = sc.nextDouble(); 
+            switch (inputHandler.getCurrentOption()) {
+                case 1:
+                    // Đặt target của cửa hàng, mặc định là lowerLimmit(5,000,000) xem ở hàng 17
+                    setTargetProfit();
 
-                    // Dat target
-                    do{
-                        if(money < 5000000){
-                            System.out.print("Target thap qua, khong du tra tien nhan vien, dat lai target:  ");
-                            money =sc.nextDouble(); }
-                        else if( money >50000000){
-                            System.out.print("Nha hang e lam, dat target chi cho cao vay, dat lai target:  ");
-                            money =sc.nextDouble(); 
-                        }
-                    }
-                    while(money < 5000000 || money > 50000000);
-    
-                    System.out.println("Target hom nay la: "+ money);
-                    simulatorChefAndWaiter(money);
-
-                   
                     break;
-                }
-                    default:
-                    System.out.println("Lua chon khong hop le");
-            }
-                   
-        }
+                case 2:
+                    // Bắt đầu chạy giả lập, gọi waiter và chef(eventHandler.notifyWaiter/notifyChef)
+                    startSimation();
 
+                    break;
+                default:
+                    inputHandler.raiseWarning(); // Nói người dùng là lựa chọn không phù hợp
+                    break;
+            }
+        }
         displayer.singleSeperate();
         inputHandler.enter2Continue();
         inputHandler.resetOption();
+        date = date.plusDays(1); // Chuyển sang ngày mới
     }
-
-
-    public void simulatorChefAndWaiter(double target){
-        String[] header = {"Nhap 0 de quay lai", "Mo phong ban hang"};
-        String[] options ={
-            "OPEN",
-            "CLOSE"
-        };
-        while (true) {
-            displayer.clearScreen();
-            displayer.displayMessage(header);
-            displayer.displayOptions(options);
-            inputHandler.getUserOption();
-            int choice = inputHandler.getCurrentOption();
-            if (choice == GO_BACK_OPTION) { inputHandler.resetOption(); break; }
-        
-            switch (choice) {
-                case 1: {
-                    System.out.println("=== BAT DAU GIA LAP NHA HANG ===");
-                    Table table = tableList.get(1); // Lấy bàn số 1 để mô phỏng
-                    
-                    eventHlr.addTable(table);
-                    eventHlr.startShift();
-
-                    if (eventHlr.isNotActive()) {
-                        break; // Nếu nhà hàng không hoạt động, thoát khỏi mô phỏng
-                    }
-
-                    // Sau đó gọi getTable() để Waiter tạo order
-                    Order order = eventHlr.getTable();
-                    if (order == null) {
-                        System.out.println("khong co order nao duoc tao");
-                        return; // hoặc tiếp tục vòng lặp tùy logic
-                    }
-                    //double bill = order.calculateAmount(); 
-                    double totalRevenue = 0.0;
-                    int attempts = 0;
-                    int maxAttempts = 1000;
-                    java.time.LocalDate today = java.time.LocalDate.now();
-                    DailyRevenue dr = new DailyRevenue(today);
-                    RevenueManager.getManager().getRevenueRecords().put(today, dr);
-                    double revenueBefore = RevenueManager.getManager().getRevenueOfDate(today);
-                    while (totalRevenue < target&& attempts < maxAttempts) {
-                        attempts++;
-                       // Đưa bàn vào hàng chờ để waiter tạo order
-                        eventHlr.addTable(table);
-
-                        // Kích hoạt waiter/chef xử lý ngay (thực thi đồng bộ trong cùng luồng)
-                        
-                        eventHlr.notifyWaiters();
-                        eventHlr.notifyChefs();
-
-                        // Đọc doanh thu hiện tại (Waiter sẽ ghi transaction khi thanh toán)
-                        double revenueNow = controllers.RevenueManager.getManager().getRevenueOfDate(today);
-                        double delta = revenueNow - revenueBefore;
-                        if (delta > 0) {
-                            totalRevenue += delta;
-                            revenueBefore = revenueNow; // cập nhật baseline
-                            displayer.dashSeperate(); 
-                            System.out.println("Thu: " + delta + " | Tong: " + totalRevenue); 
-                            displayer.dashSeperate(); 
-                        }
-                    }
-
-                    if (totalRevenue >= target) {
-                        System.out.println("Tong doanh thu: " + totalRevenue );
-                        System.out.println("DAT DUONG TARGET DAT RA");
-                    } else {
-                        System.out.println("khong dat target sau " + attempts + " lan thu. Doanh thu hien tai:  " + totalRevenue);
-                    }
-                        
-                    System.out.println("=== KET THUC GIA LAP ===");
-                    break;
-
-                }
-                case 2: {
-                    System.out.println("=== DONG CUA HANG ===");
-                    return; // hoặc break nếu muốn quay lại menu
-                }
-                default:
-                    System.out.println("Lua chon khong hop le");
-                }
-    }
-            displayer.singleSeperate();
-            inputHandler.enter2Continue();
-            inputHandler.resetOption();
 }
-}
-    
-
-    

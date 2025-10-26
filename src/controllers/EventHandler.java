@@ -2,6 +2,12 @@ package controllers;
 
 import base.Worker;
 import enums.*;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 import models.*;
 import utils.UserInputHandler;
@@ -19,7 +25,7 @@ public class EventHandler {
 
     // Số ngày của chương trình, sử dụng số ngày để tìm shift
     private int totalDays = 0;
-    private Integer currentDay = 0; //  Nếu currentDay = 0 -> chủ nhật nghỉ làm, 1->thứ 2, 2->thứ 3,...
+    // private Integer currentDay = 0; //  Nếu currentDay = 0 -> chủ nhật nghỉ làm, 1->thứ 2, 2->thứ 3,...
     private boolean isNotActive = false; // Trạng thái nhà hàng đang mở hay đóng
 
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
@@ -45,20 +51,20 @@ public class EventHandler {
     }
 
     // Bắt đầu ca làm
-    public void startShift() {
-        // lưu danh sách các chef và waiter
-        boolean notReady = false; // Kiểm tra là tiếp tục có được không
+    public void startShift(int id) {
         totalDays++;
-        currentDay = totalDays % 7;
-        if (currentDay == 0) { // Nghỉ làm vào chủ nhật
+
+        // Nghỉ làm vào chủ nhật
+        if (id == 0) { 
             System.out.println("Chu nhat nha hang nghi lam");
-            notReady = true;
+            return;
         }
+        
         // Dừng nếu ca làm không tồn tại
-        curShift = wrkMgr.getShift(currentDay);
+        curShift = wrkMgr.getShift(id);
         if (curShift == null) { 
-            System.out.println("Ca lam khong ton tai: " + currentDay);
-            notReady = true;
+            System.out.println("Ca lam khong ton tai: " + id);
+            return;
         }
 
         // Nếu shift không có nhân viên hay không đủ nhân viên thì kết thúc ngày
@@ -66,14 +72,8 @@ public class EventHandler {
             boolean shiftValid = curShift.isShiftValid();
             if (!shiftValid) {
                 System.out.println("Ca lam hien tai khong du nhan vien de mo cua");
-                notReady = true;
-            }
-        }
-
-        // Skip ngày nếu không thỏa mãn
-        if (notReady) {
-            endShift();
             return;
+            }
         }
 
         System.out.println("Bat dau ca lam: " + curShift.getShiftName() + "(Tong ngay: " + totalDays + " )");
@@ -82,10 +82,10 @@ public class EventHandler {
     }
 
     public void endShift() { 
-        if (currentDay == 0) { // Nghỉ làm vào chủ nhật
-            System.out.println("Nghi chu nhat");
-            return;
-        }
+        // if (currentDay == 0) { // Nghỉ làm vào chủ nhật
+        //     System.out.println("Nghi chu nhat");
+        //     return;
+        // }
         if (workerList == null) {
             System.out.println("Khong co nhan vien trong ca lam hien tai");
             UserInputHandler.getUserInputHandler().enter2Continue();
@@ -105,8 +105,6 @@ public class EventHandler {
         System.out.println("Ket thuc ngay lam");
         workerList = null; 
         isNotActive = true; // dat ket thuc ngay
-
-        inputHandler.enter2Continue();
     }
     
     // Khi có khách đặt bàn hay chef gửi lại order thì kêu waiter đầu tiên đang rảnh làm việc
@@ -139,7 +137,8 @@ public class EventHandler {
         }
     }
 
-    public Order getTable() {
+    // Lấy order từ bàn cần được phục vụ, chọn bàn đầu tiên trong queue(hàng đợi)
+    public Order getOrderOfTable() {
         if (unsatisfiedTables == null || unsatisfiedTables.isEmpty()) return null;
             Table table = unsatisfiedTables.remove(0);
             for (Order order : orderList) {
@@ -150,10 +149,12 @@ public class EventHandler {
             return new Order(table);
     }
 
+    // Bỏ bàn vào danh sách cần được phục vụ
     public void addTable(Table table) {
         if (unsatisfiedTables == null) unsatisfiedTables = new ArrayList<>();
         if (!unsatisfiedTables.contains(table)) unsatisfiedTables.add(table);
     }
+
     // // lấy order đầu tiên trong orderList, order co the null
     public Order getOrder() {
         // FIXME: Nếu orderList rỗng, remove(0) sẽ ném IndexOutOfBoundsException.
@@ -178,4 +179,39 @@ public class EventHandler {
     public Order orderList() {
         return null;
     }
-}
+    
+    /**
+     * Truncate common cache copy files so they become empty.
+     * This will try both "src/cache" and "cache" folders and clear
+     * Dishes(copy).txt, Ingredients(copy).txt, HiredWorkers.txt and Schedule.txt if present.
+     */
+    public void clearCache() {
+        Path[] dirs = { Paths.get("src", "cache"), Paths.get("cache") };
+        String[] filenames = { "Dishes(copy).txt", "Ingredients(copy).txt", "HiredWorkers.txt", "Schedule.txt" };
+        for (Path dir : dirs) {
+            for (String name : filenames) {
+                try {
+                    Path p = dir.resolve(name);
+                    if (Files.exists(p)) {
+                        // write zero bytes -> truncate file
+                        Files.write(p, new byte[0], StandardOpenOption.TRUNCATE_EXISTING);
+                    }
+                } catch (IOException e) {
+                    System.err.println("Lỗi khi xóa nội dung file cache " + name + " tại " + dir + ": " + e.getMessage());
+                }
+            }
+        }
+    }
+
+    public void End(){
+        // register shutdown hook to clear cache copy files when program exits
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                clearCache();
+                System.out.println("Cache files cleared on shutdown.");
+            } catch (Exception ex) {
+                System.err.println("Error clearing cache on shutdown: " + ex.getMessage());
+            }
+        }));
+    }
+}   

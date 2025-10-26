@@ -6,5 +6,5 @@ Toi se thu hut khach hang den quan cua chung ta
 Toi co the nau ra nhung mon an chat luong cao
 4 Thien 19 nam chef 500
 Toi se nau ra nhung mon an that tinh te
-5 Minh 19 nam waiter 500
+5 Minh 19 nam waiter 500    
 Toi se phuc vu khach hang that nhiet tinh
