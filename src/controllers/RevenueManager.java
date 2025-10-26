@@ -1,11 +1,15 @@
 package controllers;
 import contracts.ManagerHandler;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import models.*;
 import utils.Displayer;
-
 public class RevenueManager implements ManagerHandler {
     private static RevenueManager self;
     private Displayer displayer = Displayer.getDisplayer();
@@ -53,7 +57,7 @@ public class RevenueManager implements ManagerHandler {
         LocalDate keyToRemove = null;
         for (Map.Entry<LocalDate, DailyRevenue> entry : revenueRecords.entrySet()) {
             DailyRevenue dr = entry.getValue();
-            if (dr.getID() == (double)objID) {   // Giả sử DailyRevenue có phương thức getId()
+            if (dr.getDate() == (LocalDate)objID) {   // Giả sử DailyRevenue có phương thức getId()
                 keyToRemove = entry.getKey();
                 break;
             }
@@ -90,12 +94,50 @@ public class RevenueManager implements ManagerHandler {
         return revenue;
     }
 
+    public void saveToFile(){   
+        BufferedWriter bw = null;
+        try {
+            Path p1 = Paths.get("cache", "Revenue.txt");
+            Path p2 = Paths.get("src", "cache", "Revenue.txt");
+
+            if (Files.exists(p1)){
+                bw = Files.newBufferedWriter(p1, StandardCharsets.UTF_8);
+            }
+            else if ( Files.exists(p2)){
+                bw = Files.newBufferedWriter(p2, StandardCharsets.UTF_8);
+            }
+            else {
+                throw new FileNotFoundException("Schedule.txt not found in classpath or cache folders");
+            }
+
+            for (Map.Entry<LocalDate, DailyRevenue> entry : revenueRecords.entrySet()){
+                LocalDate date = entry.getKey();
+                DailyRevenue dr = entry.getValue();
+                bw.write(String.valueOf(date) + "|" + String.valueOf(dr.getTotalAmount()));
+                bw.newLine();
+            }
+
+        } 
+         catch (IOException e) {
+            e.printStackTrace();
+         }
+          finally {
+            if (bw != null) {
+                try { bw.close(); } catch (IOException ignored) {}
+            }
+          }
+    }
+    @Override
+    public Object Input(){
+        return  null;
+    }
+
     public HashMap<LocalDate, DailyRevenue> getRevenueRecords(){ return revenueRecords; }
 
     //Lấy doanh thu của ngày nào đó 
-    // public double getRevenueOfDate(LocalDate date){ return revenueRecords.get(date).getTotalAmount(); }
+    public double getRevenueOfDate(LocalDate date){ return revenueRecords.get(date).getTotalAmount(); }
 
-    // public double getProfitOfDate(LocalDate date){ return revenueRecords.get(date).getTotalProfit(); }
+    public double getProfitOfDate(LocalDate date){ return revenueRecords.get(date).getTotalProfit(); }
 
     // Private constructor to enforce singleton
     private RevenueManager() {
@@ -112,6 +154,15 @@ public class RevenueManager implements ManagerHandler {
 
     public HashMap<LocalDate, Double> getProfitLoss() { return profitLoss; }
 
-    
+
+    public void addTransaction(java.time.LocalDate date, models.Order order) {
+        DailyRevenue dr = revenueRecords.get(date);
+        if (dr == null) {
+            dr = new DailyRevenue(date);
+            revenueRecords.put(date, dr);
+        }
+        dr.getTransactions().add(order);
+        
+    }
 
 }
