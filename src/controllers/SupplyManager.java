@@ -108,31 +108,36 @@ public class SupplyManager implements ManagerHandler {
     @Override
     public void createReport() {
         System.out.println("Danh sach nguyen lieu trong kho:");
-        DateTimeFormatter outFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        System.out.println();
+        displayer.printFormatLine(new int[]{4, 16, 16, 20, 14, 14});
+
+        System.out.printf("| %-4s | %-16s | %-16s | %-20s | %-14s | %-14s |\n", "ID", "Ten", "So luong", "Gia", "HSD", "Ngay nhap hang");
+        displayer.printFormatLine(new int[]{4, 16, 16, 20, 14, 14});
+
         for (Map.Entry<Integer, Ingredient> entry : ingredients.entrySet()) {
             Ingredient ing = entry.getValue();
-            displayer.singleSeperate();
-            System.out.println(
-                "ID: " + entry.getKey() + 
-                "\nName: " + ing.getName() + 
-                "\nHSD: " + (ing.getDate() != null ? ing.getDate().format(outFmt) : "N/A") +
-                "\nNgay Nhap hang: " + (ing.getNgayNhapHang() != null ? ing.getNgayNhapHang().format(outFmt) : "N/A") +
-                "\nQuantity: " + ing.getQuantity() +
-                "\nCost: " + ing.getCost()
+            
+            System.out.printf(
+                "| %-4d | %-16s | %-16d | %-20.1f |", 
+                entry.getKey(), ing.getName(), ing.getQuantity(), ing.getCost()
             );
+            System.out.println(ing.getNgayNhapHang() + "      | " + ing.getDate() + "     |");
         }
+        displayer.printFormatLine(new int[]{4, 16, 16, 20, 14, 14});
+        System.out.println();
     }
 
     public void XuatNguyenLieu(){
+        System.out.println();
+        displayer.printFormatLine(new int[]{16, 16, 20});
+        System.out.printf("| %-16s | %-16s | %-20s |\n", "Ten", "So luong", "Gia");
+        displayer.printFormatLine(new int[]{16, 16, 20});
         for (Map.Entry<String, Ingredient> entry : ingredientsData.entrySet()){
             Ingredient ing = entry.getValue();
-            displayer.singleSeperate();
-            System.out.println("Name: " + ing.getName() +
-                                "\nQuantity: " + ing.getQuantity() +
-                                "\nCost: " + ing.getCost() 
-                );
+            System.out.printf("| %-16s | %-16d | %-20.1f |\n", ing.getName(), ing.getQuantity(), ing.getCost());
         }
-        
+        displayer.printFormatLine(new int[]{16, 16, 20});
+        System.out.println();
     }
 
     
@@ -211,7 +216,7 @@ public class SupplyManager implements ManagerHandler {
     //Ghi lại các lô vào file chỉ thiếu mỗi id cho giống Ingredient.txt
     public void saveIngredientsToFile() {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        Path destination = Paths.get("cache", "Ingredients(copy).txt");
+        Path destination = Paths.get("src","cache", "Ingredients(copy).txt");
         try {
             Files.createDirectories(destination.getParent());
             try (BufferedWriter bw = Files.newBufferedWriter(destination, StandardCharsets.UTF_8,
@@ -611,7 +616,7 @@ public class SupplyManager implements ManagerHandler {
     //copy file 
     public void copyFile(){
         // write the copy to the runtime cache folder (same folder used by saveDishesToFile)
-        Path destination = Paths.get("cache", "Ingredients(copy).txt");
+        Path destination = Paths.get("src","cache", "Ingredients(copy).txt");
         try {
             // Try copying from classpath resource first (works when running from jar/IDE)
             InputStream is = DishManager.class.getClassLoader().getResourceAsStream("resources/Ingredients.txt");
@@ -620,6 +625,8 @@ public class SupplyManager implements ManagerHandler {
                 try (InputStream in = is) {
                     Files.copy(in, destination, StandardCopyOption.REPLACE_EXISTING);
                     System.out.println("Đã copy file từ classpath thành công!");
+                    // reload in-memory cache from the copied file
+                    
                 }
             } else {
                 // Fallback to filesystem path relative to working directory
@@ -627,6 +634,8 @@ public class SupplyManager implements ManagerHandler {
                 if (Files.exists(source)) {
                     Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
                     System.out.println("Đã copy file từ src/resources thành công!");
+                    // reload in-memory cache from the copied file
+                   
                 } else {
                     System.err.println("Nguon Dishes.txt khong tim thay (checked classpath and src/resources)");
                 }

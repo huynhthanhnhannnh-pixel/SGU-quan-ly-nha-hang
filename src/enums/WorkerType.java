@@ -2,10 +2,7 @@ package enums;
 
 public enum WorkerType {
     WAITER("waiter"),
-    CHEF("chef"),
-    SUPPLY_MANAGER("supplyManager"),
-    WORKER_MANAGER("workerManager"),
-    TABLE_MANAGER("tableManager");
+    CHEF("chef");
 
     private final String position;
 

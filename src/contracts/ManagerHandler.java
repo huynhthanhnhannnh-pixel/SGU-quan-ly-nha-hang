@@ -10,6 +10,9 @@ public interface ManagerHandler {
     public void add(Object obj);
     public Object  remove(Object objID);
     public Object search(Object objID);
+
+    // public void loadFromFile(Runnable func);
+    // public void saveToFile(Runnable func);
     public Object Input();
 }
 

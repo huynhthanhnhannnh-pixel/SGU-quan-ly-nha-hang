@@ -10,10 +10,11 @@ import models.DailyRevenue;
 
 public class TableManager implements ManagerHandler {
     private static TableManager self;
+    private EventHandler eventHlr = EventHandler.getEventHandler();
     private Displayer displayer = Displayer.getDisplayer();
     private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
     private WorkerManager workerMgr = WorkerManager.getManager();
-
+    private LocalDate date = LocalDate.now();
     private HashMap<Integer, Table> tableList = new HashMap<Integer, Table>(); // Danh sách bàn, <Mã bàn, bàn> ví dụ: tìm bàn số 5 => <5, bàn>
     private int numOfTable = 10; // Số lượng bàn ăn
     int GO_BACK_OPTION = 0;
@@ -82,25 +83,15 @@ public class TableManager implements ManagerHandler {
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
     // Your codes go here
 
-    // Chuẩn bị bàn ăn cho khách
-    // public void prepareTable(int tableID) {
-        // dựa vào tableID lấy ra object Table từ tableList(danh sách bàn)
-
-        // thêm khách vào bàn
-
-        
-
-    // }
-
-    // 2.1 random khách hàng (chua lam gi) 
-    // public Customer customerRGN() {
-    //     return null;
-    // }
-
-
+    public static int getDayNumber(LocalDate date) {
+        int dayOfWeek = date.getDayOfWeek().getValue(); // Thứ Hai=1, ... Chủ nhật=7
+        return dayOfWeek == 7 ? 0 : dayOfWeek; // Nếu là Chủ nhật => 0
+    }
+    
     public void showSimulator(){
-        Scanner sc = new Scanner(System.in);
-        LocalDate today = LocalDate.now();
+        
+        // LocalDate today = LocalDate.now();
+         
         String[] header = {"Nhap 0 de quay lai", "Mo phong ban hang"};
         String[] options ={
             "Bat dau ngay moi"
@@ -116,41 +107,45 @@ public class TableManager implements ManagerHandler {
                 case 1:{
                     System.out.println("Check co nguyen lieu nao het han su dung hay khong: "); 
 
-                    if(SupplyManager.getManager().deleteExpiredandLowQuantityIngredients(today)==0)
+                    if(SupplyManager.getManager().deleteExpiredandLowQuantityIngredients(date)==0)
                         System.out.println("Hang con han su dung");
                     else{
-                        SupplyManager.getManager().deleteExpiredandLowQuantityIngredients(today);
+                        SupplyManager.getManager().deleteExpiredandLowQuantityIngredients(date);
                     }
                     System.out.print("Dat target hom nay:   "); 
-                    Double money = sc.nextDouble(); 
+                    inputHandler.getUserOption();
+                    double money = (double) inputHandler.getCurrentOption(); 
 
                     // Dat target
                     do{
                         if(money < 5000000){
                             System.out.print("Target thap qua, khong du tra tien nhan vien, dat lai target:  ");
-                            money =sc.nextDouble(); }
+                            inputHandler.getUserOption();
+                            money = (double) inputHandler.getCurrentOption();  
+                        }
                         else if( money >50000000){
                             System.out.print("Nha hang e lam, dat target chi cho cao vay, dat lai target:  ");
-                            money =sc.nextDouble(); 
+                            inputHandler.getUserOption();
+                            money = (double) inputHandler.getCurrentOption();  
                         }
                     }
                     while(money < 5000000 || money > 50000000);
     
                     System.out.println("Target hom nay la: "+ money);
                     simulatorChefAndWaiter(money);
-
+                    inputHandler.enter2Continue();
                    
                     break;
                 }
                     default:
                     System.out.println("Lua chon khong hop le");
-            }
-                   
+                }
+                
+            displayer.singleSeperate();
+            inputHandler.enter2Continue();
+            inputHandler.resetOption();
+            date=date.plusDays(1);    
         }
-
-        displayer.singleSeperate();
-        inputHandler.enter2Continue();
-        inputHandler.resetOption();
     }
 
 
@@ -173,10 +168,16 @@ public class TableManager implements ManagerHandler {
                     System.out.println("=== BAT DAU GIA LAP NHA HANG ===");
                     Table table = tableList.get(1); // Lấy bàn số 1 để mô phỏng
                     
-                    EventHandler.getEventHandler().addTable(table);
-                    EventHandler.getEventHandler().startShift();
+                    System.out.println(date +" "+ getDayNumber(date));  
+                    eventHlr.addTable(table);
+                    eventHlr.startShift(getDayNumber(date));
+
+                    if (eventHlr.isNotActive()) {
+                        break; // Nếu nhà hàng không hoạt động, thoát khỏi mô phỏng
+                    }
+
                     // Sau đó gọi getTable() để Waiter tạo order
-                    Order order = EventHandler.getEventHandler().getTable();
+                    Order order = eventHlr.getOrderOfTable();
                     if (order == null) {
                         System.out.println("khong co order nao duoc tao");
                         return; // hoặc tiếp tục vòng lặp tùy logic
@@ -185,22 +186,21 @@ public class TableManager implements ManagerHandler {
                     double totalRevenue = 0.0;
                     int attempts = 0;
                     int maxAttempts = 1000;
-                    java.time.LocalDate today = java.time.LocalDate.now();
-                    DailyRevenue dr = new DailyRevenue(today);
-                    RevenueManager.getManager().getRevenueRecords().put(today, dr);
-                    double revenueBefore = RevenueManager.getManager().getRevenueOfDate(today);
+                    DailyRevenue dr = new DailyRevenue(date);
+                    RevenueManager.getManager().getRevenueRecords().put(date, dr);
+                    double revenueBefore = RevenueManager.getManager().getRevenueOfDate(date);
                     while (totalRevenue < target&& attempts < maxAttempts) {
                         attempts++;
                        // Đưa bàn vào hàng chờ để waiter tạo order
-                        EventHandler.getEventHandler().addTable(table);
+                        eventHlr.addTable(table);
 
                         // Kích hoạt waiter/chef xử lý ngay (thực thi đồng bộ trong cùng luồng)
                         
-                        EventHandler.getEventHandler().notifyWaiters();
-                        EventHandler.getEventHandler().notifyChefs();
+                        eventHlr.notifyWaiters();
+                        // eventHlr.notifyChefs();
 
                         // Đọc doanh thu hiện tại (Waiter sẽ ghi transaction khi thanh toán)
-                        double revenueNow = controllers.RevenueManager.getManager().getRevenueOfDate(today);
+                        double revenueNow = controllers.RevenueManager.getManager().getRevenueOfDate(date);
                         double delta = revenueNow - revenueBefore;
                         if (delta > 0) {
                             totalRevenue += delta;
@@ -209,25 +209,28 @@ public class TableManager implements ManagerHandler {
                             System.out.println("Thu: " + delta + " | Tong: " + totalRevenue); 
                             displayer.dashSeperate(); 
                         }
+                        inputHandler.enter2Continue();
                     }
 
-                        if (totalRevenue >= target) {
-                            System.out.println("Tong doanh thu: " + totalRevenue );
-                            System.out.println("DAT DUONG TARGET DAT RA");
-                        } else {
-                            System.out.println("khong dat target sau " + attempts + " lan thu. Doanh thu hien tai:  " + totalRevenue);
-                        }
-                            
-                        System.out.println("=== KET THUC GIA LAP ===");
-                        break;
-                        }
+                    if (totalRevenue >= target) {
+                        System.out.println("Tong doanh thu: " + totalRevenue );
+                        System.out.println("DAT DUONG TARGET DAT RA");
+                    } else {
+                        System.out.println("khong dat target sau " + attempts + " lan thu. Doanh thu hien tai:  " + totalRevenue);
+                    }
+                    eventHlr.endShift();
+                    System.out.println("=== KET THUC GIA LAP ===");
+                    break;
+
+                }
                 case 2: {
                     System.out.println("=== DONG CUA HANG ===");
+                    
                     return; // hoặc break nếu muốn quay lại menu
                 }
                 default:
                     System.out.println("Lua chon khong hop le");
-                    }
+                }
     }
             displayer.singleSeperate();
             inputHandler.enter2Continue();

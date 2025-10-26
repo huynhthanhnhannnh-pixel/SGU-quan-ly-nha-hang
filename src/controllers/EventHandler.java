@@ -25,7 +25,7 @@ public class EventHandler {
 
     // Số ngày của chương trình, sử dụng số ngày để tìm shift
     private int totalDays = 0;
-    private Integer currentDay = 0; //  Nếu currentDay = 0 -> chủ nhật nghỉ làm, 1->thứ 2, 2->thứ 3,...
+    // private Integer currentDay = 0; //  Nếu currentDay = 0 -> chủ nhật nghỉ làm, 1->thứ 2, 2->thứ 3,...
     private boolean isNotActive = false; // Trạng thái nhà hàng đang mở hay đóng
 
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
@@ -46,20 +46,26 @@ public class EventHandler {
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
     //===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+===+
 
+    public boolean isNotActive() {
+        return isNotActive;
+    }
+
     // Bắt đầu ca làm
-    public void startShift() {
+    public void startShift(int id) {
         // lưu danh sách các chef và waiter
         boolean notReady = false; // Kiểm tra là tiếp tục có được không
         totalDays++;
-        currentDay = totalDays % 7;
-        if (currentDay == 0) { // Nghỉ làm vào chủ nhật
+        // currentDay = totalDays % 7;
+
+        if (id == 0) { // Nghỉ làm vào chủ nhật
             System.out.println("Chu nhat nha hang nghi lam");
             notReady = true;
         }
+        
         // Dừng nếu ca làm không tồn tại
-        curShift = wrkMgr.getShift(currentDay);
+        curShift = wrkMgr.getShift(id);
         if (curShift == null) { 
-            System.out.println("Ca lam khong ton tai: " + currentDay);
+            System.out.println("Ca lam khong ton tai: " + id);
             notReady = true;
         }
 
@@ -84,19 +90,31 @@ public class EventHandler {
     }
 
     public void endShift() { 
-        if (currentDay == 0) { // Nghỉ làm vào chủ nhật
-            System.out.println("Nghi chu nhat");
-            return;
-        }
+        // if (currentDay == 0) { // Nghỉ làm vào chủ nhật
+        //     System.out.println("Nghi chu nhat");
+        //     return;
+        // }
         if (workerList == null) {
             System.out.println("Khong co nhan vien trong ca lam hien tai");
             UserInputHandler.getUserInputHandler().enter2Continue();
             return;
         }
-        notifySupplyManager(); // thông báo cho quản lý thực phẩm
 
+        // ====================================================
+        // Thông tin được hiện thị vào cuối ngày
+        spMgr.createReport(); // thông báo cho quản lý thực phẩm
+
+        
+
+
+
+        // ====================================================
+
+        System.out.println("Ket thuc ngay lam");
         workerList = null; 
-        isNotActive = true;
+        isNotActive = true; // dat ket thuc ngay
+
+        inputHandler.enter2Continue();
     }
     
     // Khi có khách đặt bàn hay chef gửi lại order thì kêu waiter đầu tiên đang rảnh làm việc
@@ -129,17 +147,7 @@ public class EventHandler {
         }
     }
 
-    public void notifyTableManager() {
-        
-    }
-
-    public void notifySupplyManager() {
-        spMgr.createReport();
-        
-        inputHandler.enter2Continue();
-    }
-
-    public Order getTable() {
+    public Order getOrderOfTable() {
         if (unsatisfiedTables == null || unsatisfiedTables.isEmpty()) return null;
             Table table = unsatisfiedTables.remove(0);
             for (Order order : orderList) {

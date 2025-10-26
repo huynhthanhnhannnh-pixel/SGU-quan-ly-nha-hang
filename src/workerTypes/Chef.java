@@ -72,7 +72,7 @@ public class Chef extends base.Worker {
             System.out.println("Ban da thanh toan: " + bill);
                     java.time.LocalDate today = java.time.LocalDate.now();                   
                     controllers.RevenueManager.getManager().addTransaction(today, order);
-                    EventHandler.getEventHandler().notifyTableManager();
+                    // EventHandler.getEventHandler().notifyTableManager();
 
         } else {
             System.out.println("Chef: Thieu nguyen lieu - yeu cau lay lai order");
