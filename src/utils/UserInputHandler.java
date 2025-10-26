@@ -4,7 +4,6 @@ import java.util.Scanner;
 
 public class UserInputHandler {
     private static UserInputHandler self = null;
-    private Displayer displayer = Displayer.getDisplayer();
     private Scanner sc = null;
     private int curOption = -1;
     private String curOptionString ="";

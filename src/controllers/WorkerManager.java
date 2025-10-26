@@ -492,9 +492,9 @@ public class WorkerManager implements ManagerHandler {
 
                     break;
 
-                case 2:
-                    worker.interact();
-                    break;
+                // case 2:
+                //     // worker.interact();
+                //     break;
         
                 default:
                     inputHandler.raiseWarning();

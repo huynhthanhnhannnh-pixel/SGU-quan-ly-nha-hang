@@ -140,7 +140,7 @@ public class TableManager implements ManagerHandler {
         // ================================================================================
 
         System.out.println("===== BAT DAU GIA LAP NHA HANG =====");
-        System.out.println("Ngay: " + date + "\n\n");  
+        System.out.println("Ngay: " + date + "\n");  
 
         eventHlr.startShift(getDayNumber(date)); // bắt đầu làm
         // Nếu không đủ nhân viên hoặc chủ nhật thì nghỉ
@@ -157,10 +157,10 @@ public class TableManager implements ManagerHandler {
         while (todayProgress < target) {
             
             Table table = TableManager.getManager().getTableList().get(1); // Lấy bàn số 1 để mô phỏng
-            EventHandler.getEventHandler().addTable(table);
+            eventHlr.addTable(table);
             Order order = new Order(table);
-            EventHandler.getEventHandler().addOrder(order);  // Tạo order cho bàn số 1
-            eventHlr.notifyWaiters(EventHandler.getEventHandler().getOrderOfTable()); // Bắt đầu kêu waiter ra phục vụ
+            eventHlr.addOrder(order);  // Tạo order cho bàn số 1
+            eventHlr.notifyWaiters(eventHlr.getOrderOfTable()); // Bắt đầu kêu waiter ra phục vụ
 
 
             todayProgress += 1000000; // Testing, ô fix dòng này sau

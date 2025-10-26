@@ -232,7 +232,7 @@ public class SupplyManager implements ManagerHandler {
                     bw.newLine();
                 }
             }
-            System.out.println("Đã lưu thành công vào file: " + destination.toString());
+            //System.out.println("Đã lưu thành công vào file: " + destination.toString());
         } catch (IOException e) {
             System.err.println("Lỗi khi ghi file: " + e.getMessage());
             e.printStackTrace();
@@ -624,7 +624,7 @@ public class SupplyManager implements ManagerHandler {
             if (is != null) {
                 try (InputStream in = is) {
                     Files.copy(in, destination, StandardCopyOption.REPLACE_EXISTING);
-                    System.out.println("Đã copy file từ classpath thành công!");
+                    //System.out.println("Đã copy file từ classpath thành công!");
                     // reload in-memory cache from the copied file
                     
                 }
@@ -633,7 +633,7 @@ public class SupplyManager implements ManagerHandler {
                 Path source = Paths.get("src", "resources", "Ingredients.txt");
                 if (Files.exists(source)) {
                     Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
-                    System.out.println("Đã copy file từ src/resources thành công!");
+                    //System.out.println("Đã copy file từ src/resources thành công!");
                     // reload in-memory cache from the copied file
                    
                 } else {
