@@ -155,7 +155,7 @@ public class RevenueManager implements ManagerHandler {
     public HashMap<LocalDate, Double> getProfitLoss() { return profitLoss; }
 
 
-    public void addTransaction(java.time.LocalDate date, models.Order order) {
+    public void addTransaction(LocalDate date, Order order) {
         DailyRevenue dr = revenueRecords.get(date);
         if (dr == null) {
             dr = new DailyRevenue(date);

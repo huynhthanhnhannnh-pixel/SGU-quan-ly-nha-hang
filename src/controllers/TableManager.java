@@ -90,9 +90,10 @@ public class TableManager implements ManagerHandler {
         return dayOfWeek == 7 ? 0 : dayOfWeek; // Nếu là Chủ nhật => 0
     }
     
-    public HashMap<Integer, Table> getTableList() {
-        return tableList;
-    }
+    public HashMap<Integer, Table> getTableList() { return tableList; }
+
+    public LocalDate getDate() { return date; } 
+    
     // Đặt mục tiêu danh thu
     private void setTargetProfit() {
         System.out.println("Target hien tai: " + target); 

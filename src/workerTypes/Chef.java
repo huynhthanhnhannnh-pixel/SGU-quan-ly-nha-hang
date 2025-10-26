@@ -1,6 +1,7 @@
 package workerTypes;
 
 import controllers.*;
+import java.time.LocalDate;
 import java.util.Map;
 import models.Dish;
 import models.Order;
@@ -69,11 +70,11 @@ public class Chef extends base.Worker {
 
             System.out.println("Chef: Hoan thanh tat ca mon do");
             EventHandler.getEventHandler().notifyWaiters(order);
-            double bill = order.calculateAmount();
-            System.out.println("Ban da thanh toan: " + bill);
-                    java.time.LocalDate today = java.time.LocalDate.now();                   
-                    controllers.RevenueManager.getManager().addTransaction(today, order);
-                    // EventHandler.getEventHandler().notifyTableManager();
+            double bill = order.calculateAmount(); // vừa cộng tiền vào amount trong order luôn, vừa lưu amount vào biến bill
+            System.out.println("Khach hang da thanh toan: " + bill);
+            LocalDate today = TableManager.getManager().getDate();          
+            RevenueManager.getManager().addTransaction(today, order);
+            // EventHandler.getEventHandler().notifyTableManager();
 
         } else {
             System.out.println("Chef: Thieu nguyen lieu - yeu cau lay lai order");

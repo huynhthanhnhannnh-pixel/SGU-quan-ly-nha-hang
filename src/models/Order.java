@@ -74,19 +74,19 @@ public class Order {
     public double calculateAmount() {
         double total = 0.0;
         DishManager dm = DishManager.getManager();     
-    for (String dishName : this.dishes) {
-        if (dishName == null) continue;
-        for (Dish dish : dm.getDishList()) {
-            if (dish.getName().equalsIgnoreCase(dishName)) {
-                total += dish.getPrice();
-                break;
+        for (String dishName : this.dishes) {
+            if (dishName == null) continue;
+            for (Dish dish : dm.getDishList()) {
+                if (dish.getName().equalsIgnoreCase(dishName)) {
+                    total += dish.getPrice();
+                    break;
+                }
             }
         }
-    }
 
-    // store the calculated total into the order so getAmount() reflects it
-    this.amount = total;
-    return total;
+        // store the calculated total into the order so getAmount() reflects it
+        this.amount = total;
+        return total;
     }
 
  
