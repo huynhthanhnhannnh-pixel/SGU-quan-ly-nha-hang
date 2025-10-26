@@ -495,6 +495,7 @@ public class WorkerManager implements ManagerHandler {
             }
         }   
         inputHandler.resetOption();
+        saveHiredWorkers();
     }
     public void showWorkerToHire() {
         String[] message = {
