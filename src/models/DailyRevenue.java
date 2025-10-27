@@ -6,7 +6,7 @@ import java.util.*;
 public class DailyRevenue {
     private LocalDate date;
     // private int revenueID;
-    private List<Order> transactions; //danh sách các order trong ngày
+    private List<Order> transactions = new ArrayList<>(); //danh sách các order trong ngày
 
     public DailyRevenue(LocalDate date){
         this.date = date;
@@ -28,6 +28,6 @@ public class DailyRevenue {
     }
 
     public double getTotalProfit(){
-        return getTotalAmount()/32 - RevenueManager.getManager().getProfitLoss().get(date);
+        return getTotalAmount()/3*2 - RevenueManager.getManager().getProfitLoss().get(date);
     }
 }

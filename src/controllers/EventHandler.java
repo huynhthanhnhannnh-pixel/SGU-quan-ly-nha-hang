@@ -49,6 +49,9 @@ public class EventHandler {
         return isNotActive;
     }
 
+    public HashSet<Worker> getWorkerList() {
+        return workerList;
+    }
     // Bắt đầu ca làm
     public void startShift(int id) {
         totalDays++;
@@ -85,9 +88,8 @@ public class EventHandler {
         //     System.out.println("Nghi chu nhat");
         //     return;
         // }
-        if (workerList == null) {
+        if (workerList == null || workerList.isEmpty()) {
             System.out.println("Khong co nhan vien trong ca lam hien tai");
-            UserInputHandler.getUserInputHandler().enter2Continue();
             return;
         }
 
@@ -168,6 +170,12 @@ public class EventHandler {
     // tạo order mới
     public void addOrder(Order newOrder) {
         if (orderList == null) orderList = new ArrayList<>();
+        for (Order order : orderList) {
+            if (order.getTable().equals(newOrder.getTable())) {
+                // Đã có order cho bàn này rồi, không thêm nữa
+                return;
+            }
+        }
         orderList.add(newOrder);
         // Ensure the table is in the unsatisfiedTables queue so waiters can pick it up
         if (unsatisfiedTables == null) unsatisfiedTables = new ArrayList<>();
@@ -187,7 +195,7 @@ public class EventHandler {
      */
     public void clearCache() {
         Path[] dirs = { Paths.get("src", "cache"), Paths.get("cache") };
-        String[] filenames = { "Dishes(copy).txt", "Ingredients(copy).txt", "HiredWorkers.txt", "Schedule.txt" };
+        String[] filenames = { "Dishes(copy).txt", "Ingredients(copy).txt", "HiredWorkers.txt", "Schedule.txt", "Revenue.txt" };
         for (Path dir : dirs) {
             for (String name : filenames) {
                 try {

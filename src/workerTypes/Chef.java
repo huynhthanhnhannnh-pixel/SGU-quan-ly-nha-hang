@@ -1,8 +1,8 @@
 package workerTypes;
 
-import java.util.Random;
 import controllers.*;
 import java.util.Map;
+import java.util.Random;
 import models.Dish;
 import models.Order;
 import utils.Displayer;
@@ -93,7 +93,7 @@ public class Chef extends base.Worker {
                             SupplyManager.getManager().getIngredient(ingredientName, requiredAmount);
                         }
 
-                        //System.out.println("Chef: Da nau xong mon:  " + dish);
+                        // System.out.println("Chef: Da nau xong mon:  " + dish);
                         
 
                         int ratingIdx = rand.nextInt(5) + 1;
@@ -109,8 +109,18 @@ public class Chef extends base.Worker {
 
             System.out.println("\nChef: Hoan thanh tat ca mon do");
             System.out.println("=".repeat(50));
+            // eventHlr.notifyWaiters(order);
+            // for (String dishName : order.getDishes()) {
+            //     String centered = displayer.centerString(dishName, 33);
+            //     System.out.println("||" + centered + "||");
+            // }
+            // for (DailyRevenue dr : RevenueManager.getManager().getRevenueRecords().values()) {
+            //     System.out.println(dr.getTransactions().size());
+            // }
             eventHlr.notifyWaiters(order);
             double bill = order.calculateAmount();
+            
+            
 
             // ========================================================================
 
@@ -132,9 +142,11 @@ public class Chef extends base.Worker {
             // ========================================================================
             
             //System.out.println("Ban da thanh toan: " + bill);
-            java.time.LocalDate today = java.time.LocalDate.now();                   
-            controllers.RevenueManager.getManager().addTransaction(today, order);
+            
+            RevenueManager.getManager().addTransaction(TableManager.getManager().getDate(), order);
             // EventHandler.getEventHandler().notifyTableManager();
+
+            // eventHlr.notifyWaiters(order);
 
         } else {
             // ========================================================================
