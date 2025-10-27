@@ -3,6 +3,7 @@ package utils;
 public class Displayer {
     public final int SEPERATOR_LENGTH = 113;
     private static Displayer self = null;
+    private int[] optionLength = {100};
 
     private Displayer() {}
     public static Displayer getDisplayer() {
@@ -24,9 +25,14 @@ public class Displayer {
         singleSeperate();
     }
     public void displayOptions(String[] options) {
+        printFormatLine(optionLength);
+        System.out.printf("| %-100s |\n", "Options |");
+        printFormatLine(optionLength);
         for (int i = 0; i < options.length; i++) {
-            System.out.println((i + 1) + ". " + options[i]);
+            //System.out.println((i + 1) + ". " + options[i]);
+            System.out.printf("| %-1s %-97s |\n", (i+1) + ".", options[i]);
         }
+        printFormatLine(optionLength);
     }
     public void clearScreen() {
         System.out.print("\033\143");
