@@ -2,7 +2,6 @@ package controllers;
 
 import base.Worker;
 import enums.*;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -108,7 +107,7 @@ public class EventHandler {
     }
     
     // Khi có khách đặt bàn hay chef gửi lại order thì kêu waiter đầu tiên đang rảnh làm việc
-    public void notifyWaiters() {
+    public void notifyWaiters(Order order) {
         if (isNotActive) { // Không thể gọi nếu nhà hàng chưa mở cửa
             endShift();
             return;
@@ -116,14 +115,14 @@ public class EventHandler {
 
         for (Worker worker : workerList) {
             if (worker.getPosition().equals(WorkerType.WAITER.getPosition())) {
-                worker.startWorking();
+                worker.startWorking(order);
                 break;
             }
         }
     }
 
     // Sau khi waiter lấy order xong thì kêu chef đầu tiên đang rảnh bắt đầu nấu ăn
-    public void notifyChefs() {
+    public void notifyChefs(Order order) {
         if (isNotActive) { // Không thể gọi nếu nhà hàng chưa mở cửa
             endShift();
             return;
@@ -131,7 +130,7 @@ public class EventHandler {
 
         for (Worker worker : workerList) {
             if (worker.getPosition().equals(WorkerType.CHEF.getPosition())) {
-                worker.startWorking();
+                worker.startWorking(order);
                 break;
             }
         }
@@ -169,6 +168,12 @@ public class EventHandler {
     // tạo order mới
     public void addOrder(Order newOrder) {
         if (orderList == null) orderList = new ArrayList<>();
+        for (Order order : orderList) {
+            if (order.getTable().equals(newOrder.getTable())) {
+                // Đã có order cho bàn này rồi, không thêm nữa
+                return;
+            }
+        }
         orderList.add(newOrder);
         // Ensure the table is in the unsatisfiedTables queue so waiters can pick it up
         if (unsatisfiedTables == null) unsatisfiedTables = new ArrayList<>();
@@ -176,8 +181,9 @@ public class EventHandler {
             unsatisfiedTables.add(newOrder.getTable());
         }
     }
-    public Order orderList() {
-        return null;
+    
+    public List<Order> getOrderList() {
+        return orderList;
     }
     
     /**
@@ -187,7 +193,7 @@ public class EventHandler {
      */
     public void clearCache() {
         Path[] dirs = { Paths.get("src", "cache"), Paths.get("cache") };
-        String[] filenames = { "Dishes(copy).txt", "Ingredients(copy).txt", "HiredWorkers.txt", "Schedule.txt" };
+        String[] filenames = { "Dishes(copy).txt", "Ingredients(copy).txt", "HiredWorkers.txt", "Schedule.txt","Revenue.txt" };
         for (Path dir : dirs) {
             for (String name : filenames) {
                 try {

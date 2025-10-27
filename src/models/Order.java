@@ -22,22 +22,42 @@ public class Order {
     public List<String> getDishes(){ return dishes; }
     public List<String> getExcludedDishes(){ return excludedDishes; }
 
+    public void setNumOfUnsatisfiedRequest(int num) { this.numOfUnsatisfiedRequest = num; } 
+
     public void writeOrder(String dishName) {   dishes.add(dishName); }
 
     // chef thêm món không thể nấu được vào danh sách loại trừ
     public void addExcludedDish(String dishName) { excludedDishes.add(dishName); }
 
     // chef update lại order để thêm món không thể nấu được
+    // public void updateOrder() {
+    //     for (String excludedDish : excludedDishes) {
+    //         int length = dishes.size();
+    //         for (int i = 0; i < length; i++) {
+    //             if (excludedDish.equals(dishes.get(i))) {
+    //                 dishes.remove(i);
+    //                 numOfUnsatisfiedRequest++;
+    //                 length--;
+    //             }
+    //         }
+    //     }
+    // }
+
     public void updateOrder() {
-        for (String excludedDish : excludedDishes) {
-            int length = dishes.size();
-            for (int i = 0; i < length; i++) {
-                if (excludedDish.equals(dishes.get(i))) {
-                    dishes.remove(i);
-                    length--;
-                }
+        int countRemoved = 0;
+        Iterator<String> it = dishes.iterator();
+        while (it.hasNext()) {
+            String dish = it.next();
+            if (excludedDishes.contains(dish)) {
+                it.remove();
+                countRemoved++;
             }
         }
+        numOfUnsatisfiedRequest += countRemoved;
+        //System.out.println("Dishes after update: " + dishes);
+        //System.out.println("Excluded: " + excludedDishes);
+        //System.out.println("numOfUnsatisfiedRequest: " + numOfUnsatisfiedRequest);
+
     }
 
     public OrderState getState() {
@@ -48,10 +68,8 @@ public class Order {
         } else if (dishes.size() > 0 && numOfUnsatisfiedRequest == 0) {
             return OrderState.COMPLETED;
         }
-        return OrderState.COMPLETED; //hỏi chấm?
+        return OrderState.COMPLETED;
     }
-
-    //Random ra là chắc chắn món đó nằm trong menu của món thì tại sao lại có 2 vòng lặp for để chi vậy???
 
     public double calculateAmount() {
         double total = 0.0;
@@ -64,12 +82,20 @@ public class Order {
                     break;
                 }
             }
+        }
+
+        // store the calculated total into the order so getAmount() reflects it
+        this.amount = total;
+        return total;
     }
 
-    // store the calculated total into the order so getAmount() reflects it
-    this.amount = total;
-    return total;
-    }
-
+    public boolean isExclusiveDish(String name) {
+        for (String dishName : excludedDishes) {
+            if (dishName.equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    } 
  
 }

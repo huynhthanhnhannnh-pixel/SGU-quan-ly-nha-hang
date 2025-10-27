@@ -7,43 +7,43 @@ import models.*;
 
 
 public class Waiter extends base.Worker {
+    EventHandler eventHlr = EventHandler.getEventHandler();
      
     
     public Waiter(int id, String name, int age, String gender, String position, double salaries, String description) {
         super(id, name, age, gender,position, salaries, description);
     }
 
-    @Override
-    public void interact() {
-        
-    }
 
-    @Override
-    public void startWorking() {
+    public void startWorking(Order order) {
 
-        Order order = EventHandler.getEventHandler().getOrderOfTable();
+        // Order order = EventHandler.getEventHandler().getOrderOfTable(); // SAI VKL ( CHƯA CÓ ORDER TRONG ORDERLIST -> VÔ DỤNG)
         if (order == null) {
             System.out.println("Waiter: khong co order,nghi! ");
-        return;
+            return;
         }
-
+        
+        // EventHandler.getEventHandler().addTable(table); // Đưa bàn vào hàng chờ để waiter tạo order
+        // EventHandler.getEventHandler().getOrderList().add(order); // Thêm order vào danh sách order
         OrderState state = order.getState();
 
-        System.out.println("Nhan vien phuc vu toi ban lay mon, so mon duoc goi: " + order.getDishes().size()); // ra 0 
         System.out.println("");
             switch (state) {
                 case NEW:
 
                     makeOrder(order);                    
-                    EventHandler.getEventHandler().addOrder(order);
-                    EventHandler.getEventHandler().notifyChefs();
+                    System.out.println("Nhan vien phuc vu toi ban lay mon, so mon duoc goi: " + order.getDishes().size());
+                    // eventHlr.addOrder(order);
+                    eventHlr.notifyChefs(order);
                     break;
 
                 case UNFINISHED:
                     System.out.println("Nhan vien dang phuc vu lai ban");
                     retakeOrder(order);
-                    EventHandler.getEventHandler().addOrder(order);
-                    EventHandler.getEventHandler().notifyChefs();
+                    System.out.println("Nhan vien phuc vu toi ban lay lai mon, so mon duoc goi lai: " + order.getNumOfUnsatisfiedRequest());
+                    order.setNumOfUnsatisfiedRequest(0); // reset sau khi gọi lại
+                    // eventHlr.addOrder(order);
+                    eventHlr.notifyChefs(order);
                     break;
 
                 case COMPLETED:
@@ -54,6 +54,11 @@ public class Waiter extends base.Worker {
                     // System.out.println("Quan ly tinh cong vao tong doanh thu" + today + ", amount=" + bill + ")");
                     // controllers.RevenueManager.getManager().addTransaction(today, order);
                     // EventHandler.getEventHandler().notifyTableManager();
+                    for (Order o : eventHlr.getOrderList()) {
+                        System.out.println("Order trong orderList: " + o);
+                    }
+                    eventHlr.getOrderList().remove(order); // Xóa order khỏi danh sách
+                    // RevenueManager.getManager().addTransaction(TableManager.getManager().getDate(), order);
                     break;
 
                 default:
@@ -77,8 +82,8 @@ public class Waiter extends base.Worker {
     
     // Lấy lại order nấu mấy món trước không đủ đồ để nấu
     private void retakeOrder(Order order) {
-         Table table = order.getTable();
-        int retryCount = order.getExcludedDishes().size();
+        Table table = order.getTable();
+        int retryCount = order.getNumOfUnsatisfiedRequest();
         List<String> excluded = order.getExcludedDishes(); 
        
         for (int i = 0; i < retryCount; i++) {

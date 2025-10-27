@@ -90,6 +90,10 @@ public class TableManager implements ManagerHandler {
         return dayOfWeek == 7 ? 0 : dayOfWeek; // Nếu là Chủ nhật => 0
     }
     
+    public HashMap<Integer, Table> getTableList() { return tableList; }
+
+    public LocalDate getDate() { return date; } 
+
     // Đặt mục tiêu danh thu
     private void setTargetProfit() {
         System.out.println("Target hien tai: " + target); 
@@ -137,8 +141,7 @@ public class TableManager implements ManagerHandler {
         // ================================================================================
 
         System.out.println("===== BAT DAU GIA LAP NHA HANG =====");
-        System.out.println("Ngay: " + date + "\n\n");  
-
+        System.out.println("Ngay: " + date + "\n"); 
         eventHlr.startShift(getDayNumber(date)); // bắt đầu làm
         // Nếu không đủ nhân viên hoặc chủ nhật thì nghỉ
         if (eventHlr.isNotActive()) {
@@ -148,17 +151,35 @@ public class TableManager implements ManagerHandler {
 
         // ================================================================================
         // Phục vụ cho đến khi đủ danh thu
-
-        Table table = tableList.get(1); // Lấy bàn số 1 để mô phỏng // vô dụng tableList 
-        double todayProgress = 0.0; 
+        // DailyRevenue dailyRevenue = new DailyRevenue(date); // Khởi tạo doanh thu ngày mới
+        // RevenueManager.getManager().getRevenueRecords().put(date, dailyRevenue); // Thêm vào danh sách doanh thu
+        
+        double todayProgress = 0;
         while (todayProgress < target) {
             
-            eventHlr.addTable(table); // Đưa bàn vào hàng chờ để waiter tạo order
-            eventHlr.notifyWaiters(); // Bắt đầu kêu waiter ra phục vụ
+            Table table = TableManager.getManager().getTableList().get(1); // Lấy bàn số 1 để mô phỏng
+            eventHlr.addTable(table);
+            Order order = new Order(table);
+            eventHlr.addOrder(order);  // Tạo order cho bàn số 1
+            // dailyRevenue.getTransactions().add(order);
+            // for (DailyRevenue dr : RevenueManager.getManager().getRevenueRecords().values()) {
+            //     System.out.println(dr.getTransactions().size());
+            // }
+            // for ( Order o : dailyRevenue.getTransactions()) {
+            //     System.out.println(o.getDishes().size());
+            //     System.out.println(o.calculateAmount());
+            // }
+            eventHlr.notifyWaiters(eventHlr.getOrderOfTable()); // Bắt đầu kêu waiter ra phục vụ
+            
+            // System.out.println("So luong mon trong order: " + order.getDishes().size());
 
+            
+            // todayProgress = dailyRevenue.getTotalAmount();
+            // System.out.println("=== Tien do hom nay: " + todayProgress + " / " + target + " ===");
+            // todayProgress += 1000000;// Testing, ô fix dòng này sau
 
-            todayProgress += 1000000; // Testing, ô fix dòng này sau
-
+            todayProgress = RevenueManager.getManager().getRevenueOfDate(date);
+            System.out.println("=== Tien target hom nay: " + todayProgress + " / " + target + " ===");
 
             // Đọc doanh thu hiện tại (Waiter sẽ ghi transaction khi thanh toán)
             // double revenueNow = controllers.RevenueManager.getManager().getRevenueOfDate(date);
@@ -210,5 +231,6 @@ public class TableManager implements ManagerHandler {
         }
         displayer.singleSeperate();
         inputHandler.resetOption();
+        
     }
 }

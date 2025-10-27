@@ -1,5 +1,7 @@
 package base;
 
+import models.Order;
+
 public abstract class Worker extends Human {
     private final int id;
     private String position;
@@ -79,7 +81,6 @@ public abstract class Worker extends Human {
         System.out.printf("| %-4d | %-20s | %-5d | %-10s | %-25s | %-30.1f |\n", id, name, age, gender, _position, salaries);
     }
 
-    public abstract void interact();
-    public abstract void startWorking();
+    public abstract void startWorking(Order order);
     public abstract void stopWorking();
 }
