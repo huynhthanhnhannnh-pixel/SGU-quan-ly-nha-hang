@@ -90,7 +90,7 @@ public class Chef extends base.Worker {
                         for (Map.Entry<String, Integer> entry : requiredIngredients.entrySet()) {
                             String ingredientName = entry.getKey();
                             int requiredAmount = entry.getValue();
-                            SupplyManager.getManager().getIngredient(ingredientName, requiredAmount);
+                            SupplyManager.getManager().getIngredient(spl.findEarliestExpiry(ingredientName), requiredAmount);
                         }
 
                         // System.out.println("Chef: Da nau xong mon:  " + dish);

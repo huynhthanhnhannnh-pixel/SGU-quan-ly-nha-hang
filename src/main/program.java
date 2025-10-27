@@ -25,7 +25,7 @@ public class program {
             "Kiem tra kho nguyen lieu", 
             "Kiem tra danh sach menu",
             "Kiem tra doanh thu",
-            "Mo phong ban hang"
+            "Mo phong ban hang" 
         };
         boolean sessionActive = true;
 
