@@ -48,20 +48,22 @@ public class Order {
         } else if (dishes.size() > 0 && numOfUnsatisfiedRequest == 0) {
             return OrderState.COMPLETED;
         }
-        return OrderState.COMPLETED;
+        return OrderState.COMPLETED; //hỏi chấm?
     }
+
+    //Random ra là chắc chắn món đó nằm trong menu của món thì tại sao lại có 2 vòng lặp for để chi vậy???
 
     public double calculateAmount() {
         double total = 0.0;
         DishManager dm = DishManager.getManager();     
-    for (String dishName : this.dishes) {
-        if (dishName == null) continue;
-        for (Dish dish : dm.getDishList()) {
-            if (dish.getName().equalsIgnoreCase(dishName)) {
-                total += dish.getPrice();
-                break;
+        for (String dishName : this.dishes) {
+            if (dishName == null) continue;
+            for (Dish dish : dm.getDishList()) {
+                if (dish.getName().equalsIgnoreCase(dishName)) {
+                    total += dish.getPrice();
+                    break;
+                }
             }
-        }
     }
 
     // store the calculated total into the order so getAmount() reflects it

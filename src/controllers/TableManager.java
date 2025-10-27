@@ -149,15 +149,15 @@ public class TableManager implements ManagerHandler {
         // ================================================================================
         // Phục vụ cho đến khi đủ danh thu
 
-        Table table = tableList.get(1); // Lấy bàn số 1 để mô phỏng
-        double todayProgress = 0.0;
+        Table table = tableList.get(1); // Lấy bàn số 1 để mô phỏng // vô dụng tableList 
+        double todayProgress = 0.0; 
         while (todayProgress < target) {
             
             eventHlr.addTable(table); // Đưa bàn vào hàng chờ để waiter tạo order
             eventHlr.notifyWaiters(); // Bắt đầu kêu waiter ra phục vụ
 
 
-            todayProgress += 100000; // Testing, ô fix dòng này sau
+            todayProgress += 1000000; // Testing, ô fix dòng này sau
 
 
             // Đọc doanh thu hiện tại (Waiter sẽ ghi transaction khi thanh toán)
@@ -210,6 +210,5 @@ public class TableManager implements ManagerHandler {
         }
         displayer.singleSeperate();
         inputHandler.resetOption();
-        date = date.plusDays(1); // Chuyển sang ngày mới
     }
 }

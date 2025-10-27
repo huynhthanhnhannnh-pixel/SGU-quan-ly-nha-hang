@@ -22,14 +22,14 @@ public class Waiter extends base.Worker {
     public void startWorking() {
 
         Order order = EventHandler.getEventHandler().getOrderOfTable();
-           if (order == null) {
-              System.out.println("Waiter: khong co order,nghi! ");
-            return;
-            }
+        if (order == null) {
+            System.out.println("Waiter: khong co order,nghi! ");
+        return;
+        }
 
         OrderState state = order.getState();
 
-        System.out.println("Nhan vien phuc vu toi ban lay mon, so mon duoc goi: " + order.getDishes().size());
+        System.out.println("Nhan vien phuc vu toi ban lay mon, so mon duoc goi: " + order.getDishes().size()); // ra 0 
         System.out.println("");
             switch (state) {
                 case NEW:
