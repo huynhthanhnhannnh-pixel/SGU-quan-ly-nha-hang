@@ -54,9 +54,9 @@ public class Waiter extends base.Worker {
                     // System.out.println("Quan ly tinh cong vao tong doanh thu" + today + ", amount=" + bill + ")");
                     // controllers.RevenueManager.getManager().addTransaction(today, order);
                     // EventHandler.getEventHandler().notifyTableManager();
-                    for (Order o : eventHlr.getOrderList()) {
-                        System.out.println("Order trong orderList: " + o);
-                    }
+                    // for (Order o : eventHlr.getOrderList()) {
+                    //     System.out.println("Order trong orderList: " + o);
+                    // }
                     eventHlr.getOrderList().remove(order); // Xóa order khỏi danh sách
                     // RevenueManager.getManager().addTransaction(TableManager.getManager().getDate(), order);
                     break;

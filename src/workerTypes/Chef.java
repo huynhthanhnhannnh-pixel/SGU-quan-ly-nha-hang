@@ -82,6 +82,7 @@ public class Chef extends base.Worker {
 
             System.out.println("\nChef: du nguyen lieu - bat dau nau!");
             System.out.println("=".repeat(10) + "   COOKING....   " + "=".repeat(10));
+            SupplyManager spl = SupplyManager.getManager();
             for (String dish : order.getDishes()) {
                 for (Dish dishMENU : DishManager.getManager().getDishList()){
                     if (dish.equalsIgnoreCase(dishMENU.getName())){
@@ -90,10 +91,10 @@ public class Chef extends base.Worker {
                         for (Map.Entry<String, Integer> entry : requiredIngredients.entrySet()) {
                             String ingredientName = entry.getKey();
                             int requiredAmount = entry.getValue();
-                            SupplyManager.getManager().getIngredient(ingredientName, requiredAmount);
+                            SupplyManager.getManager().getIngredient(spl.findEarliestExpiry(ingredientName), requiredAmount);
                         }
 
-                        System.out.println("Chef: Da nau xong mon:  " + dish);
+                        // System.out.println("Chef: Da nau xong mon:  " + dish);
                         
 
                         int ratingIdx = rand.nextInt(5) + 1;

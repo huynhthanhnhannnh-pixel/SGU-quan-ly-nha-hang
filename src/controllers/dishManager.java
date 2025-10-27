@@ -42,10 +42,6 @@ public class DishManager implements ManagerHandler {
         System.out.println("Đã lưu thành công vào file!");
     } catch (IOException e) {
         System.err.println("Lỗi khi ghi file: " + e.getMessage());
-    } finally {
-        try {
-            if (bw != null) bw.close();
-        } catch (IOException ignored) {}
     }
 }
 
@@ -63,17 +59,12 @@ public class DishManager implements ManagerHandler {
     // === Load dữ liệu món ăn === 
     private void loadDishesFromFile() {
         BufferedReader reader = null;
-        try {
-            InputStream is = SupplyManager.class.getClassLoader().getResourceAsStream("resources/Dishes.txt");
-            if (is != null) {
-                reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-            } else {
-                Path p1 = Paths.get("resources", "Dishes.txt");
-                Path p2 = Paths.get("src", "resources", "Dishes.txt");
-                if (Files.exists(p1)) reader = Files.newBufferedReader(p1, StandardCharsets.UTF_8);
-                else if (Files.exists(p2)) reader = Files.newBufferedReader(p2, StandardCharsets.UTF_8);
-                else throw new FileNotFoundException("Dishes.txt not found in classpath or resources folders");
-            }
+        try {            
+            Path p1 = Paths.get("src", "cache", "Dishes(copy).txt").toAbsolutePath().normalize();
+            Path p2 = Paths.get("src", "resources", "Dishes.txt");
+            if (Files.exists(p1) && Files.size(p1) > 0) reader = Files.newBufferedReader(p1, StandardCharsets.UTF_8);
+            else if (Files.exists(p2)) reader = Files.newBufferedReader(p2, StandardCharsets.UTF_8);
+            else throw new FileNotFoundException("Dishes.txt not found in classpath or resources folders");
 
             String line;
             while ((line = reader.readLine()) != null) {
@@ -97,9 +88,7 @@ public class DishManager implements ManagerHandler {
             System.out.println("Loading dishes successful");
         } catch (IOException e) {
             System.err.println("Error loading dishes: " + e.getMessage());
-        } finally {
-            if (reader != null) try { reader.close(); } catch (IOException ignored) {}
-        }
+        } 
     }
 
     public void copyFile(){
@@ -107,6 +96,10 @@ public class DishManager implements ManagerHandler {
         Path destination = Paths.get("src","cache", "Dishes(copy).txt");
         try {
             // Try copying from classpath resource first (works when running from jar/IDE)
+            if (Files.exists(destination) && Files.size(destination) > 0) {
+            System.out.println("File Dishes(copy).txt đã có dữ liệu, bỏ qua việc copy.");
+            return; // kết thúc hàm luôn
+            }
             InputStream is = DishManager.class.getClassLoader().getResourceAsStream("resources/Dishes.txt");
             Files.createDirectories(destination.getParent());
             if (is != null) {
@@ -115,19 +108,8 @@ public class DishManager implements ManagerHandler {
                     System.out.println("Đã copy file từ classpath thành công!");
                     // reload in-memory cache from the copied file so runtime state matches the cache
                     
-                }
-            } else {
-                // Fallback to filesystem path relative to working directory
-                Path source = Paths.get("src", "resources", "Dishes.txt");
-                if (Files.exists(source)) {
-                    Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
-                    System.out.println("Đã copy file từ src/resources thành công!");
-                    // reload in-memory cache from the copied file so runtime state matches the cache
-                    
-                } else {
-                    System.err.println("Nguon Dishes.txt khong tim thay (checked classpath and src/resources)");
-                }
             }
+            } 
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -222,6 +204,7 @@ public class DishManager implements ManagerHandler {
                         break; 
                      }
                     addIngToDish(dishName, ing, amt);
+                    saveDishesToFile();
                     break;
                 }
                 case 6: {
@@ -263,6 +246,7 @@ public class DishManager implements ManagerHandler {
     }
 
     // Helper to read a Dish from console (name + ingredient list). Returns null if cancelled.
+    // Hàm này cần xem lại đầu tiên
     @Override
     public Dish Input() {
         UserInputHandler input = UserInputHandler.getUserInputHandler();
@@ -359,7 +343,6 @@ public class DishManager implements ManagerHandler {
             int newAmount = ingOfDish.get(ingredientName) + amount;
             targetDish.getIngredients().put(ingredientName, newAmount);
             ingredientIsNotFound = false; // Nguyên liệu đã được tìm thấy và đã cập nhật
-            saveDishesToFile();
             break;
         }
 
@@ -370,7 +353,6 @@ public class DishManager implements ManagerHandler {
 
                 targetDish.addIngredient(ingName, amount);
                 ingredientIsNotFound = false;
-                saveDishesToFile();
                 break;
             }
             //dish.addIngredient(ingName, amount);
@@ -414,6 +396,7 @@ public class DishManager implements ManagerHandler {
         return false;
     }
 
+    //Hàm này cần xem lại
     @Override
     public Object search(Object obj) {
         if (obj == null) return null;

@@ -14,9 +14,7 @@ public class SupplyManager implements ManagerHandler {
     private static SupplyManager self;
     private Displayer displayer = Displayer.getDisplayer();
     private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
-    // Giờ kho là HashMap<Integer, Ingredient>
     private HashMap<Integer, Ingredient> ingredients = new LinkedHashMap<>(); // kho
-    // int GO_BACK_OPTION = 0;
     private HashMap <String, Ingredient> ingredientsData = new LinkedHashMap<>();
 
 
@@ -40,7 +38,8 @@ public class SupplyManager implements ManagerHandler {
             "Xoa nguyen lieu (theo ID)",
             "Tim kiem nguyen lieu",
             "TEST nguyen lieu date thap nhat",
-            "TEST nguyen lieu duoc lay ra khoi kho"
+            "TEST nguyen lieu duoc lay ra khoi kho",
+            "TEST tim nguyen lieu co han su dung nho nhat"
         };
 
         while (true) {
@@ -85,9 +84,17 @@ public class SupplyManager implements ManagerHandler {
                 case 8: {
                     System.out.print("Nhap ten nguyen lieu (nhap 0 de huy): ");
                     String name = inputHandler.getScanner().nextLine().trim().replaceAll("\\s+", "");
+                    Ingredient newIng = new Ingredient(name);
                     System.out.print("Moi nhap vao so luong: ");
                     int qty = inputHandler.getScanner().nextInt();
-                    getIngredient(name, qty);
+                    getIngredient(newIng, qty);
+                    System.out.print("Da lay nguyen lieu ra khoi kho");
+                    break;
+                }
+                case 9: {
+                    System.out.print("Nhap ten nguyen lieu (nhap 0 de huy): ");
+                    String name = inputHandler.getScanner().nextLine().trim().replaceAll("\\s+", "");
+                    getIngredient(findEarliestExpiry(name), 19);
                     System.out.print("Da lay nguyen lieu ra khoi kho");
                     break;
                 }
@@ -104,7 +111,7 @@ public class SupplyManager implements ManagerHandler {
     
 
     
-    
+    //Xuất nguyên liệu theo lô hàng
     @Override
     public void createReport() {
         System.out.println("Danh sach nguyen lieu trong kho:");
@@ -127,6 +134,7 @@ public class SupplyManager implements ManagerHandler {
         System.out.println();
     }
 
+    //Xuất nguyên liệu theo tổng số lượng 
     public void XuatNguyenLieu(){
         System.out.println();
         displayer.printFormatLine(new int[]{16, 16, 20});
@@ -147,23 +155,11 @@ public class SupplyManager implements ManagerHandler {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         BufferedReader reader = null;
         try {
-            // 1) Try classpath resource (works when resources are on classpath or inside JAR)
-            InputStream is = SupplyManager.class.getClassLoader().getResourceAsStream("resources/Ingredients.txt");
-            if (is != null) {
-                reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-            } else {
-                // 2) Try common relative paths. These depend on the current working directory.
-                Path p1 = Paths.get("resources", "Ingredients.txt");
-                Path p2 = Paths.get("src", "resources", "Ingredients.txt");
-                
-                if (Files.exists(p1)) {
-                    reader = Files.newBufferedReader(p1, StandardCharsets.UTF_8);
-                } else if (Files.exists(p2)) {
-                    reader = Files.newBufferedReader(p2, StandardCharsets.UTF_8);
-                } else {
-                    throw new FileNotFoundException("Ingredients.txt not found in classpath or resources folders");
-                }
-            }
+            Path p1 = Paths.get("src", "cache", "Ingredients(copy).txt").toAbsolutePath().normalize();
+            Path p2 = Paths.get("src", "resources", "Ingredients.txt");
+            if (Files.exists(p1) && Files.size(p1) > 0) reader = Files.newBufferedReader(p1, StandardCharsets.UTF_8);
+            else if (Files.exists(p2)) reader = Files.newBufferedReader(p2, StandardCharsets.UTF_8);
+            else throw new FileNotFoundException("Dishes.txt not found in classpath or resources folders");
 
             String line;
             int id = 1; // ID tự tăng
@@ -237,7 +233,7 @@ public class SupplyManager implements ManagerHandler {
             System.err.println("Lỗi khi ghi file: " + e.getMessage());
             e.printStackTrace();
         }
-}
+    }
 
 
     // Private constructor to enforce singleton
@@ -278,22 +274,23 @@ public class SupplyManager implements ManagerHandler {
         }
         Ingredient removed = ingredients.remove(id);
         String key = normalizeKey(removed.getName());
-            Ingredient agg = ingredientsData.get(key);
-            if (agg != null){
-                agg.decreaseQuantity(removed.getQuantity());
-                if (agg.getQuantity() <= 0 ) {
-                    // remove aggregate record when total reaches zero
-                    agg.setQuantity(0);
-                }
+        Ingredient agg = ingredientsData.get(key);
+        if (agg != null){
+            agg.decreaseQuantity(removed.getQuantity());
+            if (agg.getQuantity() <= 0 ) {
+                // remove aggregate record when total reaches zero
+                agg.setQuantity(0);
             }
+        }
 
-            System.out.println("Da xoa nguyen lieu: " + removed.getName() + " (so luong: " + removed.getQuantity() + ")");
-            // persist changes after removal
-            saveIngredientsToFile();
-            return removed;
+        System.out.println("Da xoa nguyen lieu: " + removed.getName() + " (so luong: " + removed.getQuantity() + ")");
+        // persist changes after removal
+        saveIngredientsToFile();
+        return removed;
     }
 
     //hàm thêm quantity vào nguyên liệu có sẵn
+    // Hàm này cần xem lại đầu tiên
     @Override
     public void add(Object obj) {
         if (obj == null || !(obj instanceof Ingredient)) {
@@ -336,6 +333,7 @@ public class SupplyManager implements ManagerHandler {
     }
 
     // Hàm tìm kiếm theo id (tức tìm theo lô hàng)
+    // Hàm này cần xem lại đầu tiên
     @Override
         public Ingredient search(Object obj){
             if (obj == null || !(obj instanceof String)){
@@ -384,6 +382,7 @@ public class SupplyManager implements ManagerHandler {
 
 
     // Xóa nguyên liệu hết hạn và số lượng = 0 và trả về giá hàng bị hủy ( dùng để tính chi phí khấu hao của nguyên liệu )
+    // Hàm này cần xem lại đầu tiên
     public double deleteExpiredandLowQuantityIngredients(LocalDate today) {
         double total = 0;
         Iterator<Map.Entry<Integer, Ingredient>> iterator = ingredients.entrySet().iterator();
@@ -414,29 +413,24 @@ public class SupplyManager implements ManagerHandler {
 
     
     // Lấy nguyên liệu ra khỏi kho
-    public Ingredient getIngredient(String name, int amount) {
-        for (Ingredient ing : ingredients.values()) {
-            if (normalizeKey(ing.getName()).equals(normalizeKey(name))) {
-                int retrievedAmount = ing.decreaseQuantity(amount);
-                if (retrievedAmount > 0) {
-                    // cập nhật tổng
-                    String key = normalizeKey(name);
-                    Ingredient agg = ingredientsData.get(key);
-                    if (agg != null) {
-                        agg.decreaseQuantity(retrievedAmount);
-                        if (agg.getQuantity() <= 0) {
-                            agg.setQuantity(0);
-                        }
-                    }
-
-                    Ingredient result = new Ingredient(name);
-                    result.setCost(ing.getCost());
-                    result.increaseQuantity(retrievedAmount);
-                    saveIngredientsToFile();
-                    return result;
+    public Ingredient getIngredient(Ingredient takeIngredient, int amount) {    
+        int retrievedAmount = takeIngredient.decreaseQuantity(amount);
+        if (retrievedAmount > 0) {
+            // cập nhật tổng
+            String key = normalizeKey(takeIngredient.getName());
+            Ingredient agg = ingredientsData.get(key);
+            if (agg != null) {
+                agg.decreaseQuantity(retrievedAmount);
+                if (agg.getQuantity() <= 0) {
+                    agg.setQuantity(0);
                 }
-                break;
             }
+
+            Ingredient result = new Ingredient(takeIngredient.getName());
+            result.setCost(takeIngredient.getCost());
+            result.increaseQuantity(retrievedAmount);
+            saveIngredientsToFile();
+            return result;
         }
         return null;
     }
@@ -455,6 +449,7 @@ public class SupplyManager implements ManagerHandler {
     }
 
     // Hàm kiểm tra xem các nguyên liệu có đủ làm 1 món nào k 
+    // Hàm này cần xem lại đầu tiên 
     public void checkWarehouse() {
         // Improve: for each dish compute how many full portions can be made
         // and list missing/insufficient ingredients with quantities.
@@ -619,6 +614,11 @@ public class SupplyManager implements ManagerHandler {
         Path destination = Paths.get("src","cache", "Ingredients(copy).txt");
         try {
             // Try copying from classpath resource first (works when running from jar/IDE)
+            if (Files.exists(destination) && Files.size(destination) > 0) {
+            System.out.println("File Ingredients(copy).txt đã có dữ liệu, bỏ qua việc copy.");
+            return; // kết thúc hàm luôn
+            }
+            // Try copying from classpath resource first (works when running from jar/IDE)
             InputStream is = DishManager.class.getClassLoader().getResourceAsStream("resources/Ingredients.txt");
             Files.createDirectories(destination.getParent());
             if (is != null) {
@@ -628,18 +628,7 @@ public class SupplyManager implements ManagerHandler {
                     // reload in-memory cache from the copied file
                     
                 }
-            } else {
-                // Fallback to filesystem path relative to working directory
-                Path source = Paths.get("src", "resources", "Ingredients.txt");
-                if (Files.exists(source)) {
-                    Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
-                    //System.out.println("Đã copy file từ src/resources thành công!");
-                    // reload in-memory cache from the copied file
-                   
-                } else {
-                    System.err.println("Nguon Dishes.txt khong tim thay (checked classpath and src/resources)");
-                }
-            }
+            } 
         } catch (IOException e) {
             e.printStackTrace();
         }

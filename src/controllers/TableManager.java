@@ -3,10 +3,13 @@ import java.util.*;
 import java.time.LocalDate;
 
 import contracts.ManagerHandler;
+import main.program;
 import models.Table;
 import utils.*;
 import models.Order;
 import models.DailyRevenue;
+import java.text.DecimalFormat;
+import base.Worker;
 
 public class TableManager implements ManagerHandler {
     private static TableManager self;
@@ -20,6 +23,7 @@ public class TableManager implements ManagerHandler {
 
     private HashMap<Integer, Table> tableList = new HashMap<Integer, Table>(); // Danh sách bàn, <Mã bàn, bàn> ví dụ: tìm bàn số 5 => <5, bàn>
     private int numOfTable = 10; // Số lượng bàn ăn
+    DecimalFormat df = new DecimalFormat("#,###");
 
     @Override
     public void showGeneralInfo() {
@@ -114,7 +118,7 @@ public class TableManager implements ManagerHandler {
         }
         while(target < lowerLimit || target > upperLimmit);
 
-        System.out.println("Target hom nay la: "+ target);   
+        System.out.println("Target hom nay la: "+ df.format(target));   
     }
 
     // Đóng cửa nhà hàng(được tự động gọi bởi startSimation)
@@ -177,9 +181,23 @@ public class TableManager implements ManagerHandler {
             // todayProgress = dailyRevenue.getTotalAmount();
             // System.out.println("=== Tien do hom nay: " + todayProgress + " / " + target + " ===");
             // todayProgress += 1000000;// Testing, ô fix dòng này sau
+            
+            try  {
+                todayProgress = RevenueManager.getManager().getRevenueOfDate(date);
+            } catch (Exception e) {
+                break;
+            }
 
-            todayProgress = RevenueManager.getManager().getRevenueOfDate(date);
-            System.out.println("=== Tien target hom nay: " + todayProgress + " / " + target + " ===");
+            int[] middleLine = {42};
+            int dashLength = 6;
+            int[] sumaryLine = {dashLength, dashLength, dashLength, dashLength, dashLength};
+            displayer.printFormatLine(sumaryLine);
+            System.out.println("| " + displayer.centerString("TODAY", 42) + " |");
+            displayer.printFormatLine(sumaryLine);
+            System.out.println("|       Revenue       |        Target        |");
+            displayer.printFormatLine(middleLine);
+            System.out.printf("|     %-16.2f|     %-16.2f |\n", todayProgress, target);
+            displayer.printFormatLine(sumaryLine);
 
             // Đọc doanh thu hiện tại (Waiter sẽ ghi transaction khi thanh toán)
             // double revenueNow = controllers.RevenueManager.getManager().getRevenueOfDate(date);
@@ -193,7 +211,7 @@ public class TableManager implements ManagerHandler {
             // }
             // inputHandler.enter2Continue();
         }
-
+        RevenueManager.getManager().saveRevenueToFile();
         closeRestaurant();
     }
     
