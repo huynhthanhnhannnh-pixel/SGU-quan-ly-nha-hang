@@ -117,7 +117,6 @@ public class SupplyManager implements ManagerHandler {
         System.out.println("Danh sach nguyen lieu trong kho:");
         System.out.println();
         displayer.printFormatLine(new int[]{4, 16, 16, 20, 14, 14});
-
         System.out.printf("| %-4s | %-16s | %-16s | %-20s | %-14s | %-14s |\n", "ID", "Ten", "So luong", "Gia", "HSD", "Ngay nhap hang");
         displayer.printFormatLine(new int[]{4, 16, 16, 20, 14, 14});
 
@@ -361,15 +360,19 @@ public class SupplyManager implements ManagerHandler {
                 Ingredient ing = entry.getValue();
                 if (normalizeKey(ing.getName()).equals(normalizeKey(name))) {
                     found = true;
-                    System.out.println(
-                        "ID: " + entry.getKey() + 
-                        "\nName: " + ing.getName() +
-                        "\nHSD: " + (ing.getDate() != null ? ing.getDate().format(outFmt) : "N/A") +
-                        "\nNgay Nhap: " + (ing.getNgayNhapHang() != null ? ing.getNgayNhapHang().format(outFmt) : "N/A") +
-                        "\nQuantity: " + ing.getQuantity() +
-                        "\nCost: " + ing.getCost()
+                    displayer.printFormatLine(new int[]{4, 16, 16, 20, 14, 14});
+                    System.out.printf("| %-4s | %-16s | %-16s | %-20s | %-14s | %-14s |\n", "ID", "Ten", "So luong", "Gia", "HSD", "Ngay nhap hang");
+                    displayer.printFormatLine(new int[]{4, 16, 16, 20, 14, 14});
+
+                    System.out.printf(
+                        "| %-4d | %-16s | %-16d | %-20.1f |", 
+                        entry.getKey(), ing.getName(), ing.getQuantity(), ing.getCost()
                     );
-                    displayer.singleSeperate();
+                    System.out.println(
+                        (ing.getNgayNhapHang() != null ? ing.getNgayNhapHang().format(outFmt) : "N/A") + "      | " + 
+                        (ing.getDate() != null ? ing.getDate().format(outFmt) : "N/A") + "     |"
+                    );
+                    displayer.printFormatLine(new int[]{4, 16, 16, 20, 14, 14});
                 }
             }
 
@@ -461,7 +464,13 @@ public class SupplyManager implements ManagerHandler {
         }
 
         boolean anyMakeable = false;
-        System.out.println("Kiem tra kho de biet co the lam duoc may phan cua moi mon:");
+        System.out.println("\nKiem tra kho de biet co the lam duoc may phan cua moi mon:\n");
+
+        int[] formatLine = {25, 16};
+        displayer.printFormatLine(formatLine);
+        System.out.printf("| %-25s | %-16s |\n", "Ten", "So Luong");
+        displayer.printFormatLine(formatLine);
+
         for (Dish dish : dishList) {
             Map<String, Integer> needs = dish.readIngredients();
             if (needs == null || needs.isEmpty()) {
@@ -498,19 +507,24 @@ public class SupplyManager implements ManagerHandler {
             }
 
             if (maxPortions > 0 && maxPortions != Integer.MAX_VALUE) {
-                System.out.println("- " + dish.getName() + ": Co the lam duoc " + maxPortions + " phan.");
+                System.out.printf("| %-25s | %-16d |\n", dish.getName(), maxPortions); 
                 anyMakeable = true;
             } else if (maxPortions == Integer.MAX_VALUE) {
                 // rare: all requirements had required<=0
                 System.out.println("- " + dish.getName() + ": Yeu cau nguyen lieu khong hop le.");
             } else {
-                System.out.println("- " + dish.getName() + ": Khong the lam phan nao.");
+                //System.out.println("- " + dish.getName() + ": Khong the lam phan nao.");
+                System.out.println("=".repeat(56));
+                System.out.printf("| %-25s | %-16d |\n", dish.getName(), maxPortions);
+                System.out.println("| !!! Khong du nguyen lieu !!!                 |");
                 if (!shortages.isEmpty()) {
-                    System.out.println("  Nguyen lieu thieu/khong du:");
-                    for (String s : shortages) System.out.println("    - " + s);
+                    for (String s : shortages) System.out.printf("| Thieu %-38s |\n", s);
                 }
+                System.out.println("=".repeat(56));
             }
         }
+        displayer.printFormatLine(formatLine);
+        System.out.println();
 
         if (!anyMakeable) {
             System.out.println("(Luu y) Kho hien khong du nguyen lieu de lam bat ky mon nao hoac so luong la 0.");

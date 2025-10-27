@@ -271,22 +271,29 @@ public class DishManager implements ManagerHandler {
 
     @Override
     public void createReport() {
-        System.out.println("--- Bao cao danh sach mon an ---");
+        int[] headlerLine = {50};
+        System.out.println();
+        displayer.printFormatLine(headlerLine);
+        System.out.println("|" + displayer.centerString(" *** BAO CAO DANH SACH MON AN *** ", 52) + "|");
+        displayer.printFormatLine(headlerLine);
         if (dishList.isEmpty()) {
             System.out.println("Khong co mon an nao.");
             return;
         }
+        int[] dishTitleLine = {3, 25, 16};
         for (Map.Entry<Integer, Dish> entry : dishList.entrySet()) {
             Dish d = entry.getValue();
-            displayer.singleSeperate();
-            System.out.println("ID: " + entry.getKey());
-            System.out.println("Mon: " + d.getName());
-            System.out.println("Gia: " + String.format("%.2f", d.getPrice()));
-            System.out.println("Nguyen lieu:");
+            displayer.printFormatLine(dishTitleLine);
+            System.out.printf("| %-3d | %-25s | Gia: %-11.2f |\n", entry.getKey(), d.getName(), d.getPrice());
+            displayer.printFormatLine(dishTitleLine);
+            System.out.println("| Nguyen lieu:" + " ".repeat(39) + "|");
             for (Map.Entry<String, Integer> e : d.readIngredients().entrySet()) {
-                System.out.println(" - " + e.getKey() + ": " + e.getValue());
-            }
+                String dishInfo = e.getKey() + ": " + e.getValue();
+                System.out.printf("| %-50s |\n", dishInfo);
+            }    
         }
+        displayer.printFormatLine(headlerLine);
+        System.out.println();
     }
 
     @Override

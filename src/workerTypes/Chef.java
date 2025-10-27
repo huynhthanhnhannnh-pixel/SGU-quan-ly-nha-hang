@@ -81,8 +81,7 @@ public class Chef extends base.Worker {
             Random rand = new Random();
 
             System.out.println("\nChef: du nguyen lieu - bat dau nau!");
-            System.out.println("=".repeat(10) + "   COOKING....   " + "=".repeat(10));
-            SupplyManager spl = SupplyManager.getManager();
+            System.out.println("=".repeat(20) + "   COOKING....   " + "=".repeat(20));
             for (String dish : order.getDishes()) {
                 for (Dish dishMENU : DishManager.getManager().getDishList()){
                     if (dish.equalsIgnoreCase(dishMENU.getName())){
@@ -108,8 +107,9 @@ public class Chef extends base.Worker {
                 }
             }
 
+            System.out.println("=".repeat(57));
             System.out.println("\nChef: Hoan thanh tat ca mon do");
-            System.out.println("=".repeat(50));
+            
             // eventHlr.notifyWaiters(order);
             // for (String dishName : order.getDishes()) {
             //     String centered = displayer.centerString(dishName, 33);
