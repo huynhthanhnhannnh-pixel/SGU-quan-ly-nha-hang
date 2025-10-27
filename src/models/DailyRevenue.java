@@ -6,7 +6,7 @@ import java.util.*;
 public class DailyRevenue {
     private LocalDate date;
     // private int revenueID;
-    private List<Order> transactions; //danh sách các order trong ngày
+    private List<Order> transactions = new ArrayList<>(); //danh sách các order trong ngày
 
     public DailyRevenue(LocalDate date){
         this.date = date;

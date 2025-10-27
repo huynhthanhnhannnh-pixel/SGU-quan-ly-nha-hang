@@ -1,7 +1,6 @@
 package main;
 
 import controllers.*;
-import java.time.*;
 import utils.*;
 
 public class program {
@@ -14,7 +13,6 @@ public class program {
         DishManager dishMgr = DishManager.getManager();
         RevenueManager revenueMgr = RevenueManager.getManager();
         TableManager tbManager = TableManager.getManager();
-        LocalDate today = LocalDate.now();
 
         String[] message = {
             "WELCOME TO QUAN LY NHA HANG"

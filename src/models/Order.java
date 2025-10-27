@@ -54,9 +54,9 @@ public class Order {
             }
         }
         numOfUnsatisfiedRequest += countRemoved;
-        System.out.println("Dishes after update: " + dishes);
-        System.out.println("Excluded: " + excludedDishes);
-        System.out.println("numOfUnsatisfiedRequest: " + numOfUnsatisfiedRequest);
+        //System.out.println("Dishes after update: " + dishes);
+        //System.out.println("Excluded: " + excludedDishes);
+        //System.out.println("numOfUnsatisfiedRequest: " + numOfUnsatisfiedRequest);
 
     }
 
@@ -89,5 +89,13 @@ public class Order {
         return total;
     }
 
+    public boolean isExclusiveDish(String name) {
+        for (String dishName : excludedDishes) {
+            if (dishName.equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    } 
  
 }

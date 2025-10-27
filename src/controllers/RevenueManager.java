@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -13,8 +14,9 @@ import utils.Displayer;
 public class RevenueManager implements ManagerHandler {
     private static RevenueManager self;
     private Displayer displayer = Displayer.getDisplayer();
-    private HashMap<LocalDate, DailyRevenue> revenueRecords; //danh sách các DailyRevenue, đc lưu theo từng ngày 
+    private HashMap<LocalDate, DailyRevenue> revenueRecords = new HashMap<>(); //danh sách các DailyRevenue, đc lưu theo từng ngày 
     private HashMap<LocalDate, Double> profitLoss = new LinkedHashMap<>(); // danh sách các khoản phí
+    DecimalFormat df = new DecimalFormat("#,###");
     // private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
     // private int GO_BACK_OPTION = 0;
 
@@ -82,11 +84,10 @@ public class RevenueManager implements ManagerHandler {
         DailyRevenue revenue = revenueRecords.get(date);
 
         if (revenue != null) {
-            System.out.println("Doanh thu cua ngay " + date.format(formatter) + ": " + revenue.getTotalAmount());
+            System.out.println("Doanh thu cua ngay " + date.format(formatter) + ": " + df.format(revenue.getTotalAmount()));
             System.out.println("==================================================");
-            System.out.println("Loi nhuan cua ngay " + date.format(formatter) + ": " + revenue.getTotalProfit());
-            System.out.println("Chi phi hoat dong cua ngay + " + date.format(formatter) + ": " + profitLoss.get(date));
-            System.out.println("Tien von nguyen lieu cua ngay + " + date.format(formatter) + ": " + revenue.getTotalAmount()/3*1);
+            System.out.println("Loi nhuan cua ngay " + date.format(formatter) + ": " + df.format(revenue.getTotalProfit()));
+            System.out.println("Tien von nguyen lieu cua ngay " + date.format(formatter) + ": " + df.format(revenue.getTotalAmount()/3*1));
         } else {    
             System.out.println("Khong tin thay doanh thu va loi nhuan cua ngay " + date.format(formatter));
         }
@@ -94,7 +95,7 @@ public class RevenueManager implements ManagerHandler {
         return revenue;
     }
 
-    public void saveToFile(){   
+    public void saveRevenueToFile(){   
         BufferedWriter bw = null;
         try {
             Path p1 = Paths.get("cache", "Revenue.txt");
@@ -140,9 +141,7 @@ public class RevenueManager implements ManagerHandler {
     public double getProfitOfDate(LocalDate date){ return revenueRecords.get(date).getTotalProfit(); }
 
     // Private constructor to enforce singleton
-    private RevenueManager() {
-        revenueRecords = new HashMap<>();
-    }
+    private RevenueManager() {}
 
     // Public method to get the single self
     public static RevenueManager getManager() {

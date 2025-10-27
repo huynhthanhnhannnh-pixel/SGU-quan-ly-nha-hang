@@ -7,6 +7,8 @@ import models.Table;
 import utils.*;
 import models.Order;
 import models.DailyRevenue;
+import java.text.DecimalFormat;
+import base.Worker;
 
 public class TableManager implements ManagerHandler {
     private static TableManager self;
@@ -20,6 +22,7 @@ public class TableManager implements ManagerHandler {
 
     private HashMap<Integer, Table> tableList = new HashMap<Integer, Table>(); // Danh sách bàn, <Mã bàn, bàn> ví dụ: tìm bàn số 5 => <5, bàn>
     private int numOfTable = 10; // Số lượng bàn ăn
+    DecimalFormat df = new DecimalFormat("#,###");
 
     @Override
     public void showGeneralInfo() {
@@ -93,7 +96,7 @@ public class TableManager implements ManagerHandler {
     public HashMap<Integer, Table> getTableList() { return tableList; }
 
     public LocalDate getDate() { return date; } 
-    
+
     // Đặt mục tiêu danh thu
     private void setTargetProfit() {
         System.out.println("Target hien tai: " + target); 
@@ -114,7 +117,7 @@ public class TableManager implements ManagerHandler {
         }
         while(target < lowerLimit || target > upperLimmit);
 
-        System.out.println("Target hom nay la: "+ target);   
+        System.out.println("Target hom nay la: "+ df.format(target));   
     }
 
     // Đóng cửa nhà hàng(được tự động gọi bởi startSimation)
@@ -141,8 +144,7 @@ public class TableManager implements ManagerHandler {
         // ================================================================================
 
         System.out.println("===== BAT DAU GIA LAP NHA HANG =====");
-        System.out.println("Ngay: " + date + "\n\n");  
-
+        System.out.println("Ngay: " + date + "\n"); 
         eventHlr.startShift(getDayNumber(date)); // bắt đầu làm
         // Nếu không đủ nhân viên hoặc chủ nhật thì nghỉ
         if (eventHlr.isNotActive()) {
@@ -152,20 +154,39 @@ public class TableManager implements ManagerHandler {
 
         // ================================================================================
         // Phục vụ cho đến khi đủ danh thu
-
+        // DailyRevenue dailyRevenue = new DailyRevenue(date); // Khởi tạo doanh thu ngày mới
+        // RevenueManager.getManager().getRevenueRecords().put(date, dailyRevenue); // Thêm vào danh sách doanh thu
         
-        double todayProgress = 0.0;
+        double todayProgress = 0;
         while (todayProgress < target) {
             
             Table table = TableManager.getManager().getTableList().get(1); // Lấy bàn số 1 để mô phỏng
-            EventHandler.getEventHandler().addTable(table);
+            eventHlr.addTable(table);
             Order order = new Order(table);
-            EventHandler.getEventHandler().addOrder(order);  // Tạo order cho bàn số 1
-            eventHlr.notifyWaiters(EventHandler.getEventHandler().getOrderOfTable()); // Bắt đầu kêu waiter ra phục vụ
+            eventHlr.addOrder(order);  // Tạo order cho bàn số 1
+            // dailyRevenue.getTransactions().add(order);
+            // for (DailyRevenue dr : RevenueManager.getManager().getRevenueRecords().values()) {
+            //     System.out.println(dr.getTransactions().size());
+            // }
+            // for ( Order o : dailyRevenue.getTransactions()) {
+            //     System.out.println(o.getDishes().size());
+            //     System.out.println(o.calculateAmount());
+            // }
+            eventHlr.notifyWaiters(eventHlr.getOrderOfTable()); // Bắt đầu kêu waiter ra phục vụ
+            
+            // System.out.println("So luong mon trong order: " + order.getDishes().size());
 
-
-            todayProgress += 1000000; // Testing, ô fix dòng này sau
-
+            
+            // todayProgress = dailyRevenue.getTotalAmount();
+            // System.out.println("=== Tien do hom nay: " + todayProgress + " / " + target + " ===");
+            // todayProgress += 1000000;// Testing, ô fix dòng này sau
+            
+            try  {
+                todayProgress = RevenueManager.getManager().getRevenueOfDate(date);
+            } catch (Exception e) {
+                break;
+            }
+            System.out.println("=== Tien target hom nay: " + df.format(todayProgress) + " / " + df.format(target) + " ===");
 
             // Đọc doanh thu hiện tại (Waiter sẽ ghi transaction khi thanh toán)
             // double revenueNow = controllers.RevenueManager.getManager().getRevenueOfDate(date);
@@ -179,7 +200,7 @@ public class TableManager implements ManagerHandler {
             // }
             // inputHandler.enter2Continue();
         }
-
+        RevenueManager.getManager().saveRevenueToFile();
         closeRestaurant();
     }
     
@@ -217,6 +238,6 @@ public class TableManager implements ManagerHandler {
         }
         displayer.singleSeperate();
         inputHandler.resetOption();
-        date = date.plusDays(1); // Chuyển sang ngày mới
+        
     }
 }

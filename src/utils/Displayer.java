@@ -41,4 +41,41 @@ public class Displayer {
         }
         System.out.println("+");
     }
+
+    // Hien thi string can giua
+    public String centerString(String text, int width) {
+        if (text.length() >= width) {
+            return text;
+        }
+        int totalPadding = width - text.length();
+        int paddingLeft = totalPadding / 2;
+        int paddingRight = totalPadding - paddingLeft; // ensures total padding is correct
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < paddingLeft; i++) sb.append(" ");
+        sb.append(text);
+        for (int i = 0; i < paddingRight; i++) sb.append(" ");
+
+        return sb.toString();
+    }
+
+    public String centerSplit(String word, int totalLength) {
+        int mid = word.length() / 2;
+        String left = word.substring(0, mid);
+        String right = word.substring(mid);
+
+        String combined = left + "------" + right;
+        int padding = totalLength - combined.length();
+        int leftPadding = padding / 2;
+        int rightPadding = padding - leftPadding;
+
+        return "-".repeat(leftPadding) + combined + "-".repeat(rightPadding);
+    }
+
+    public String wrapWord(String word, int count, String symbol) {
+        String padding = String.valueOf(symbol).repeat(count);
+        return padding + " " + word + " " + padding;
+    }
+
+
 }
