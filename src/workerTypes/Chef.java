@@ -10,6 +10,7 @@ import utils.Displayer;
 public class Chef extends base.Worker {
     private EventHandler eventHlr = EventHandler.getEventHandler();
     private Displayer displayer = Displayer.getDisplayer();
+    private SupplyManager spl = SupplyManager.getManager();
     private String[] customCompliment = {
         "Ok.. (-_-)", "Great!", "Wow! ('O')", "Amazing!!! ( @ v @ )", 
         "Outstanding! ^~^", "Tasty ( ^ v ^ )", "How.. Magic? (o_o)?", "Perfection (U w U)",
@@ -90,7 +91,7 @@ public class Chef extends base.Worker {
                         for (Map.Entry<String, Integer> entry : requiredIngredients.entrySet()) {
                             String ingredientName = entry.getKey();
                             int requiredAmount = entry.getValue();
-                            SupplyManager.getManager().getIngredient(spl.findEarliestExpiry(ingredientName), requiredAmount);
+                            spl.getIngredient(spl.findEarliestExpiry(ingredientName), requiredAmount);
                         }
 
                         // System.out.println("Chef: Da nau xong mon:  " + dish);
