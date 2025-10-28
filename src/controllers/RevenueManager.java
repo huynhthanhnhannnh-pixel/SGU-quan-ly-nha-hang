@@ -15,7 +15,7 @@ public class RevenueManager implements ManagerHandler {
     private static RevenueManager self;
     private Displayer displayer = Displayer.getDisplayer();
     private HashMap<LocalDate, DailyRevenue> revenueRecords = new HashMap<>(); //danh sách các DailyRevenue, đc lưu theo từng ngày 
-    private HashMap<LocalDate, Double> profitLoss = new LinkedHashMap<>(); // danh sách các khoản phí
+    private LinkedHashMap<LocalDate, Double> profitLoss = new LinkedHashMap<>(); // danh sách các khoản phí
     DecimalFormat df = new DecimalFormat("#,###");
     // private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
     // private int GO_BACK_OPTION = 0;
@@ -86,8 +86,9 @@ public class RevenueManager implements ManagerHandler {
         if (revenue != null) {
             System.out.println("Doanh thu cua ngay " + date.format(formatter) + ": " + df.format(revenue.getTotalAmount()));
             System.out.println("==================================================");
-            System.out.println("Loi nhuan cua ngay " + date.format(formatter) + ": " + df.format(revenue.getTotalProfit()));
             System.out.println("Tien von nguyen lieu cua ngay " + date.format(formatter) + ": " + df.format(revenue.getTotalAmount()/3*1));
+            System.out.println("Chi phi khau hao cua ngay " + date.format(formatter) + ": " + df.format(getProfitLoss().get(date)));
+            System.out.println("Loi nhuan cua ngay " + date.format(formatter) + ": " + df.format(revenue.getTotalProfit()));
         } else {    
             System.out.println("Khong tin thay doanh thu va loi nhuan cua ngay " + date.format(formatter));
         }
