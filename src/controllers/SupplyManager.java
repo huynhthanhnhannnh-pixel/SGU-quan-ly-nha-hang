@@ -408,8 +408,9 @@ public class SupplyManager implements ManagerHandler {
                 saveIngredientsToFile();
             }
         }
-        // thêm số hao hụt hàng hóa vào tổng cost 1 ngày
-        RevenueManager.getManager().getProfitLoss().put(today, total);
+
+        if ( total > 0 ) {  RevenueManager.getManager().getProfitLoss().put(today, total); }
+
         // persist updated inventory after deletions
         return total;
     }

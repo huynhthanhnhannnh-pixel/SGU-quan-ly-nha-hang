@@ -572,4 +572,5 @@ public class WorkerManager implements ManagerHandler {
         }
         inputHandler.resetOption();
     }
+
 }
