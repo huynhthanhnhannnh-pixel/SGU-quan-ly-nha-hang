@@ -9,12 +9,10 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 import models.*;
-import utils.UserInputHandler;
 
 public class EventHandler {
     private WorkerManager wrkMgr = WorkerManager.getManager();
     private SupplyManager spMgr = SupplyManager.getManager();
-    private UserInputHandler inputHandler = UserInputHandler.getUserInputHandler();
     private Shift curShift = wrkMgr.getShift(1); // lấy thông tin ca làm, mặc định là sáng thứ 2
     private static EventHandler self;
 
@@ -158,8 +156,6 @@ public class EventHandler {
 
     // // lấy order đầu tiên trong orderList, order co the null
     public Order getOrder() {
-        // FIXME: Nếu orderList rỗng, remove(0) sẽ ném IndexOutOfBoundsException.
-        // Đề xuất: kiểm tra orderList != null && !orderList.isEmpty() trước khi remove.
          if (!orderList.isEmpty()) {
             return orderList.remove(0);
         } else {

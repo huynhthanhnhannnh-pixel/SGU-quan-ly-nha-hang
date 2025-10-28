@@ -629,7 +629,7 @@ public class SupplyManager implements ManagerHandler {
         try {
             // Try copying from classpath resource first (works when running from jar/IDE)
             if (Files.exists(destination) && Files.size(destination) > 0) {
-            System.out.println("File Ingredients(copy).txt đã có dữ liệu, bỏ qua việc copy.");
+            System.out.println("File Ingredients(copy).txt da co du lieu, bo qua viec copy.");
             return; // kết thúc hàm luôn
             }
             // Try copying from classpath resource first (works when running from jar/IDE)

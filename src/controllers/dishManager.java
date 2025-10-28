@@ -39,9 +39,9 @@ public class DishManager implements ManagerHandler {
             }
             bw.newLine();
         }
-        System.out.println("Đã lưu thành công vào file!");
+        System.out.println("Da luu thanh cong vao file!");
     } catch (IOException e) {
-        System.err.println("Lỗi khi ghi file: " + e.getMessage());
+        System.err.println("Loi khi ghi file: " + e.getMessage());
     }
 }
 
@@ -97,7 +97,7 @@ public class DishManager implements ManagerHandler {
         try {
             // Try copying from classpath resource first (works when running from jar/IDE)
             if (Files.exists(destination) && Files.size(destination) > 0) {
-            System.out.println("File Dishes(copy).txt đã có dữ liệu, bỏ qua việc copy.");
+            System.out.println("File Dishes(copy).txt da co du lieu, bo qua viec copy.");
             return; // kết thúc hàm luôn
             }
             InputStream is = DishManager.class.getClassLoader().getResourceAsStream("resources/Dishes.txt");
@@ -105,7 +105,7 @@ public class DishManager implements ManagerHandler {
             if (is != null) {
                 try (InputStream in = is) {
                     Files.copy(in, destination, StandardCopyOption.REPLACE_EXISTING);
-                    System.out.println("Đã copy file từ classpath thành công!");
+                    System.out.println("Da copy file thanh cong");
                     // reload in-memory cache from the copied file so runtime state matches the cache
                     
             }
@@ -232,7 +232,12 @@ public class DishManager implements ManagerHandler {
                     String[] parts2 = line2.split("\\|");
                     if (parts2.length != 2) { System.out.println("Dinh dang khong hop le"); break; }
                     String ingName = parts2[0].trim(); int newAmt = 0; try { newAmt = Integer.parseInt(parts2[1].trim()); } catch (Exception e) { System.out.println("So luong khong hop le"); break; }
-                    changeIngredientAmountInDish(dishName3, ingName, newAmt);
+                    if (changeIngredientAmountInDish(dishName3, ingName, newAmt)) {
+                        changeIngredientAmountInDish(dishName3, ingName, newAmt);
+                    }
+                    else {
+                        System.out.println("Khong tim thay mon hoac nguyen lieu do trong: " + dishName3);
+                    }
                     break;
                 }
                 default:
@@ -372,7 +377,7 @@ public class DishManager implements ManagerHandler {
         }
         
         System.out.println("Da them " + ingName + " vao mon " + targetDish.getName() + " (so luong: " + amount + ")");
-        return ingredientIsNotFound; // return true
+        return ingredientIsNotFound; // return true 
     }
 
     @Override
@@ -487,13 +492,14 @@ public class DishManager implements ManagerHandler {
         if (dishName == null || ingName == null) return false;
         for (Dish dish : dishList.values()) {
             if (dish.getName().equalsIgnoreCase(dishName)) {
+                if (dish.readIngredients().containsKey(ingName)){
                 dish.changeIngredientAmount(ingName.toLowerCase(), amount);
                 System.out.println("Da cap nhat so luong " + ingName + " trong mon " + dish.getName() + " = " + amount);
                 saveDishesToFile();
                 return true;
+                }
             }
         }
-        System.out.println("Khong tim thay mon: " + dishName);
         return false;
     }
 
